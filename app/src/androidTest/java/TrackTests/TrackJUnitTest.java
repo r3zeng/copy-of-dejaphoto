@@ -12,15 +12,9 @@ import static org.junit.Assert.assertEquals;
 public class TrackJUnitTest {
 
     @Test
-    public void testCompareTime(){
+    public void testLocation(){
         Tracker tracker = new Tracker();
-        tracker.set(1000000, null);
-        assertEquals(tracker.compareTime(), true);
+        tracker.updateLocation(null);
+        assertEquals(tracker.getLocation(), null);
     }
-
-    @Test
-    public void testCompareLocation(){}
-
-    @Test
-    public void testCompare(){}
 }
