@@ -1,5 +1,9 @@
 package com.example.mingchengzhu.dejaphoto;
+import java.io.IOException;
 import java.util.Random;//needs to delete
+
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +22,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.app.Service;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -105,6 +110,9 @@ public class MainActivity extends AppCompatActivity
 
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
+
+        /*Bring UI for choosing Photo*/
+
     }
 
     @Override
@@ -175,6 +183,14 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+
+            // in onCreate or any event where your want the user to
+            // select a file
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent,
+                    "Select Picture"), 1);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -190,6 +206,24 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturn)
+    {
+        switch (requestCode)
+        {
+            case 1 :
+                if (resultCode==1)
+                {
+                    Uri imageUri = imageReturn.getData();
+                    try {
+                        AlbumUtility.insertPhoto(imageUri, MainActivity.this);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        }
     }
 
     @Override
