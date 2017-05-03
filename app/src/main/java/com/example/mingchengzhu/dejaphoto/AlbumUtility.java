@@ -23,17 +23,27 @@ import java.nio.channels.FileChannel;
 
 public class AlbumUtility {
 
+    // For logging
+    private static final String TAG = "AlbumUtility";
+
     private final static String path = Environment.getExternalStorageDirectory().toString();
     private final static String filePath = "/dejaphoto/media/app images/";
 
     public static void createAlbum()
     {
         File dir = new File(path, filePath);
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "Creating new DejaPhoto album now at " + dir.toString());
+        }
         dir.mkdirs();
     }
 
     public static boolean dejaAlbumExists()
     {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Checking for DejaPhoto album existence");
+        }
+
         return albumDir().isDirectory();
     }
 
