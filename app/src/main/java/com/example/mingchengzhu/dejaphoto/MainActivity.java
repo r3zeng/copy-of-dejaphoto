@@ -1,5 +1,5 @@
 package com.example.mingchengzhu.dejaphoto;
-
+import java.util.Random;//needs to delete
 import android.os.Handler;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +18,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.app.Service;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -25,6 +26,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 
+import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity
@@ -35,7 +37,8 @@ public class MainActivity extends AppCompatActivity
     public Location mLastLocation;
     private Tracker tracker = new Tracker();
     private Runnable auto_switch;
-
+    TextView textView;
+    TextView textView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +74,19 @@ public class MainActivity extends AppCompatActivity
                     .build();
         }
 
+
         /* Task: auto-switch */
         final Handler auto_switch_handler = new Handler();
         auto_switch = new Runnable() {
             @Override
             public void run() {
                 //call the change background method here
-                auto_switch_handler.postDelayed(auto_switch, 180000);//3 minutes
+                Random random = new Random();
+                textView = (TextView)findViewById(R.id.textView2);
+                textView.setText(String.valueOf(random.nextInt(50)+1));
+                textView2 = (TextView)findViewById(R.id.textView3);
+                textView2.setText(String.valueOf(random.nextInt(50)+1));
+                auto_switch_handler.postDelayed(auto_switch, 3000);//3 minutes 180000
             }
         };
 
@@ -99,6 +108,11 @@ public class MainActivity extends AppCompatActivity
         if (mLastLocation != null){
             Log.d("STATE", String.valueOf(mLastLocation.getLatitude()));
             Log.d("CREATION", String.valueOf(mLastLocation.getLongitude()));
+            textView = (TextView)findViewById(R.id.textView2);
+            textView.setText(String.valueOf(mLastLocation.getLatitude()));
+            textView2 = (TextView)findViewById(R.id.textView3);
+            textView2.setText(String.valueOf(mLastLocation.getLongitude()));
+
         }
         // possible place to update location
         tracker.updateLocation(mLastLocation);
