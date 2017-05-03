@@ -1,5 +1,6 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.os.Handler;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,9 +30,12 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
 {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
     public Location mLastLocation;
-    public Tracker tracker;
+    private Tracker tracker = new Tracker();
+    private Runnable auto_switch;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +69,20 @@ public class MainActivity extends AppCompatActivity
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build();
-            tracker = new Tracker();
         }
+
+        /* Task: auto-switch */
+        final Handler auto_switch_handler = new Handler();
+        auto_switch = new Runnable() {
+            @Override
+            public void run() {
+                //call the change background method here
+                auto_switch_handler.postDelayed(auto_switch, 180000);//3 minutes
+            }
+        };
+
+        /* Start the runnable task*/
+        auto_switch_handler.post(auto_switch);
     }
 
     @Override
@@ -84,8 +100,8 @@ public class MainActivity extends AppCompatActivity
             Log.d("STATE", String.valueOf(mLastLocation.getLatitude()));
             Log.d("CREATION", String.valueOf(mLastLocation.getLongitude()));
         }
-            // possible place to update location
-            tracker.updateLocation(mLastLocation);
+        // possible place to update location
+        tracker.updateLocation(mLastLocation);
     }
 
     @Override
@@ -155,11 +171,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConnectionSuspended(int cause) {
         // We are not connected anymore!
+        Log.i(TAG, "connection suspended");
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onConnectionFailed(ConnectionResult result) {
         // We tried to connect but failed!
+        Log.i(TAG, "connection failed");
     }
 
 }

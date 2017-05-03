@@ -1,4 +1,5 @@
 package TrackTests;
+import com.example.mingchengzhu.dejaphoto.MainActivity;
 import com.example.mingchengzhu.dejaphoto.Tracker;
 import android.location.Location;
 import org.junit.Test;
@@ -16,5 +17,10 @@ public class TrackJUnitTest {
         Tracker tracker = new Tracker();
         tracker.updateLocation(null);
         assertEquals(tracker.getLocation(), null);
+    }
+
+    @Test
+    public void testGettingCoordinates(){
+
     }
 }
