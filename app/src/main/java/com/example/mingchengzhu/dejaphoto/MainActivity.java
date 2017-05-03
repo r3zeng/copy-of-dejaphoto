@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = MainActivity.class.getSimpleName();
     private GoogleApiClient mGoogleApiClient;
-    public Location mLastLocation;
+    public Location mLastLocation = new Location(""); //just for testing
     private Tracker tracker = new Tracker();
     private Runnable auto_switch;
     TextView textView;
@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mLastLocation.setLongitude(0.0d);
+        mLastLocation.setLatitude(0.0d);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -81,12 +84,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 //call the change background method here
+
+                //for testing
                 Random random = new Random();
                 textView = (TextView)findViewById(R.id.textView2);
                 textView.setText(String.valueOf(random.nextInt(50)+1));
                 textView2 = (TextView)findViewById(R.id.textView3);
                 textView2.setText(String.valueOf(random.nextInt(50)+1));
+
+                /*
+                textView = (TextView)findViewById(R.id.textView2);
+                textView.setText(String.valueOf(mLastLocation.getLatitude()));
+                textView2 = (TextView)findViewById(R.id.textView3);
+                textView2.setText(String.valueOf(mLastLocation.getLongitude()));
+                */
                 auto_switch_handler.postDelayed(auto_switch, 3000);//3 minutes 180000
+
             }
         };
 
@@ -102,17 +115,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
+        if ( mGoogleApiClient.isConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }
 
         if (mLastLocation != null){
             Log.d("STATE", String.valueOf(mLastLocation.getLatitude()));
             Log.d("CREATION", String.valueOf(mLastLocation.getLongitude()));
-            textView = (TextView)findViewById(R.id.textView2);
-            textView.setText(String.valueOf(mLastLocation.getLatitude()));
-            textView2 = (TextView)findViewById(R.id.textView3);
-            textView2.setText(String.valueOf(mLastLocation.getLongitude()));
-
         }
         // possible place to update location
         tracker.updateLocation(mLastLocation);
