@@ -191,6 +191,17 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    
+    /**
+     * sets an image as the background
+     *
+     * @param file java.io.File that contains path to image
+     */
+    public void setBackgroundImage(File file){
+        Uri uri = Uri.fromFile(file);
+        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+        background.setImageURI(uri);
+    }
 
     @Override
     public void onConnectionSuspended(int cause) {
