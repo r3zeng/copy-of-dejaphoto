@@ -11,11 +11,11 @@ import java.io.IOException;
  */
 
 public class DejaPhoto {
-    static DejaPhoto[] currentSearchResults;
+    private static DejaPhoto[] currentSearchResults;
 
     private Uri galleryUri;
-    boolean hasKarma;
-    boolean wasReleased;
+    private boolean hasKarma;
+    private boolean wasReleased;
 
     // Note: will be moved to a different class
     static DejaPhoto[] getCurrentSearchResults() {
@@ -35,11 +35,10 @@ public class DejaPhoto {
     }
 
     long getTime() {
-
+        return 0;
     }
 
-    Location getLocation() throws IOException {
-        //ExifInterface exif = new ExifInterface(galleryUri.getPath());
-        //return exif
+    Location getLocation() {
+        return new Location("");
     }
 }
