@@ -28,6 +28,41 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 
 import org.w3c.dom.Text;
 
+/* imports that may be needed
+
+package com.example.mingchengzhu.dejaphoto;
+import java.util.Random;//needs to delete
+import java.io.File;
+import android.content.res.Resources;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Button;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.app.Service;
+import android.view.LayoutInflater;
+import android.widget.PopupWindow;
+import android.widget.TextView;
+*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
@@ -39,6 +74,12 @@ public class MainActivity extends AppCompatActivity
     private Runnable auto_switch;
     TextView textView;
     TextView textView2;
+    
+    private boolean Deja_Time = true;
+    private boolean Deja_Date = true;
+    private boolean Deja_Location = true;
+    private boolean Deja_Karma = true;
+    private int Deja_refresh_time = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
