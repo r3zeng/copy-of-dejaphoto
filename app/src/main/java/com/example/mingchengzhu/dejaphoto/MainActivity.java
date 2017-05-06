@@ -28,9 +28,9 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 
 import org.w3c.dom.Text;
 
-/* imports that may be needed
+// imports that may be needed
 
-package com.example.mingchengzhu.dejaphoto;
+//package com.example.mingchengzhu.dejaphoto;
 import java.util.Random;//needs to delete
 import java.io.File;
 import android.content.res.Resources;
@@ -62,7 +62,7 @@ import android.app.Service;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-*/
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
@@ -267,11 +267,11 @@ public class MainActivity extends AppCompatActivity
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
 
-        popup = new PopupWindow(container, 500, 500, true);
+        popup = new PopupWindow(container, 500, 800, true);
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
-        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -250);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -400);
 
         Button confirm = (Button) popup.getContentView().findViewById(R.id.frequency_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
