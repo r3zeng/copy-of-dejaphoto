@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity
     TextView textView;
     TextView textView2;
     
+    private PopupWindow popup;
+    
     private boolean Deja_Time = true;
     private boolean Deja_Date = true;
     private boolean Deja_Location = true;
@@ -214,23 +216,91 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if(id == R.id.nav_time) {
+            if(Deja_Time){
+                item.setTitle("Time Off");
+                Deja_Time = false;
+            }else{
+                item.setTitle("Time On");
+                Deja_Time = true;
+            }
+        } else if (id == R.id.nav_date) {
+            if(Deja_Date){
+                item.setTitle("Date Off");
+                Deja_Date = false;
+            }else{
+                item.setTitle("Date On");
+                Deja_Date = true;
+            }
+        } else if (id == R.id.nav_location) {
+            if(Deja_Location){
+                item.setTitle("Location Off");
+                Deja_Location = false;
+            }else{
+                item.setTitle("Location On");
+                Deja_Location = true;
+            }
+        }else if (id == R.id.nav_karma){
+            if(Deja_Karma){
+                item.setTitle("Karma Off");
+                Deja_Karma = false;
+            }else{
+                item.setTitle("Karma On");
+                Deja_Karma = true;
+            }
+        }else if(id == R.id.add_photo){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            AddPhoto();
+        }else if(id == R.id.change_frequency){
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            changeFrenquencyPopUp();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        //drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    
+        public void changeFrenquencyPopUp(){
+        LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
+
+        popup = new PopupWindow(container, 500, 500, true);
+        int width = Resources.getSystem().getDisplayMetrics().widthPixels;
+        int height = Resources.getSystem().getDisplayMetrics().heightPixels;
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -250);
+
+        Button confirm = (Button) popup.getContentView().findViewById(R.id.frequency_confirm);
+        confirm.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                  EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.change_frequency_edittext);
+                  try {//catch overflow
+                      if (!mEdit.getText().toString().equals("")) {//no null strings
+                          Deja_refresh_time = Integer.valueOf(mEdit.getText().toString());
+                          popup.dismiss();
+                      }
+                  }catch(Exception e){
+                      popup.dismiss();
+                  }
+            }
+        });
+
+        Button cancle = (Button) popup.getContentView().findViewById(R.id.frequency_cancle);
+        cancle.setOnClickListener(new View.OnClickListener(){
+           @Override
+            public  void onClick(View view){
+               popup.dismiss();
+           }
+        });
+    }
+
+    public void AddPhoto(){
+
     }
     
     /**
