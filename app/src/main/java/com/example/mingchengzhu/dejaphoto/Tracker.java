@@ -18,25 +18,16 @@ public class Tracker{
     private long time; //last time
     private Location lastLocation;
 
- //   private double latitude;
-//    private double longitude;
-
-
     public Location getLocation(){
         return lastLocation;
     }
+    public long getTime(){ return time; }
 
     /* For testing */
     public void set(long time, Location location){
         this.time = time;
     }
 
-    /*
-    public boolean compareTime(){
-        long currTime = System.currentTimeMillis(); //in millisecond
-        return (currTime - time) >= 300000; // 5 minutes
-    }
-*/
     public void updateTime(){
         this.time = System.currentTimeMillis();
     }
@@ -44,13 +35,6 @@ public class Tracker{
     public void updateLocation(Location location){
         if (location != null) {
             lastLocation = location;
-   //         latitude = location.getLatitude();
-     //       longitude = location.getLongitude();
         }
     }
-
-    //public boolean compare(Location location){
-    //    return compare(location) || compareTime();
-    //}
-
 }

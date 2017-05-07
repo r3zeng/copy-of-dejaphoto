@@ -1,5 +1,7 @@
 package com.example.mingchengzhu.dejaphoto;
 import java.util.Random;//needs to delete
+
+import android.content.Context;
 import android.os.Handler;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -62,15 +64,15 @@ import android.app.Service;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
+//*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
 {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private GoogleApiClient mGoogleApiClient;
-    public Location mLastLocation = new Location(""); //just for testing
     private Tracker tracker = new Tracker();
+    private LocationManager locationManager;
+    private LocationListener locationListener;
     private Runnable auto_switch;
     TextView textView;
     TextView textView2;
@@ -81,18 +83,25 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Date = true;
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
-    private int Deja_refresh_time = 300;
+    private int Deja_refresh_time = 3000; //3 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mLastLocation.setLongitude(0.0d);
-        mLastLocation.setLatitude(0.0d);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+/*
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+*/
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -102,15 +111,41 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Create an instance of GoogleAPIClient.
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
 
+        /* The following is used to update screen based on location */
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                // call switch screen
+                tracker.updateLocation(location);
+                tracker.updateTime();
+                /* test */
+                textView = (TextView)findViewById(R.id.textView2);
+                textView.setText(String.valueOf(tracker.getLocation().getLongitude()));
+                textView2 = (TextView)findViewById(R.id.textView3);
+                textView2.setText(String.valueOf(tracker.getTime()));
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        String locationProvider = LocationManager.GPS_PROVIDER;
+        // specified refresh time, 500 meters
+        locationManager.requestLocationUpdates(locationProvider, Deja_refresh_time, 500, locationListener);
 
         /* Task: auto-switch */
         final Handler auto_switch_handler = new Handler();
@@ -118,14 +153,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 //call the change background method here
-
+                /*
                 //for testing
                 Random random = new Random();
                 textView = (TextView)findViewById(R.id.textView2);
                 textView.setText(String.valueOf(random.nextInt(50)+1));
                 textView2 = (TextView)findViewById(R.id.textView3);
                 textView2.setText(String.valueOf(random.nextInt(50)+1));
-
+                */
                 /*
                 textView = (TextView)findViewById(R.id.textView2);
                 textView.setText(String.valueOf(mLastLocation.getLatitude()));
@@ -143,28 +178,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStart(){
-        mGoogleApiClient.connect();
         super.onStart();
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        if ( mGoogleApiClient.isConnected()) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                    mGoogleApiClient);
-        }
-
-        if (mLastLocation != null){
-            Log.d("STATE", String.valueOf(mLastLocation.getLatitude()));
-            Log.d("CREATION", String.valueOf(mLastLocation.getLongitude()));
-        }
-        // possible place to update location
-        tracker.updateLocation(mLastLocation);
     }
 
     @Override
     protected void onStop(){
-        mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -192,12 +214,12 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+/*
         //noinspection SimplifiableIfStatement
-        /*if (id == R.id.action_settings) {
+        if (id == R.id.action_settings) {
             return true;
-        }*/
-
+        }
+*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -258,11 +280,11 @@ public class MainActivity extends AppCompatActivity
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
 
-        popup = new PopupWindow(container, 500, 800, true);
+        popup = new PopupWindow(container, 500, 500, true);
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
-        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -400);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -250);
 
         Button confirm = (Button) popup.getContentView().findViewById(R.id.frequency_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -309,7 +331,6 @@ public class MainActivity extends AppCompatActivity
     public void onConnectionSuspended(int cause) {
         // We are not connected anymore!
         Log.i(TAG, "connection suspended");
-        mGoogleApiClient.connect();
     }
 
     @Override
