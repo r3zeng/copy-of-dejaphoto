@@ -326,6 +326,16 @@ public class MainActivity extends AppCompatActivity
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(uri);
     }
+    
+    /**
+     * Overloaded function to set backgound image
+     * 
+     * @param uri path to image
+     */
+    public void setBackgrounfImage(Uri uri){
+        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+        background.setImageURI(uri);
+    }
 
     @Override
     public void onConnectionSuspended(int cause) {
