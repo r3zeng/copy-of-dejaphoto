@@ -14,7 +14,8 @@ import java.io.IOException;
  */
 
 public class DejaPhoto {
-    private static DejaPhoto[] currentSearchResults;
+    // Note: will be moved to a different class
+    private static DejaPhoto[] currentSearchResults = {};
 
     private Uri galleryUri;
     private boolean hasKarma;
@@ -26,6 +27,28 @@ public class DejaPhoto {
     // Note: will be moved to a different class
     static DejaPhoto[] getCurrentSearchResults() {
         return currentSearchResults;
+    }
+
+    // Note: will be moved to a different class
+    static DejaPhoto addPhotoWithUri(Uri photoUri, Context context) {
+        DejaPhoto newPhoto = new DejaPhoto(photoUri, context);
+
+        // Check for duplicate
+        for (DejaPhoto photo : currentSearchResults) {
+            if (photo.equals(newPhoto)) {
+                return photo;
+            }
+        }
+
+        DejaPhoto[] newResults = new DejaPhoto[currentSearchResults.length + 1];
+        newResults[0] = newPhoto;
+        if (currentSearchResults.length > 0) {
+            System.arraycopy(currentSearchResults, 0, newResults, 1, currentSearchResults.length);
+        }
+
+        currentSearchResults = newResults;
+
+        return newPhoto;
     }
 
     DejaPhoto(Uri galleryUri, Context context) {

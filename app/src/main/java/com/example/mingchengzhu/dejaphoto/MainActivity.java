@@ -2,8 +2,10 @@ package com.example.mingchengzhu.dejaphoto;
 import java.util.Random;//needs to delete
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -69,7 +71,12 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
 {
+    // Used for logging
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    // Used with the photo chooser intent
+    private static final int RESULT_LOAD_IMAGE = 1;
+
     private Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -313,9 +320,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void AddPhoto(){
-
+        Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(gallery, RESULT_LOAD_IMAGE);
     }
-    
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
+
+            setBackgroundImage(photo.getUri());
+        }
+    }
+
     /**
      * sets an image as the background
      *
@@ -332,7 +352,7 @@ public class MainActivity extends AppCompatActivity
      * 
      * @param uri path to image
      */
-    public void setBackgrounfImage(Uri uri){
+    public void setBackgroundImage(Uri uri){
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(uri);
     }
