@@ -337,7 +337,7 @@ public class MainActivity extends AppCompatActivity
         background.setImageURI(uri);
     }
     
-        /**
+    /**
      * gets the next Image to display
      * should be called on right swipe and by the auto-switcher
      */
