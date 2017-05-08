@@ -336,6 +336,166 @@ public class MainActivity extends AppCompatActivity
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(uri);
     }
+    
+        /**
+     * gets the next Image to display
+     * should be called on right swipe and by the auto-switcher
+     */
+    public DejaPhoto getNextRandomImage(){
+        
+
+        if(DejaPhoto.getCurrentSearchResults().length == 0){
+            System.err.println("Error: getting next image from empty album");
+            return null;
+        }
+
+        double largestWeight = 0;
+        DejaPhoto selectedPhoto = null;
+
+        for(int i = 0; i < DejaPhoto.getCurrentSearchResults().length; i++){
+            DejaPhoto currentPhoto = DejaPhoto.getCurrentSearchResults()[i];
+            double photoWeight = getTotalPhotoWeight(currentPhoto);
+            if(photoWeight > largestWeight ){
+                selectedPhoto = currentPhoto;
+                largestWeight = photoWeight;
+            }
+        }
+
+        return  selectedPhoto;
+    }
+
+    /**
+     * helper function for getNextRandomImage
+     * gets the weight for the probality a photo is displayed
+     *
+     * @param photo deja photo object
+     * @return a value repersenting the likelyness this photo is to be displayed as the background.
+     *  note: This value is not a percentage and should be compared relative to other photo weights
+     */
+    private double getTotalPhotoWeight(DejaPhoto photo){
+        Random rand = new Random();
+        double rand_value = rand.nextDouble();
+        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
+                * getDateWeight(photo) * getLocationWeight(photo);
+    }
+
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     * 
+     * @return time weight
+     */
+    private double getTimeWeight(DejaPhoto photo){
+        if(!Deja_Time){ /*time from deja mode disabled*/
+            return 1; //base weight
+        }else{
+            long SystemTime = tracker.getTime();
+            long PhotoTime = photo.getTime();
+
+            final long MILLISECONDS_IN_DAY = 86400000;
+            final long MILLISECONDS_IN_2_HOURS = 7200000;
+
+            long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
+
+            if(difference < MILLISECONDS_IN_2_HOURS){
+                return 2;
+            }else{
+                return 0.5;
+            }
+        }
+    }
+
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     *
+     * @return date weight
+     */
+    private double getDateWeight(DejaPhoto photo){
+        if(!Deja_Date){
+            return 1;
+        }else{
+            long SystemTime = tracker.getTime();
+            long PhotoTime= photo.getTime();
+
+            long difference = Math.abs(SystemTime - PhotoTime);
+
+            final long MILLISECONDS_IN_DAY = 86400000;
+            final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
+            final long MILLISECONDS_IN_MONTH = 30 * MILLISECONDS_IN_DAY;
+            final long MILLISECONDS_IN_3_MONTH = 3 * MILLISECONDS_IN_MONTH;
+            final long MILLISECONFS_IN_6_MONTH = 6 * MILLISECONDS_IN_MONTH;
+
+            if(difference < MILLISECONDS_IN_DAY){
+                return 2;
+            }else if(difference < MILLISECONDS_IN_WEEK){
+                return 1.7;
+            }else if(difference < MILLISECONDS_IN_MONTH){
+                return 1.4;
+            }else if(difference < MILLISECONDS_IN_3_MONTH){
+                return  1;
+            }else if(difference < MILLISECONFS_IN_6_MONTH){
+                return 0.7;
+            }else{
+                return 0.5;
+            }
+        }
+    }
+
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     *
+     * @return location weight
+     */
+    private double getLocationWeight(DejaPhoto photo){
+        if(!Deja_Location){
+            return 1; //base weight
+        }else{
+            Location SystemLocation = tracker.getLocation();
+            Location PhotoLocation = photo.getLocation();
+
+            double DistanceInMeters = SystemLocation.distanceTo(PhotoLocation);
+
+            if(DistanceInMeters < 200){
+                return 2;
+            }else{
+                return 0.5;
+            }
+        }
+    }
+    
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     *
+     * @return Karma weight
+     */
+    private double getKarmaWeight(DejaPhoto photo){
+        if(!Deja_Karma){
+            return 1;
+        }else{
+            if(photo.getKarma()){
+                return 2;
+            }else{
+                return 0.5;
+            }
+        }
+    }
+
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     *
+     * @return release weight
+     */
+    private double getRelasedWeight(DejaPhoto photo){
+        if(photo.getReleased()){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
 
     @Override
     public void onConnectionSuspended(int cause) {
