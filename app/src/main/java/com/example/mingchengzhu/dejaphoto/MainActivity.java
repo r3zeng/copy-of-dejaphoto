@@ -214,8 +214,7 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode)
         {
             case 1 :
-                System.err.println("contains photo = "+ AlbumUtility.numberOfPhotos());
-                if (resultCode==1)
+                if (resultCode== RESULT_OK)
                 {
                     Uri imageUri = imageReturn.getData();
                     try {

@@ -75,6 +75,13 @@ public class AlbumUtility {
         }
         cursor.close();
 
+        //
+
+
+
+        res = image.getPath();
+
+
         File sourceFile = new File(res);
         File destFile = new File(albumDir(), java.util.UUID.randomUUID().toString());
         if (!sourceFile.exists()) {
@@ -108,6 +115,7 @@ public class AlbumUtility {
     {
         return albumDir().listFiles();
     }
+
 
 
 }
