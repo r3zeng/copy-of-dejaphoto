@@ -22,6 +22,7 @@ import android.location.LocationManager;
 import android.app.Service;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -64,6 +65,8 @@ import android.app.Service;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
+
 //*/
 
 public class MainActivity extends AppCompatActivity
@@ -110,6 +113,29 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        /* Swiping function */
+        ImageView backgroundImage = (ImageView)findViewById(R.id.backgroundImage);
+
+        backgroundImage.setOnTouchListener(new OnSwipeListener(MainActivity.this){
+
+            public void onSwipeRight(){
+                //put switch wallpaper method here
+                Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeTop() {
+                //put addKarma method here
+                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeLeft() {
+                //put switch wallpaper method here
+                Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+            }
+            public void onSwipeDown() {
+                //put release method here
+                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
         /* The following is used to update screen based on location */
@@ -174,6 +200,7 @@ public class MainActivity extends AppCompatActivity
 
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
+
     }
 
     @Override

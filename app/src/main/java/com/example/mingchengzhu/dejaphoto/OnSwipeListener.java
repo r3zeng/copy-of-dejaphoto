@@ -2,8 +2,11 @@ package com.example.mingchengzhu.dejaphoto;
 
 import android.content.Context;
 import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
+
 
 /**
  * Created by tianhuic on 5/8/17.
@@ -11,7 +14,7 @@ import android.view.View;
  *            https://developer.android.com/training/gestures/detector.html
  */
 
-public class OnSwipeListener implements View.OnTouchListener {
+public class OnSwipeListener implements OnTouchListener {
 
     private final GestureDetector gestureDetector;
 
@@ -24,10 +27,10 @@ public class OnSwipeListener implements View.OnTouchListener {
         return gestureDetector.onTouchEvent(event);
     }
 
-    class MyGestureListener extends GestureDetector.SimpleOnGestureListener{
+    private class MyGestureListener extends SimpleOnGestureListener{
 
-        private final int threshold = 100;
-        private final int velocity_threshold = 100;
+        private static final int threshold = 100;
+        private static final int velocity_threshold = 100;
 
         @Override
         public boolean onDown(MotionEvent event) {
@@ -41,23 +44,25 @@ public class OnSwipeListener implements View.OnTouchListener {
             try{
                 float diffY = event2.getY() - event1.getY();
                 float diffX = event2.getX() - event1.getX();
-                if (Math.abs(diffX) < Math.abs(diffY)){
-                    if (Math.abs(diffY) > threshold && velocityY > velocity_threshold) {
-                        if (diffY > 0)
-                            onSwipeTop();
-                        else
-                            onSwipeDown();
+                if (Math.abs(diffX) > Math.abs(diffY)){
+                    if (Math.abs(diffX) > threshold && Math.abs(velocityX) > velocity_threshold){
+                        if (diffX > 0) {
+                            onSwipeRight();
+                        }
+                        else {
+                            onSwipeLeft();
+                        }
                         result = true;
                     }
                 }
-                else{
-                    if (Math.abs(diffX) > threshold && velocityX > velocity_threshold){
-                        if (diffX > 0)
-                            onSwipeRight();
-                        else
-                            onSwipeLeft();
-                        result = true;
+                else if (Math.abs(diffY) > threshold && Math.abs(velocityY) > velocity_threshold) {
+                    if (diffY > 0) {
+                        onSwipeDown();
                     }
+                    else {
+                        onSwipeTop();
+                    }
+                    result = true;
                 }
             }
             catch (Exception e){
@@ -66,10 +71,10 @@ public class OnSwipeListener implements View.OnTouchListener {
             return result;
         }
 
-        public void onSwipeTop(){}
-        public void onSwipeDown(){}
-        public void onSwipeLeft(){}
-        public void onSwipeRight(){}
-
     }
+    public void onSwipeTop(){}
+    public void onSwipeDown(){}
+    public void onSwipeLeft(){}
+    public void onSwipeRight(){}
+
 }
