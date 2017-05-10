@@ -359,6 +359,9 @@ public class MainActivity extends AppCompatActivity
             Uri selectedImage = data.getData();
             DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
 
+
+            //Andy is Testing Writing to File
+            StateCodec.generateNoteOnSD(this, "stateCodec", "Hello \n My \n Friends");
             setBackgroundImage(photo.getUri());
         }
     }
