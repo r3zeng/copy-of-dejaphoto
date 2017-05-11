@@ -152,29 +152,10 @@ public class MainActivity extends AppCompatActivity
 
         /* The following is used to implement auto-switch background */
         final Handler auto_switch_handler = new Handler();
-        auto_switch = new Runnable() {
-            @Override
-            public void run() {
-                //call the change background method here
-                /*
-                //for testing
-                Random random = new Random();
-                textView = (TextView)findViewById(R.id.textView2);
-                textView.setText(String.valueOf(random.nextInt(50)+1));
-                textView2 = (TextView)findViewById(R.id.textView3);
-                textView2.setText(String.valueOf(random.nextInt(50)+1));
-                */
-                /*
-                textView = (TextView)findViewById(R.id.textView2);
-                textView.setText(String.valueOf(mLastLocation.getLatitude()));
-                textView2 = (TextView)findViewById(R.id.textView3);
-                textView2.setText(String.valueOf(mLastLocation.getLongitude()));
-                */
-                auto_switch_handler.postDelayed(auto_switch, 3000);//3 minutes 180000
-
-            }
-        };
-
+        //text field for testing: to be deleted in the future
+        textView = (TextView)findViewById(R.id.textView2);
+        textView2 = (TextView)findViewById(R.id.textView3);
+        auto_switch = new AutoSwitch(auto_switch_handler, Deja_refresh_time, textView, textView2);
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
 
