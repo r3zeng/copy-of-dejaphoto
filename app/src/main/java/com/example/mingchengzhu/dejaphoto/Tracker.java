@@ -10,28 +10,39 @@ import android.os.Bundle;
 
 
 /**
- * Created by tianhuic on 4/30/17.
+ * Created by Tianhui Cao, Mingcheng Zhu on 4/30/17.
+ * Description: Getter class for most current system location and time
  */
-
 public class Tracker{
 
-    private long time; //last time
-    private Location lastLocation;
+    private long time; //system time
+    private Location lastLocation; //system location
 
+    /**
+     * getter method for current system location
+     * @return current system location
+     */
     public Location getLocation(){
         return lastLocation;
     }
+
+    /**
+     * getter method for current system time
+     * @return current system time
+     */
     public long getTime(){ return time; }
 
-    /* For testing */
-    public void set(long time, Location location){
-        this.time = time;
-    }
-
+    /**
+     *  update the time to most current system time
+     */
     public void updateTime(){
         this.time = System.currentTimeMillis();
     }
 
+    /**
+     * update the location to given location
+     * @param location 
+     */
     public void updateLocation(Location location){
         if (location != null) {
             lastLocation = location;

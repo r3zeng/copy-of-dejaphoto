@@ -1,6 +1,6 @@
 package com.example.mingchengzhu.dejaphoto;
-import java.util.Random;//needs to delete
 
+import java.util.Random;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -21,55 +21,27 @@ import android.view.MenuItem;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.app.Service;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 
 import org.w3c.dom.Text;
 
-// imports that may be needed
-
-//package com.example.mingchengzhu.dejaphoto;
-import java.util.Random;//needs to delete
 import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Button;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.app.Service;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
-
-//*/
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
@@ -80,6 +52,7 @@ public class MainActivity extends AppCompatActivity
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
+    // Used for tracking system time and location
     private Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -88,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     TextView textView2;
     
     private PopupWindow popup;
-    
+    // Field for setting panel
     private boolean Deja_Time = true;
     private boolean Deja_Date = true;
     private boolean Deja_Location = true;
@@ -102,7 +75,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-/*
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +84,7 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-*/
+        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -121,23 +94,28 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /* Swiping function */
+
+        /* The following is used to implement swiping functionality */
         ImageView backgroundImage = (ImageView)findViewById(R.id.backgroundImage);
 
         backgroundImage.setOnTouchListener(new OnSwipeListener(MainActivity.this){
 
+            @Override
             public void onSwipeRight(){
                 //put switch wallpaper method here
                 Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
             }
+            @Override
             public void onSwipeTop() {
                 //put addKarma method here
                 Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
+            @Override
             public void onSwipeLeft() {
                 //put switch wallpaper method here
                 Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
             }
+            @Override
             public void onSwipeDown() {
                 //put release method here
                 Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
@@ -158,21 +136,12 @@ public class MainActivity extends AppCompatActivity
                 textView2 = (TextView)findViewById(R.id.textView3);
                 textView2.setText(String.valueOf(tracker.getTime()));
             }
-
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
             @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
+            public void onProviderEnabled(String provider) {}
             @Override
-            public void onProviderDisabled(String provider) {
-
-            }
+            public void onProviderDisabled(String provider) {}
         };
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -180,7 +149,8 @@ public class MainActivity extends AppCompatActivity
         // specified refresh time, 500 meters
         locationManager.requestLocationUpdates(locationProvider, Deja_refresh_time, 500, locationListener);
 
-        /* Task: auto-switch */
+
+        /* The following is used to implement auto-switch background */
         final Handler auto_switch_handler = new Handler();
         auto_switch = new Runnable() {
             @Override
