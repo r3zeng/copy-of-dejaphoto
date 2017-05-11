@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,14 +21,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.TextView;
-
-import com.google.android.gms.ads.formats.NativeAd;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-
 import org.w3c.dom.Text;
-
 import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -44,11 +36,8 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ConnectionCallbacks, OnConnectionFailedListener
+        implements NavigationView.OnNavigationItemSelectedListener
 {
-    // Used for logging
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
@@ -167,10 +156,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
-    }
-
-    @Override
     protected void onStop(){
         super.onStop();
     }
@@ -184,7 +169,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -261,7 +245,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
     
-        public void changeFrenquencyPopUp(){
+    public void changeFrenquencyPopUp(){
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
 
@@ -496,18 +480,6 @@ public class MainActivity extends AppCompatActivity
         }else{
             return 1;
         }
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        // We are not connected anymore!
-        Log.i(TAG, "connection suspended");
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        // We tried to connect but failed!
-        Log.i(TAG, "connection failed");
     }
 
 }
