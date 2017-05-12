@@ -98,21 +98,28 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeRight(){
                 //put switch wallpaper method here
+                CurrentPhoto = getNextRandomImage();
+                setBackgroundImage(CurrentPhoto.getUri());
+                previousImage.swipeRight(CurrentPhoto);
                 Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeTop() {
                 //put addKarma method here
+                CurrentPhoto.setKarma(true);
                 Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeLeft() {
                 //put switch wallpaper method here
+                CurrentPhoto = previousImage.swipeLeft();
+                setBackgroundImage(CurrentPhoto.getUri());
                 Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeDown() {
                 //put release method here
+                CurrentPhoto.setReleased(true);
                 Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
         });
