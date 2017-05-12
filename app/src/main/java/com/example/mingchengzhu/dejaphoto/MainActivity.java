@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,11 +37,17 @@ import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+        implements NavigationView.OnNavigationItemSelectedListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
+
+    private AddressResultReceiver mResultReceiver;
 
     // Used for tracking system time and location
     private Tracker tracker = new Tracker();
@@ -59,6 +67,35 @@ public class MainActivity extends AppCompatActivity
     
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            /*
+            // Display the address string
+            // or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+            displayAddressOutput();
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                showToast(getString(R.string.address_found));
+            }
+            */
+
+            if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
+                //TODO: set label text
+                TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+                locationTextView.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+            } else {
+                //TODO: log error
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +137,7 @@ public class MainActivity extends AppCompatActivity
                 //put switch wallpaper method here
                 CurrentPhoto = getNextRandomImage();
                 if(CurrentPhoto != null){
-                    setBackgroundImage(CurrentPhoto.getUri());
+                    setBackgroundImage(CurrentPhoto);
                     previousImage.swipeRight(CurrentPhoto);
                 }
                 Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
@@ -118,7 +155,7 @@ public class MainActivity extends AppCompatActivity
                 //put switch wallpaper method here
                 CurrentPhoto = previousImage.swipeLeft();
                 if(CurrentPhoto != null){
-                    setBackgroundImage(CurrentPhoto.getUri());
+                    setBackgroundImage(CurrentPhoto);
                 }
                 Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
             }
@@ -318,7 +355,27 @@ public class MainActivity extends AppCompatActivity
 
             //Andy is Testing Writing to File
             StateCodec.generateNoteOnSD(this, "stateCodec", "Hello \n My \n Friends");
-            setBackgroundImage(photo.getUri());
+            setBackgroundImage(photo);
+        }
+    }
+
+    public void setBackgroundImage(DejaPhoto photo) {
+        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+        background.setImageURI(photo.getUri());
+
+        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        locationTextView.setText("");
+
+        Location location = photo.getLocation();
+        if (location != null) {
+            if (mResultReceiver == null) {
+                mResultReceiver = new AddressResultReceiver(new Handler());
+            }
+
+            Intent intent = new Intent(this, FetchAddressIntentService.class);
+            intent.putExtra(Constants.RECEIVER, mResultReceiver);
+            intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
+            startService(intent);
         }
     }
 
@@ -348,7 +405,6 @@ public class MainActivity extends AppCompatActivity
      * should be called on right swipe and by the auto-switcher
      */
     public DejaPhoto getNextRandomImage(){
-        
 
         if(DejaPhoto.getCurrentSearchResults().length == 0){
             System.err.println("Error: getting next image from empty album");
@@ -546,4 +602,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        //TODO:
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        //TODO:
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        //TODO:
+    }
 }

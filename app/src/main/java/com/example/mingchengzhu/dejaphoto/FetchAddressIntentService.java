@@ -23,7 +23,6 @@ import java.util.Locale;
  * helper methods.
  */
 public class FetchAddressIntentService extends IntentService {
-    protected Location mLastLocation;
     protected ResultReceiver mReceiver;
 
     private static final String TAG = "FetchAddress";
@@ -88,6 +87,9 @@ public class FetchAddressIntentService extends IntentService {
     private void deliverResultToReceiver(int resultCode, String message) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
-        mReceiver.send(resultCode, bundle);
+
+        if (mReceiver != null) {
+            mReceiver.send(resultCode, bundle);
+        }
     }
 }
