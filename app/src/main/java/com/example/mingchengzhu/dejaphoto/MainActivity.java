@@ -371,6 +371,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     * helper function for getNextRandomImage
+     * gets the weight for the probality a photo is displayed
+     *
+     * @param photo deja photo object
+     * @return a value repersenting the likelyness this photo is to be displayed as the background.
+     *  note: This value is not a percentage and should be compared relative to other photo weights
+     */
+    private double getTotalPhotoWeight(DejaPhoto photo){
+        Random rand = new Random();
+        double rand_value = rand.nextDouble();
+        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
+                * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo);
+    }
+
+    /**
      * helper function for getTotalPhotoWeight
      * should not be called elsewhere
      * 
