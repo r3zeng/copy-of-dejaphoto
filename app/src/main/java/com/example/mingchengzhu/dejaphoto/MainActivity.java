@@ -371,21 +371,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * helper function for getNextRandomImage
-     * gets the weight for the probality a photo is displayed
-     *
-     * @param photo deja photo object
-     * @return a value repersenting the likelyness this photo is to be displayed as the background.
-     *  note: This value is not a percentage and should be compared relative to other photo weights
-     */
-    private double getTotalPhotoWeight(DejaPhoto photo){
-        Random rand = new Random();
-        double rand_value = rand.nextDouble();
-        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
-                * getDateWeight(photo) * getLocationWeight(photo);
-    }
-
-    /**
      * helper function for getTotalPhotoWeight
      * should not be called elsewhere
      * 
@@ -406,7 +391,7 @@ public class MainActivity extends AppCompatActivity
             if(difference < MILLISECONDS_IN_2_HOURS){
                 return 2;
             }else{
-                return 0.5;
+                return 1;
             }
         }
     }
@@ -466,7 +451,7 @@ public class MainActivity extends AppCompatActivity
             if(DistanceInMeters < 200){
                 return 2;
             }else{
-                return 0.5;
+                return 1;
             }
         }
     }
@@ -484,7 +469,7 @@ public class MainActivity extends AppCompatActivity
             if(photo.getKarma()){
                 return 2;
             }else{
-                return 0.5;
+                return 1;
             }
         }
     }
@@ -499,6 +484,21 @@ public class MainActivity extends AppCompatActivity
         if(photo.getReleased()){
             return 0;
         }else{
+            return 1;
+        }
+    }
+
+    /**
+     * helper function for getTotalPhotoWeight
+     * shoulf not be called elsewhere
+     *
+     * @param photo
+     * @return recent weight
+     */
+    private double getRecentWeight(DejaPhoto photo){
+        if(previousImage.PhotoPreviouslySeen(photo)){
+            return 0.1;
+        }else {
             return 1;
         }
     }
