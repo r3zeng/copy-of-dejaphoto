@@ -382,7 +382,8 @@ public class MainActivity extends AppCompatActivity
         Random rand = new Random();
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
-                * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo);
+                * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo) 
+                * getSameDayWeight(photo) ;
     }
 
     /**
@@ -514,6 +515,33 @@ public class MainActivity extends AppCompatActivity
         if(previousImage.PhotoPreviouslySeen(photo)){
             return 0.1;
         }else {
+            return 1;
+        }
+    }
+    
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     *
+     * @param photo
+     * @return
+     */
+    private double getSameDayWeight(DejaPhoto photo){
+        final long MILLISECONDS_IN_DAY = 86400000;
+        final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
+
+        long CurrentTime = tracker.getTime();
+        long PhotoTime = photo.getTime();
+
+        CurrentTime = CurrentTime % MILLISECONDS_IN_WEEK;
+        PhotoTime = PhotoTime % MILLISECONDS_IN_WEEK;
+
+        long CurrentDay = CurrentTime / MILLISECONDS_IN_DAY;
+        long PhotoDay = PhotoTime / MILLISECONDS_IN_DAY;
+
+        if(CurrentDay == PhotoDay){
+            return 2;
+        }else{
             return 1;
         }
     }
