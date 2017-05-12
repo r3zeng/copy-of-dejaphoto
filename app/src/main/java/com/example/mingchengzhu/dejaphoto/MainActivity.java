@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
     private int Deja_refresh_time = 3000; //3 seconds
+    
+    PreviousImage previousImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        previousImage = new PreviousImage();
+        
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
