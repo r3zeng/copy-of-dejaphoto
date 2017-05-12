@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private int Deja_refresh_time = 3000; //3 seconds
     
     PreviousImage previousImage;
+    DejaPhoto CurrentPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         previousImage = new PreviousImage();
+        CurrentPhoto = null;
         
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
