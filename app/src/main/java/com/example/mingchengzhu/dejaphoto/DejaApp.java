@@ -19,8 +19,6 @@ public class DejaApp extends Application {
     {
         super.onCreate();
 
-        //Album Utility: Checking if dejaAlbum Exists
-        if(!AlbumUtility.dejaAlbumExists()) AlbumUtility.createAlbum();
     }
 
 }
