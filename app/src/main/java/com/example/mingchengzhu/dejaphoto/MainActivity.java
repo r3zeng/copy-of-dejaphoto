@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
-
+            previousImage.swipeRight(photo);                
 
             //Andy is Testing Writing to File
             StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photo);
