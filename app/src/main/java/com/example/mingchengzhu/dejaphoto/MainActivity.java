@@ -428,6 +428,12 @@ public class MainActivity extends AppCompatActivity
             // converting uri to bitmap
             SetWallpaper(CurrentPhoto);
 
+            // reset timer
+            if(auto_switch != null){
+                auto_switch_handler.removeCallbacks(auto_switch);
+                auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+            }
+
         }
     }
 
