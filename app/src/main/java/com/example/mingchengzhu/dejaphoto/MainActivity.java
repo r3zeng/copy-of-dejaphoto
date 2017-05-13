@@ -506,7 +506,7 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
 
-        double largestWeight = 0;
+        double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
         for(int i = 0; i < list.length; i++){
