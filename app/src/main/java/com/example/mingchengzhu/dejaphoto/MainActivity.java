@@ -636,6 +636,23 @@ public class MainActivity extends AppCompatActivity
             return 1;
         }
     }
+    
+    /**
+     * helper function for getTotalPhotoWeight
+     * should not be called elsewhere
+     * 
+     * @param photo
+     * @return 0% chance of getting same photo twice unless only 1 photo
+     */
+    private double getLastPhotoWeight(DejaPhoto photo){
+        if(previousImage.getNumberofPhoto() == 1){
+            return 1;
+        }else if(previousImage.getLastPhoto().equals(photo)){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
