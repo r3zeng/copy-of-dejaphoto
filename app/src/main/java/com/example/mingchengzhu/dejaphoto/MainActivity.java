@@ -251,9 +251,9 @@ public class MainActivity extends AppCompatActivity
         /* Start the runnable task*/
         auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
 
-        DejaPhoto startingPhoto = getNextRandomImage();
-        // if startingPhoto is null, it will display a message telling the user there are no photos
-        setBackgroundImage(startingPhoto);
+        CurrentPhoto = getNextRandomImage();
+        // if CurrentPhoto is null, it will display a message telling the user there are no photos
+        setBackgroundImage(CurrentPhoto);
     }
 
     @Override
@@ -402,16 +402,16 @@ public class MainActivity extends AppCompatActivity
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
-            previousImage.swipeRight(photo);                
+            CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
+            previousImage.swipeRight(CurrentPhoto);
 
             //Andy is Testing Writing to File
-            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photo);
-            setBackgroundImage(photo);
+            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
+            setBackgroundImage(CurrentPhoto);
 
             /* Setting wallpaper */
             // converting uri to bitmap
-            SetWallpaper(photo);
+            SetWallpaper(CurrentPhoto);
 
         }
     }
