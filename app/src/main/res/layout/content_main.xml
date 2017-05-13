@@ -17,8 +17,8 @@
 
     <ImageView
         android:id="@+id/backgroundImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="495dp"
         android:src="#ddd"
         android:scaleType="centerCrop"
         tools:layout_editor_absoluteX="8dp"
@@ -51,7 +51,8 @@
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="16dp" />
     />
 
 </android.support.constraint.ConstraintLayout>

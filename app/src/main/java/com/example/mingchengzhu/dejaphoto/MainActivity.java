@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Date = true;
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
-    private int Deja_refresh_time = 3000; //3 seconds
+    private int Deja_refresh_time = 10000; //3 seconds
 
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
@@ -186,12 +186,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeRight(){
                 //put switch wallpaper method here
-                CurrentPhoto = getNextRandomImage();
-                if(CurrentPhoto != null){
-                    setBackgroundImage(CurrentPhoto);
-                    previousImage.swipeRight(CurrentPhoto);
-                }
-                Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+                SwipeRight();
             }
             @Override
             public void onSwipeTop() {
@@ -203,12 +198,7 @@ public class MainActivity extends AppCompatActivity
             }
             @Override
             public void onSwipeLeft() {
-                //put switch wallpaper method here
-                CurrentPhoto = previousImage.swipeLeft();
-                if(CurrentPhoto != null){
-                    setBackgroundImage(CurrentPhoto);
-                }
-                Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+                SwipeLeft();
             }
             @Override
             public void onSwipeDown() {
@@ -253,7 +243,7 @@ public class MainActivity extends AppCompatActivity
         //text field for testing: to be deleted in the future
         textView = (TextView)findViewById(R.id.textView2);
         textView2 = (TextView)findViewById(R.id.textView3);
-        auto_switch = new AutoSwitch(auto_switch_handler, Deja_refresh_time, textView, textView2);
+        auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time, textView, textView2);
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
     }

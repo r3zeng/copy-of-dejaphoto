@@ -13,14 +13,16 @@ import android.widget.TextView;
 
 public class AutoSwitch implements Runnable {
     Handler handler;
+    MainActivity activity;
     private int refresh_time;
 
     // For testing
     TextView textView;
     TextView textView2;
 
-    AutoSwitch(Handler handler, int refresh_time, TextView textView, TextView textView2){
+    AutoSwitch(MainActivity activity, Handler handler, int refresh_time, TextView textView, TextView textView2){
         this.handler = handler;
+        this.activity = activity;
         this.refresh_time = refresh_time;
 
         this.textView = textView;
@@ -30,6 +32,7 @@ public class AutoSwitch implements Runnable {
     @Override
     public void run() {
         //call the change background method here
+        activity.SwipeRight();
 
         //for testing
         Random random = new Random();
