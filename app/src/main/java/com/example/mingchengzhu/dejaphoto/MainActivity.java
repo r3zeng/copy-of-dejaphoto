@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -354,7 +355,10 @@ public class MainActivity extends AppCompatActivity
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
         popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
-
+        TextView instruction = (TextView) popup.getContentView().findViewById(R.id.textView4);
+        EditText field = (EditText) popup.getContentView().findViewById(R.id.change_frequency_edittext);
+        instruction.setTextColor(Color.BLACK);
+        field.setTextColor(Color.BLACK);
         Button confirm = (Button) popup.getContentView().findViewById(R.id.frequency_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
 
