@@ -697,6 +697,31 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void SwipeRight(){
+        //put switch wallpaper method here
+        CurrentPhoto = getNextRandomImage();
+        if(CurrentPhoto != null){
+            if(lastSwipe ==  SwipeDirection.left){
+                CurrentPhoto = getNextRandomImage();
+            }
+            setBackgroundImage(CurrentPhoto);
+            previousImage.swipeRight(CurrentPhoto);
+        }
+        Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+    }
+
+    public void SwipeLeft(){
+        //put switch wallpaper method here
+        CurrentPhoto = previousImage.swipeLeft();
+        if(CurrentPhoto != null){
+            if(lastSwipe == SwipeDirection.right){
+                CurrentPhoto = previousImage.swipeLeft();
+            }
+            setBackgroundImage(CurrentPhoto);
+        }
+        Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         //TODO:
