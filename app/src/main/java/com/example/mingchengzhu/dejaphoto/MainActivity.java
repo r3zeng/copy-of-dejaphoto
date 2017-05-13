@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
     private int Deja_refresh_time = 10000; //3 seconds
-
+    private final Handler auto_switch_handler = new Handler();
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
 
@@ -185,6 +185,10 @@ public class MainActivity extends AppCompatActivity
             public void onSwipeRight(){
                 //put switch wallpaper method here
                 SwipeRight();
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
             }
             @Override
             public void onSwipeTop() {
@@ -192,17 +196,29 @@ public class MainActivity extends AppCompatActivity
                 if(CurrentPhoto != null){
                     CurrentPhoto.setKarma(true);
                 }
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
                 Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeLeft() {
                 SwipeLeft();
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
             }
             @Override
             public void onSwipeDown() {
                 //put release method here
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
+                }
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
                 Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
@@ -237,7 +253,6 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following is used to implement auto-switch background */
-        final Handler auto_switch_handler = new Handler();
         //text field for testing: to be deleted in the future
         textView = (TextView)findViewById(R.id.textView2);
         textView2 = (TextView)findViewById(R.id.textView3);
