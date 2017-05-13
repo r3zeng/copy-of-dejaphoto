@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Random;
 
 import android.app.WallpaperManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,6 +54,16 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
+
+    //swipes
+    public enum SwipeDirection{
+        right, left, neither
+    }
+    SwipeDirection lastSwipe = SwipeDirection.neither;         
+
+    // Used for logging
+    private static final String TAG = "MainActivity";
+
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
@@ -87,11 +98,24 @@ public class MainActivity extends AppCompatActivity
     void setNoPhotosModeEnabled(boolean enabled) {
         noPhotosModeEnabled = enabled;
 
+        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+
         if (enabled) {
-            //TODO: unhide the "you need to add some photos" message
+            Log.d(TAG, "enabling no photos mode");
+
+            int resID = getResources().getIdentifier("default_background", "drawable",  getPackageName());
+            Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                    getResources().getResourcePackageName(resID) + '/' +
+                    getResources().getResourceTypeName(resID) + '/' +
+                    getResources().getResourceEntryName(resID) );
+            background.setImageURI(uri);
+
         } else {
-            //TODO: hide the "you need to add some photos" message
+            Log.d(TAG, "disabling no photos mode");
+
         }
+
+        background.invalidate();
     }
 
     class AddressResultReceiver extends ResultReceiver {
@@ -231,11 +255,15 @@ public class MainActivity extends AppCompatActivity
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
 
+        DejaPhoto startingPhoto = getNextRandomImage();
+        // if startingPhoto is null, it will display a message telling the user there are no photos
+        setBackgroundImage(startingPhoto);
     }
 
     @Override
     protected void onStart(){
         super.onStart();
+
     }
 
     @Override
@@ -376,7 +404,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
             DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
-
+            previousImage.swipeRight(photo);                
 
             //Andy is Testing Writing to File
             StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photo);
@@ -412,8 +440,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setBackgroundImage(DejaPhoto photo) {
+        if (photo == null) {
+            setNoPhotosModeEnabled(true);
+            return;
+        }
+
+        setNoPhotosModeEnabled(false);
+
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(photo.getUri());
+        background.invalidate();
 
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
         locationTextView.setText("");
@@ -458,7 +494,8 @@ public class MainActivity extends AppCompatActivity
      */
     public DejaPhoto getNextRandomImage(){
 
-        if(DejaPhoto.getCurrentSearchResults().length == 0){
+        DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
+        if(list == null || list.length == 0){
             System.err.println("Error: getting next image from empty album");
             return null;
         }
@@ -466,8 +503,8 @@ public class MainActivity extends AppCompatActivity
         double largestWeight = 0;
         DejaPhoto selectedPhoto = null;
 
-        for(int i = 0; i < DejaPhoto.getCurrentSearchResults().length; i++){
-            DejaPhoto currentPhoto = DejaPhoto.getCurrentSearchResults()[i];
+        for(int i = 0; i < list.length; i++){
+            DejaPhoto currentPhoto = list[i];
             double photoWeight = getTotalPhotoWeight(currentPhoto);
             if(photoWeight > largestWeight ){
                 selectedPhoto = currentPhoto;
@@ -669,6 +706,31 @@ public class MainActivity extends AppCompatActivity
         }else{
             return 1;
         }
+    }
+
+    public void SwipeRight(){
+        //put switch wallpaper method here
+        CurrentPhoto = getNextRandomImage();
+        if(CurrentPhoto != null){
+            if(lastSwipe ==  SwipeDirection.left){
+                CurrentPhoto = getNextRandomImage();
+            }
+            setBackgroundImage(CurrentPhoto);
+            previousImage.swipeRight(CurrentPhoto);
+        }
+        Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+    }
+
+    public void SwipeLeft(){
+        //put switch wallpaper method here
+        CurrentPhoto = previousImage.swipeLeft();
+        if(CurrentPhoto != null){
+            if(lastSwipe == SwipeDirection.right){
+                CurrentPhoto = previousImage.swipeLeft();
+            }
+            setBackgroundImage(CurrentPhoto);
+        }
+        Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
     }
 
     @Override
