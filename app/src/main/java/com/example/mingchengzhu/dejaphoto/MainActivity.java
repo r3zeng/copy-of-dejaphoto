@@ -533,19 +533,22 @@ public class MainActivity extends AppCompatActivity
     private double getTimeWeight(DejaPhoto photo){
         if(!Deja_Time){ /*time from deja mode disabled*/
             return 1; //base weight
+        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
+            return 1;//invalid data
         }else{
-            long SystemTime = tracker.getTime();
-            long PhotoTime = photo.getTime();
+                long SystemTime = tracker.getTime();
+                long PhotoTime = photo.getTime();
 
-            final long MILLISECONDS_IN_DAY = 86400000;
-            final long MILLISECONDS_IN_2_HOURS = 7200000;
+                final long MILLISECONDS_IN_DAY = 86400000;
+                final long MILLISECONDS_IN_2_HOURS = 7200000;
 
-            long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
+                long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
 
-            if(difference < MILLISECONDS_IN_2_HOURS){
-                return 2;
-            }else{
-                return 1;
+                if(difference < MILLISECONDS_IN_2_HOURS){
+                    return 2;
+                }else{
+                    return 1;
+                }
             }
         }
     }
@@ -559,6 +562,8 @@ public class MainActivity extends AppCompatActivity
     private double getDateWeight(DejaPhoto photo){
         if(!Deja_Date){
             return 1;
+        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
+            return 1;//invalid datat
         }else{
             long SystemTime = tracker.getTime();
             long PhotoTime= photo.getTime();
@@ -596,6 +601,8 @@ public class MainActivity extends AppCompatActivity
     private double getLocationWeight(DejaPhoto photo){
         if(!Deja_Location){
             return 1; //base weight
+        }else if(tracker == null || tracker.getLocation() == null || photo.getLocation() == null) {
+            return 1;//invalid data
         }else{
             Location SystemLocation = tracker.getLocation();
             Location PhotoLocation = photo.getLocation();
@@ -650,7 +657,7 @@ public class MainActivity extends AppCompatActivity
      * @return recent weight
      */
     private double getRecentWeight(DejaPhoto photo){
-        if(previousImage.PhotoPreviouslySeen(photo)){
+        if(previousImage != null && previousImage.PhotoPreviouslySeen(photo)){
             return 0.1;
         }else {
             return 1;
@@ -665,22 +672,28 @@ public class MainActivity extends AppCompatActivity
      * @return same day weight 
      */
     private double getSameDayWeight(DejaPhoto photo){
-        final long MILLISECONDS_IN_DAY = 86400000;
-        final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
-
-        long CurrentTime = tracker.getTime();
-        long PhotoTime = photo.getTime();
-
-        CurrentTime = CurrentTime % MILLISECONDS_IN_WEEK;
-        PhotoTime = PhotoTime % MILLISECONDS_IN_WEEK;
-
-        long CurrentDay = CurrentTime / MILLISECONDS_IN_DAY;
-        long PhotoDay = PhotoTime / MILLISECONDS_IN_DAY;
-
-        if(CurrentDay == PhotoDay){
-            return 2;
-        }else{
+        if(!Deja_Date) {
             return 1;
+        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
+            return 1;//invalid data
+        }else {
+            final long MILLISECONDS_IN_DAY = 86400000;
+            final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
+
+            long CurrentTime = tracker.getTime();
+            long PhotoTime = photo.getTime();
+
+            CurrentTime = CurrentTime % MILLISECONDS_IN_WEEK;
+            PhotoTime = PhotoTime % MILLISECONDS_IN_WEEK;
+
+            long CurrentDay = CurrentTime / MILLISECONDS_IN_DAY;
+            long PhotoDay = PhotoTime / MILLISECONDS_IN_DAY;
+
+            if (CurrentDay == PhotoDay) {
+                return 2;
+            } else {
+                return 1;
+            }
         }
     }
     
@@ -692,7 +705,7 @@ public class MainActivity extends AppCompatActivity
      * @return 0% chance of getting same photo twice unless only 1 photo
      */
     private double getLastPhotoWeight(DejaPhoto photo){
-        if(previousImage.getNumberofPhoto() == 1){
+        if(previousImage == null || previousImage.getNumberofPhoto() == 1){
             return 1;
         }else if(previousImage.getLastPhoto().equals(photo)){
             return 0;
@@ -700,7 +713,6 @@ public class MainActivity extends AppCompatActivity
             return 1;
         }
     }
-
     public void SwipeRight(){
         //put switch wallpaper method here
         CurrentPhoto = getNextRandomImage();
