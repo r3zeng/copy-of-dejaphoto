@@ -23,7 +23,13 @@ import java.io.InputStream;
 
 public class StateCodec {
 
-    public static void generateNoteOnSD(Context context, String sFileName, DejaPhoto dejaP) {
+    public static void addDejaPhotoToSC(Context context, String sFileName, DejaPhoto dejaP)
+    {
+        if (dejaP.getSavedToFile())
+        {
+            return;
+        }
+
         try {
             File root = new File(Environment.getExternalStorageDirectory(), "Notes");
             if (!root.exists()) {

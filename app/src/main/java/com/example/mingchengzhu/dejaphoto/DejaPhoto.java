@@ -27,6 +27,7 @@ public class DejaPhoto {
     private long time;
 
     private Location location;
+    private boolean savedToFile;
 
     // Note: will be moved to a different class
     static DejaPhoto[] getCurrentSearchResults() {
@@ -112,6 +113,10 @@ public class DejaPhoto {
 
     public boolean getReleased() {
         return wasReleased;
+    }
+
+    public boolean getSavedToFile() {
+        return savedToFile;
     }
 
     public void setReleased(boolean released) {

@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity
 
 
             //Andy is Testing Writing to File
-            StateCodec.generateNoteOnSD(this, "stateCodec.txt", photo);
+            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photo);
             setBackgroundImage(photo);
 
             /* Setting wallpaper */
