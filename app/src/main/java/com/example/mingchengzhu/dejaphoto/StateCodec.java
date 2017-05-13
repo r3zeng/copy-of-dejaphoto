@@ -1,7 +1,12 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -18,14 +23,15 @@ import java.io.InputStream;
 
 public class StateCodec {
 
-    public static void generateNoteOnSD(Context context, String sFileName, String sBody) {
+    public static void generateNoteOnSD(Context context, String sFileName, DejaPhoto dejaP) {
         try {
             File root = new File(Environment.getExternalStorageDirectory(), "Notes");
             if (!root.exists()) {
                 root.mkdirs();
             }
+            String sBody = dejaP.toString(context);
             File stateCodecFile = new File(root, sFileName);
-            FileWriter writer = new FileWriter(stateCodecFile);
+            FileWriter writer = new FileWriter(stateCodecFile,true);
             writer.append(sBody);
             writer.flush();
             writer.close();
