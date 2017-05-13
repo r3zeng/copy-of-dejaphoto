@@ -315,11 +315,11 @@ public class MainActivity extends AppCompatActivity
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
 
-        popup = new PopupWindow(container, 500, 500, true);
+        popup = new PopupWindow(container, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT, true);
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
         RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
-        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, (width/2) -250, (height/2) -250);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
 
         Button confirm = (Button) popup.getContentView().findViewById(R.id.frequency_confirm);
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -338,8 +338,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        Button cancle = (Button) popup.getContentView().findViewById(R.id.frequency_cancle);
-        cancle.setOnClickListener(new View.OnClickListener(){
+        Button cancel = (Button) popup.getContentView().findViewById(R.id.frequency_cancel);
+        cancel.setOnClickListener(new View.OnClickListener(){
            @Override
             public  void onClick(View view){
                popup.dismiss();
