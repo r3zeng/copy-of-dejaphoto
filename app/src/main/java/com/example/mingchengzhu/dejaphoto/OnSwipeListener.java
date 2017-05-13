@@ -51,9 +51,9 @@ public class OnSwipeListener implements OnTouchListener {
                 if (Math.abs(diffX) > Math.abs(diffY)){
                     if (Math.abs(diffX) > THRESHOLD && Math.abs(velocityX) > VELOCITY_THRESHOLD){
                         if (diffX > 0)
-                            onSwipeRight();
-                        else
                             onSwipeLeft();
+                        else
+                            onSwipeRight();
                         result = true;
                     }
                 }

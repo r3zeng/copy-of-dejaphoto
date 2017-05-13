@@ -186,12 +186,12 @@ public class MainActivity extends AppCompatActivity
                 //put addKarma method here
                 if(CurrentPhoto != null){
                     CurrentPhoto.setKarma(true);
+                    Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
                     auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
-                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeLeft() {
@@ -206,12 +206,12 @@ public class MainActivity extends AppCompatActivity
                 //put release method here
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
+                    Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
                     auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
-                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -735,6 +735,7 @@ public class MainActivity extends AppCompatActivity
     public void SwipeRight(){
         //put switch wallpaper method here
         CurrentPhoto = getNextRandomImage();
+
         if(CurrentPhoto != null){
             if(lastSwipe ==  SwipeDirection.left){
                 CurrentPhoto = getNextRandomImage();
@@ -744,7 +745,6 @@ public class MainActivity extends AppCompatActivity
 
             previousImage.swipeRight(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "next", Toast.LENGTH_SHORT).show();
     }
 
     public void SwipeLeft(){
@@ -755,8 +755,8 @@ public class MainActivity extends AppCompatActivity
                 CurrentPhoto = previousImage.swipeLeft();
             }
             setBackgroundImage(CurrentPhoto);
+            setWallpaper(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "prev", Toast.LENGTH_SHORT).show();
     }
 
     @Override

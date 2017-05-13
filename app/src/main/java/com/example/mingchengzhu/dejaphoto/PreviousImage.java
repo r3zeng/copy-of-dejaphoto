@@ -42,8 +42,8 @@ public class PreviousImage {
         if(isEmpty()){
             return null;
         }else{
-            index--;
-            return previous_photo[index];
+            index-=2;
+            return previous_photo[index++];
         }
     }
     
