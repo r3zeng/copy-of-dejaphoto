@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
+    // Used to receive an address result from FetchAddressIntentService
     private AddressResultReceiver mResultReceiver;
 
     // Used for tracking system time and location
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     TextView textView;
     TextView textView2;
 
+    // true if we are currently showing the user a message about having no photos
     boolean noPhotosModeEnabled = false;
 
     private PopupWindow popup;
@@ -119,6 +121,9 @@ public class MainActivity extends AppCompatActivity
         background.invalidate();
     }
 
+    /**
+     * Used to receive address results from FetchAddressIntentService
+     */
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
@@ -242,8 +247,9 @@ public class MainActivity extends AppCompatActivity
         textView = (TextView)findViewById(R.id.textView2);
         textView2 = (TextView)findViewById(R.id.textView3);
         auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time, textView, textView2);
+
         /* Start the runnable task*/
-        auto_switch_handler.post(auto_switch);
+        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
 
         DejaPhoto startingPhoto = getNextRandomImage();
         // if startingPhoto is null, it will display a message telling the user there are no photos
@@ -405,32 +411,39 @@ public class MainActivity extends AppCompatActivity
 
             /* Setting wallpaper */
             // converting uri to bitmap
-            Uri uri = photo.getUri();
-            InputStream image_stream = null;
-            Bitmap bitmap = null;
-            try {
-                image_stream = getContentResolver().openInputStream(uri);
-            }
-            catch (FileNotFoundException e){
-                // logging message
-            }
-            if(image_stream != null){
-                bitmap= BitmapFactory.decodeStream(image_stream);
-            }
-            // setting wallpaper with the converted bitmap
-            WallpaperManager myWallpaperManager
-                    = WallpaperManager.getInstance(getApplicationContext());
-            try {
-                if(bitmap != null) {
-                    myWallpaperManager.setBitmap(bitmap);
-                }
-            }
-            catch (IOException e) {
-                // logging message
-            }
+            SetWallpaper(photo);
 
         }
     }
+
+    /* Setting wallpaper method*/
+    private void SetWallpaper(DejaPhoto photo) {
+        Uri uri = photo.getUri();
+        InputStream image_stream = null;
+        Bitmap bitmap = null;
+        try {
+            image_stream = getContentResolver().openInputStream(uri);
+        }
+        catch (FileNotFoundException e){
+            // logging message
+        }
+        if(image_stream != null){
+            bitmap= BitmapFactory.decodeStream(image_stream);
+        }
+        // setting wallpaper with the converted bitmap
+        WallpaperManager myWallpaperManager
+                = WallpaperManager.getInstance(getApplicationContext());
+        try {
+            if(bitmap != null) {
+                myWallpaperManager.setBitmap(bitmap);
+            }
+        }
+        catch (IOException e) {
+            // logging message
+        }
+    }
+
+
 
     public void setBackgroundImage(DejaPhoto photo) {
         if (photo == null) {
@@ -536,19 +549,18 @@ public class MainActivity extends AppCompatActivity
         }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
         }else{
-                long SystemTime = tracker.getTime();
-                long PhotoTime = photo.getTime();
+            long SystemTime = tracker.getTime();
+            long PhotoTime = photo.getTime();
 
-                final long MILLISECONDS_IN_DAY = 86400000;
-                final long MILLISECONDS_IN_2_HOURS = 7200000;
+            final long MILLISECONDS_IN_DAY = 86400000;
+            final long MILLISECONDS_IN_2_HOURS = 7200000;
 
-                long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
+            long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
 
-                if(difference < MILLISECONDS_IN_2_HOURS){
-                    return 2;
-                }else{
-                    return 1;
-                }
+            if(difference < MILLISECONDS_IN_2_HOURS){
+                return 2;
+            }else{
+                return 1;
             }
         }
     }
@@ -721,9 +733,11 @@ public class MainActivity extends AppCompatActivity
                 CurrentPhoto = getNextRandomImage();
             }
             setBackgroundImage(CurrentPhoto);
+            SetWallpaper(CurrentPhoto);
+
             previousImage.swipeRight(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "next", Toast.LENGTH_SHORT).show();
     }
 
     public void SwipeLeft(){
@@ -735,7 +749,7 @@ public class MainActivity extends AppCompatActivity
             }
             setBackgroundImage(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "prev", Toast.LENGTH_SHORT).show();
     }
 
     @Override
