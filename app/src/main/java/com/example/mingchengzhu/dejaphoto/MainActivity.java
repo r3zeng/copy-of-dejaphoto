@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity
     public enum SwipeDirection{
         right, left, neither
     }
+    SwipeDirection lastSwipe = SwipeDirection.neither;         
 
     // Used for logging
     private static final String TAG = "MainActivity";
