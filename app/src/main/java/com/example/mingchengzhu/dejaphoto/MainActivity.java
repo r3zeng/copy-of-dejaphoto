@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
+    // Used to receive an address result from FetchAddressIntentService
     private AddressResultReceiver mResultReceiver;
 
     // Used for tracking system time and location
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     TextView textView;
     TextView textView2;
 
+    // true if we are currently showing the user a message about having no photos
     boolean noPhotosModeEnabled = false;
 
     private PopupWindow popup;
@@ -119,6 +121,9 @@ public class MainActivity extends AppCompatActivity
         background.invalidate();
     }
 
+    /**
+     * Used to receive address results from FetchAddressIntentService
+     */
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
             super(handler);
