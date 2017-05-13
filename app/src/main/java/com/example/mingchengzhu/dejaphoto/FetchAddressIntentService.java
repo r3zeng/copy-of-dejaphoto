@@ -33,7 +33,11 @@ public class FetchAddressIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "FetchAddressIntentService now processing an intent");
+
         String errorMessage = "";
+
+        mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
         // Get the location passed to this service through an extra.
         Location location = intent.getParcelableExtra(
@@ -87,6 +91,8 @@ public class FetchAddressIntentService extends IntentService {
     private void deliverResultToReceiver(int resultCode, String message) {
         Bundle bundle = new Bundle();
         bundle.putString(Constants.RESULT_DATA_KEY, message);
+
+        Log.d(TAG, "delivering result: " + message);
 
         if (mReceiver != null) {
             mReceiver.send(resultCode, bundle);
