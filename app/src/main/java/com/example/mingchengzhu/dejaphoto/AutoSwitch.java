@@ -16,17 +16,11 @@ public class AutoSwitch implements Runnable {
     MainActivity activity;
     private int refresh_time;
 
-    // For testing
-    TextView textView;
-    TextView textView2;
 
-    AutoSwitch(MainActivity activity, Handler handler, int refresh_time, TextView textView, TextView textView2){
+    AutoSwitch(MainActivity activity, Handler handler, int refresh_time){
         this.handler = handler;
         this.activity = activity;
         this.refresh_time = refresh_time;
-
-        this.textView = textView;
-        this.textView2 = textView2;
     }
 
     @Override
@@ -34,11 +28,10 @@ public class AutoSwitch implements Runnable {
         //call the change background method here
         activity.SwipeRight();
 
-        //for testing
-        Random random = new Random();
-        textView.setText(String.valueOf(random.nextInt(50)+1));
-        textView2.setText(String.valueOf(random.nextInt(50)+1));
-
         handler.postDelayed(this, refresh_time);//3 minutes 180000
+    }
+
+    public void setTime(int time){
+        refresh_time = time;
     }
 }
