@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity
         if (enabled) {
             Log.d(TAG, "enabling no photos mode");
 
-            //TODO: unhide the "you need to add some photos" message
-
             int resID = getResources().getIdentifier("default_background", "drawable",  getPackageName());
             Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
                     getResources().getResourcePackageName(resID) + '/' +
@@ -107,8 +105,6 @@ public class MainActivity extends AppCompatActivity
 
         } else {
             Log.d(TAG, "disabling no photos mode");
-
-            //TODO: hide the "you need to add some photos" message
 
         }
 
