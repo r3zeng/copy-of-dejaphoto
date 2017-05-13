@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -432,30 +433,35 @@ public class MainActivity extends AppCompatActivity
     }
 
     /* Setting wallpaper method*/
-    private void SetWallpaper(DejaPhoto photo) {
-        Uri uri = photo.getUri();
-        InputStream image_stream = null;
-        Bitmap bitmap = null;
-        try {
-            image_stream = getContentResolver().openInputStream(uri);
-        }
-        catch (FileNotFoundException e){
-            // logging message
-        }
-        if(image_stream != null){
-            bitmap= BitmapFactory.decodeStream(image_stream);
-        }
-        // setting wallpaper with the converted bitmap
-        WallpaperManager myWallpaperManager
-                = WallpaperManager.getInstance(getApplicationContext());
-        try {
-            if(bitmap != null) {
-                myWallpaperManager.setBitmap(bitmap);
+    private void SetWallpaper(final DejaPhoto photo) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Uri uri = photo.getUri();
+                InputStream image_stream = null;
+                Bitmap bitmap = null;
+                try {
+                    image_stream = getContentResolver().openInputStream(uri);
+                }
+                catch (FileNotFoundException e){
+                    // logging message
+                }
+                if(image_stream != null){
+                    bitmap= BitmapFactory.decodeStream(image_stream);
+                }
+                // setting wallpaper with the converted bitmap
+                WallpaperManager myWallpaperManager
+                        = WallpaperManager.getInstance(getApplicationContext());
+                try {
+                    if(bitmap != null) {
+                        myWallpaperManager.setBitmap(bitmap);
+                    }
+                }
+                catch (IOException e) {
+                    // logging message
+                }
             }
-        }
-        catch (IOException e) {
-            // logging message
-        }
+        });
     }
 
 
