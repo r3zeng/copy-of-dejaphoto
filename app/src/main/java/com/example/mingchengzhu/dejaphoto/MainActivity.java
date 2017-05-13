@@ -9,8 +9,6 @@ import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -32,7 +30,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.TextView;
-import org.w3c.dom.Text;
+
 import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -411,7 +409,7 @@ public class MainActivity extends AppCompatActivity
 
             /* Setting wallpaper */
             // converting uri to bitmap
-            SetWallpaper(CurrentPhoto);
+            setWallpaper(CurrentPhoto);
 
             // reset timer
             if(auto_switch != null){
@@ -423,32 +421,28 @@ public class MainActivity extends AppCompatActivity
     }
 
     /* Setting wallpaper method*/
-    private void SetWallpaper(final DejaPhoto photo) {
+    private void setWallpaper(final DejaPhoto photo) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Uri uri = photo.getUri();
                 InputStream image_stream = null;
-                Bitmap bitmap = null;
                 try {
                     image_stream = getContentResolver().openInputStream(uri);
-                }
-                catch (FileNotFoundException e){
-                    // logging message
-                }
-                if(image_stream != null){
-                    bitmap= BitmapFactory.decodeStream(image_stream);
-                }
-                // setting wallpaper with the converted bitmap
-                WallpaperManager myWallpaperManager
-                        = WallpaperManager.getInstance(getApplicationContext());
-                try {
-                    if(bitmap != null) {
-                        myWallpaperManager.setBitmap(bitmap);
+
+                    // setting wallpaper with the converted bitmap
+                    WallpaperManager myWallpaperManager
+                            = WallpaperManager.getInstance(getApplicationContext());
+
+                    if (image_stream != null) {
+                        myWallpaperManager.setStream(image_stream);
                     }
                 }
+                catch (FileNotFoundException e) {
+                    Log.e(TAG, "file not found while trying to set wallpaper", e);
+                }
                 catch (IOException e) {
-                    // logging message
+                    Log.e(TAG, "IO error while trying to set wallpaper", e);
                 }
             }
         });
@@ -747,7 +741,7 @@ public class MainActivity extends AppCompatActivity
                 CurrentPhoto = getNextRandomImage();
             }
             setBackgroundImage(CurrentPhoto);
-            SetWallpaper(CurrentPhoto);
+            setWallpaper(CurrentPhoto);
 
             previousImage.swipeRight(CurrentPhoto);
         }
