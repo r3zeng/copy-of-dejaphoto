@@ -29,6 +29,6 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/frequency_cancle"
-        android:text="Cancle"/>
+        android:id="@+id/frequency_cancel"
+        android:text="Cancel"/>
 </LinearLayout>
