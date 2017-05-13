@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity
     TextView textView;
     TextView textView2;
 
+    boolean noPhotosModeEnabled = false;
+
     private PopupWindow popup;
     // Field for setting panel
     private boolean Deja_Time = true;
@@ -76,6 +78,21 @@ public class MainActivity extends AppCompatActivity
 
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
+
+    /**
+     * turns on/off a message about having no photos
+     *
+     * @param enabled true if we should be showing a message about having no photos
+     */
+    void setNoPhotosModeEnabled(boolean enabled) {
+        noPhotosModeEnabled = enabled;
+
+        if (enabled) {
+            //TODO: unhide the "you need to add some photos" message
+        } else {
+            //TODO: hide the "you need to add some photos" message
+        }
+    }
 
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
