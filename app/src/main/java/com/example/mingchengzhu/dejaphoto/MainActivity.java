@@ -156,8 +156,6 @@ public class MainActivity extends AppCompatActivity
         previousImage = new PreviousImage();
         CurrentPhoto = null;
 
-        setNoPhotosModeEnabled(true);
-
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -256,6 +254,10 @@ public class MainActivity extends AppCompatActivity
         auto_switch = new AutoSwitch(auto_switch_handler, Deja_refresh_time, textView, textView2);
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
+
+        DejaPhoto startingPhoto = getNextRandomImage();
+        // if startingPhoto is null, it will display a message telling the user there are no photos
+        setBackgroundImage(startingPhoto);
     }
 
     @Override
@@ -438,6 +440,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void setBackgroundImage(DejaPhoto photo) {
+        if (photo == null) {
+            setNoPhotosModeEnabled(true);
+            return;
+        }
+
+        setNoPhotosModeEnabled(false);
+
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(photo.getUri());
         background.invalidate();
@@ -485,7 +494,8 @@ public class MainActivity extends AppCompatActivity
      */
     public DejaPhoto getNextRandomImage(){
 
-        if(DejaPhoto.getCurrentSearchResults().length == 0){
+        DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
+        if(list == null || list.length == 0){
             System.err.println("Error: getting next image from empty album");
             return null;
         }
@@ -493,8 +503,8 @@ public class MainActivity extends AppCompatActivity
         double largestWeight = 0;
         DejaPhoto selectedPhoto = null;
 
-        for(int i = 0; i < DejaPhoto.getCurrentSearchResults().length; i++){
-            DejaPhoto currentPhoto = DejaPhoto.getCurrentSearchResults()[i];
+        for(int i = 0; i < list.length; i++){
+            DejaPhoto currentPhoto = list[i];
             double photoWeight = getTotalPhotoWeight(currentPhoto);
             if(photoWeight > largestWeight ){
                 selectedPhoto = currentPhoto;
