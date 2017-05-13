@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Random;
 
 import android.app.WallpaperManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -53,6 +54,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
+    // Used for logging
+    private static final String TAG = "MainActivity";
+
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
 
@@ -87,11 +91,28 @@ public class MainActivity extends AppCompatActivity
     void setNoPhotosModeEnabled(boolean enabled) {
         noPhotosModeEnabled = enabled;
 
+        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+
         if (enabled) {
+            Log.d(TAG, "enabling no photos mode");
+
             //TODO: unhide the "you need to add some photos" message
+
+            int resID = getResources().getIdentifier("default_background", "drawable",  getPackageName());
+            Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
+                    getResources().getResourcePackageName(resID) + '/' +
+                    getResources().getResourceTypeName(resID) + '/' +
+                    getResources().getResourceEntryName(resID) );
+            background.setImageURI(uri);
+
         } else {
+            Log.d(TAG, "disabling no photos mode");
+
             //TODO: hide the "you need to add some photos" message
+
         }
+
+        background.invalidate();
     }
 
     class AddressResultReceiver extends ResultReceiver {
@@ -131,6 +152,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         previousImage = new PreviousImage();
         CurrentPhoto = null;
+
+        setNoPhotosModeEnabled(true);
 
         /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -230,12 +253,12 @@ public class MainActivity extends AppCompatActivity
         auto_switch = new AutoSwitch(auto_switch_handler, Deja_refresh_time, textView, textView2);
         /* Start the runnable task*/
         auto_switch_handler.post(auto_switch);
-
     }
 
     @Override
     protected void onStart(){
         super.onStart();
+
     }
 
     @Override
@@ -414,6 +437,7 @@ public class MainActivity extends AppCompatActivity
     public void setBackgroundImage(DejaPhoto photo) {
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
         background.setImageURI(photo.getUri());
+        background.invalidate();
 
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
         locationTextView.setText("");
@@ -491,7 +515,7 @@ public class MainActivity extends AppCompatActivity
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo)
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo);
     }
 
     /**
