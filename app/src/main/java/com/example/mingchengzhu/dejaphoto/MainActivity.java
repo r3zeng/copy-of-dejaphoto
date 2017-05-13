@@ -464,8 +464,11 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-
-
+    /**
+     * Displays a photo in the background, along with its location
+     *
+     * @param photo the photo to display in the background
+     */
     public void setBackgroundImage(DejaPhoto photo) {
         if (photo == null) {
             setNoPhotosModeEnabled(true);
