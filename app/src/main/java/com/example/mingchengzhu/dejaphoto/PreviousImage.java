@@ -100,5 +100,12 @@ public class PreviousImage {
     private boolean isEmpty(){
         return index == 0;
     }
+    
+    /**
+     * @return the number of images currently being stored
+     */
+    public int getNumberofPhoto(){
+        return index;
+    }
 
 }
