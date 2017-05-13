@@ -4,14 +4,15 @@
     android:layout_height="match_parent"
     android:background="@drawable/frame"
     android:orientation="vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
     android:weightSum="1">
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="\n\nPlease select the frequency (in seconds) for automatically displaying a new image" />
-
+        android:text="\n\n\n\n\n\n\nPlease select the frequency (in seconds) for automatically displaying a new image" />
     <EditText
         android:id="@+id/change_frequency_edittext"
         android:layout_width="fill_parent"
@@ -21,14 +22,14 @@
         android:text="" android:inputType="phone" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/frequency_confirm"
         android:text="Confirm"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/frequency_cancle"
-        android:text="Cancle"/>
+        android:id="@+id/frequency_cancel"
+        android:text="Cancel"/>
 </LinearLayout>

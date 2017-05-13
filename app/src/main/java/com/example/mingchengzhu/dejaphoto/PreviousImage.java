@@ -34,7 +34,7 @@ public class PreviousImage {
     /**
      * similar to a pop
      * returns the previous photo
-     * note: null is return if no previous photo is avalible
+     * note: null is returned if no previous photo is avalible
      *
      * @return the previous photo
      */
@@ -46,6 +46,22 @@ public class PreviousImage {
             return previous_photo[index];
         }
     }
+    
+    /**
+     * similar to a top
+     * returns previous image without removing it
+     * note: null is returned if no previous photo is avalible
+     *
+     * @return the previous photo
+     */
+    public DejaPhoto getLastPhoto(){
+        if(isEmpty()){
+            return null;
+        }else{
+            return previous_photo[index - 1];
+        }
+    }
+    
 
     /**
      * checks if a photo has been previously seen before or not
@@ -83,6 +99,13 @@ public class PreviousImage {
      */
     private boolean isEmpty(){
         return index == 0;
+    }
+    
+    /**
+     * @return the number of images currently being stored
+     */
+    public int getNumberofPhoto(){
+        return index;
     }
 
 }
