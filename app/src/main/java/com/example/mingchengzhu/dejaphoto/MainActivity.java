@@ -510,17 +510,16 @@ public class MainActivity extends AppCompatActivity
 
         DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
         if(list == null || list.length == 0){
-            System.err.println("Error: getting next image from empty album");
+            Log.e(TAG, "Error: getting next image from empty album");
             return null;
         }
 
         double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
-        for(int i = 0; i < list.length; i++){
-            DejaPhoto currentPhoto = list[i];
+        for (DejaPhoto currentPhoto : list) {
             double photoWeight = getTotalPhotoWeight(currentPhoto);
-            if(photoWeight > largestWeight ){
+            if (photoWeight > largestWeight) {
                 selectedPhoto = currentPhoto;
                 largestWeight = photoWeight;
             }
