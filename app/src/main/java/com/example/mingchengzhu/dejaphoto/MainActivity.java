@@ -3,7 +3,6 @@ package com.example.mingchengzhu.dejaphoto;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Random;
 
 import android.app.WallpaperManager;
@@ -18,8 +17,6 @@ import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -162,16 +159,6 @@ public class MainActivity extends AppCompatActivity
         previousImage = new PreviousImage();
         CurrentPhoto = null;
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
