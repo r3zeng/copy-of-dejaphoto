@@ -615,7 +615,7 @@ public class MainActivity extends AppCompatActivity
      * should not be called elsewhere
      *
      * @param photo
-     * @return
+     * @return same day weight 
      */
     private double getSameDayWeight(DejaPhoto photo){
         final long MILLISECONDS_IN_DAY = 86400000;
