@@ -1,8 +1,16 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Random;
+
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -356,6 +364,33 @@ public class MainActivity extends AppCompatActivity
             //Andy is Testing Writing to File
             StateCodec.generateNoteOnSD(this, "stateCodec", "Hello \n My \n Friends");
             setBackgroundImage(photo);
+
+            /* Setting wallpaper */
+            // converting uri to bitmap
+            Uri uri = photo.getUri();
+            InputStream image_stream = null;
+            Bitmap bitmap = null;
+            try {
+                image_stream = getContentResolver().openInputStream(uri);
+            }
+            catch (FileNotFoundException e){
+                // logging message
+            }
+            if(image_stream != null){
+                bitmap= BitmapFactory.decodeStream(image_stream);
+            }
+            // setting wallpaper with the converted bitmap
+            WallpaperManager myWallpaperManager
+                    = WallpaperManager.getInstance(getApplicationContext());
+            try {
+                if(bitmap != null) {
+                    myWallpaperManager.setBitmap(bitmap);
+                }
+            }
+            catch (IOException e) {
+                // logging message
+            }
+
         }
     }
 
