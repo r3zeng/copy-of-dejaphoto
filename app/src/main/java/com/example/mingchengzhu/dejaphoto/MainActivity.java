@@ -536,19 +536,18 @@ public class MainActivity extends AppCompatActivity
         }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
         }else{
-                long SystemTime = tracker.getTime();
-                long PhotoTime = photo.getTime();
+            long SystemTime = tracker.getTime();
+            long PhotoTime = photo.getTime();
 
-                final long MILLISECONDS_IN_DAY = 86400000;
-                final long MILLISECONDS_IN_2_HOURS = 7200000;
+            final long MILLISECONDS_IN_DAY = 86400000;
+            final long MILLISECONDS_IN_2_HOURS = 7200000;
 
-                long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
+            long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
 
-                if(difference < MILLISECONDS_IN_2_HOURS){
-                    return 2;
-                }else{
-                    return 1;
-                }
+            if(difference < MILLISECONDS_IN_2_HOURS){
+                return 2;
+            }else{
+                return 1;
             }
         }
     }
