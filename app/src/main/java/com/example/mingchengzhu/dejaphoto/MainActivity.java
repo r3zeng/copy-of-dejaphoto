@@ -9,8 +9,6 @@ import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
@@ -32,7 +30,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.TextView;
-import org.w3c.dom.Text;
+
 import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
 
         if (enabled) {
-            Log.d(TAG, "enabling no photos mode");
+            Log.i(TAG, "enabling no photos mode");
 
             int resID = getResources().getIdentifier("default_background", "drawable",  getPackageName());
             Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity
             background.setImageURI(uri);
 
         } else {
-            Log.d(TAG, "disabling no photos mode");
+            Log.i(TAG, "disabling no photos mode");
 
         }
 
@@ -177,6 +175,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeRight(){
                 //put switch wallpaper method here
+
+                Log.i(TAG, "user has swiped right");
+
                 SwipeRight();
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
@@ -186,17 +187,24 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeTop() {
                 //put addKarma method here
+
+                Log.i(TAG, "user has swiped up");
+
                 if(CurrentPhoto != null){
                     CurrentPhoto.setKarma(true);
+                    Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
                     auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
-                Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeLeft() {
+                //put switch wallpaper method here
+
+                Log.i(TAG, "user has swiped left");
+
                 SwipeLeft();
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
@@ -206,14 +214,17 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeDown() {
                 //put release method here
+
+                Log.i(TAG, "user has swiped down");
+
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
+                    Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
                     auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
-                Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -299,6 +310,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        Log.i(TAG, "User selected navigation item " + id);
 
         if(id == R.id.nav_time) {
             if(Deja_Time){
@@ -400,55 +413,66 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
-            previousImage.swipeRight(CurrentPhoto);
+        switch (requestCode) {
+            case RESULT_LOAD_IMAGE:
+            {
+                if (resultCode == RESULT_OK && null != data) {
+                    Log.i(TAG, "user selected an image to add");
 
-            //Andy is Testing Writing to File
-            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
-            setBackgroundImage(CurrentPhoto);
+                    Uri selectedImage = data.getData();
+                    CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
+                    previousImage.swipeRight(CurrentPhoto);
 
-            /* Setting wallpaper */
-            // converting uri to bitmap
-            SetWallpaper(CurrentPhoto);
+                    //Andy is Testing Writing to File
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
 
-            // reset timer
-            if(auto_switch != null){
-                auto_switch_handler.removeCallbacks(auto_switch);
-                auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                    // Display the new photo immediately
+                    setBackgroundImage(CurrentPhoto);
+
+                    /* Setting wallpaper */
+                    // converting uri to bitmap
+                    setWallpaper(CurrentPhoto);
+
+                    // reset timer
+                    if(auto_switch != null){
+                        auto_switch_handler.removeCallbacks(auto_switch);
+                        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                    }
+
+                }
+                break;
             }
-
+            default:
+            {
+                Log.w(TAG, "onActivityResult got unknown requestCode: " + requestCode);
+                break;
+            }
         }
     }
 
     /* Setting wallpaper method*/
-    private void SetWallpaper(final DejaPhoto photo) {
+    private void setWallpaper(final DejaPhoto photo) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Uri uri = photo.getUri();
                 InputStream image_stream = null;
-                Bitmap bitmap = null;
                 try {
                     image_stream = getContentResolver().openInputStream(uri);
-                }
-                catch (FileNotFoundException e){
-                    // logging message
-                }
-                if(image_stream != null){
-                    bitmap= BitmapFactory.decodeStream(image_stream);
-                }
-                // setting wallpaper with the converted bitmap
-                WallpaperManager myWallpaperManager
-                        = WallpaperManager.getInstance(getApplicationContext());
-                try {
-                    if(bitmap != null) {
-                        myWallpaperManager.setBitmap(bitmap);
+
+                    // setting wallpaper with the converted bitmap
+                    WallpaperManager myWallpaperManager
+                            = WallpaperManager.getInstance(getApplicationContext());
+
+                    if (image_stream != null) {
+                        myWallpaperManager.setStream(image_stream);
                     }
                 }
+                catch (FileNotFoundException e) {
+                    Log.e(TAG, "file not found while trying to set wallpaper", e);
+                }
                 catch (IOException e) {
-                    // logging message
+                    Log.e(TAG, "IO error while trying to set wallpaper", e);
                 }
             }
         });
@@ -516,17 +540,16 @@ public class MainActivity extends AppCompatActivity
 
         DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
         if(list == null || list.length == 0){
-            System.err.println("Error: getting next image from empty album");
+            Log.e(TAG, "Error: getting next image from empty album");
             return null;
         }
 
         double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
-        for(int i = 0; i < list.length; i++){
-            DejaPhoto currentPhoto = list[i];
+        for (DejaPhoto currentPhoto : list) {
             double photoWeight = getTotalPhotoWeight(currentPhoto);
-            if(photoWeight > largestWeight ){
+            if (photoWeight > largestWeight) {
                 selectedPhoto = currentPhoto;
                 largestWeight = photoWeight;
             }
@@ -742,16 +765,16 @@ public class MainActivity extends AppCompatActivity
     public void SwipeRight(){
         //put switch wallpaper method here
         CurrentPhoto = getNextRandomImage();
+
         if(CurrentPhoto != null){
             if(lastSwipe ==  SwipeDirection.left){
                 CurrentPhoto = getNextRandomImage();
             }
             setBackgroundImage(CurrentPhoto);
-            SetWallpaper(CurrentPhoto);
+            setWallpaper(CurrentPhoto);
 
             previousImage.swipeRight(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "next", Toast.LENGTH_SHORT).show();
     }
 
     public void SwipeLeft(){
@@ -762,8 +785,8 @@ public class MainActivity extends AppCompatActivity
                 CurrentPhoto = previousImage.swipeLeft();
             }
             setBackgroundImage(CurrentPhoto);
+            setWallpaper(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "prev", Toast.LENGTH_SHORT).show();
     }
 
     @Override
