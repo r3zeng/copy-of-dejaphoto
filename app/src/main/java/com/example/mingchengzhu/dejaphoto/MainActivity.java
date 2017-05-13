@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
     private int Deja_refresh_time = 10000; //3 seconds
-
+    private final Handler auto_switch_handler = new Handler();
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
 
@@ -190,6 +191,10 @@ public class MainActivity extends AppCompatActivity
             public void onSwipeRight(){
                 //put switch wallpaper method here
                 SwipeRight();
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
             }
             @Override
             public void onSwipeTop() {
@@ -197,17 +202,29 @@ public class MainActivity extends AppCompatActivity
                 if(CurrentPhoto != null){
                     CurrentPhoto.setKarma(true);
                 }
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
                 Toast.makeText(MainActivity.this, "top", Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onSwipeLeft() {
                 SwipeLeft();
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                }
             }
             @Override
             public void onSwipeDown() {
                 //put release method here
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
+                }
+                if(auto_switch != null){
+                    auto_switch_handler.removeCallbacks(auto_switch);
+                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
                 }
                 Toast.makeText(MainActivity.this, "bottom", Toast.LENGTH_SHORT).show();
             }
@@ -242,7 +259,6 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following is used to implement auto-switch background */
-        final Handler auto_switch_handler = new Handler();
         //text field for testing: to be deleted in the future
         textView = (TextView)findViewById(R.id.textView2);
         textView2 = (TextView)findViewById(R.id.textView3);
@@ -251,9 +267,9 @@ public class MainActivity extends AppCompatActivity
         /* Start the runnable task*/
         auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
 
-        DejaPhoto startingPhoto = getNextRandomImage();
-        // if startingPhoto is null, it will display a message telling the user there are no photos
-        setBackgroundImage(startingPhoto);
+        CurrentPhoto = getNextRandomImage();
+        // if CurrentPhoto is null, it will display a message telling the user there are no photos
+        setBackgroundImage(CurrentPhoto);
     }
 
     @Override
@@ -402,49 +418,57 @@ public class MainActivity extends AppCompatActivity
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            DejaPhoto photo = DejaPhoto.addPhotoWithUri(selectedImage, this);
-            previousImage.swipeRight(photo);                
+            CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
+            previousImage.swipeRight(CurrentPhoto);
 
             //Andy is Testing Writing to File
-            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photo);
-            setBackgroundImage(photo);
+            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
+            setBackgroundImage(CurrentPhoto);
 
             /* Setting wallpaper */
             // converting uri to bitmap
-            SetWallpaper(photo);
+            SetWallpaper(CurrentPhoto);
 
         }
     }
 
     /* Setting wallpaper method*/
-    private void SetWallpaper(DejaPhoto photo) {
-        Uri uri = photo.getUri();
-        InputStream image_stream = null;
-        Bitmap bitmap = null;
-        try {
-            image_stream = getContentResolver().openInputStream(uri);
-        }
-        catch (FileNotFoundException e){
-            // logging message
-        }
-        if(image_stream != null){
-            bitmap= BitmapFactory.decodeStream(image_stream);
-        }
-        // setting wallpaper with the converted bitmap
-        WallpaperManager myWallpaperManager
-                = WallpaperManager.getInstance(getApplicationContext());
-        try {
-            if(bitmap != null) {
-                myWallpaperManager.setBitmap(bitmap);
+    private void SetWallpaper(final DejaPhoto photo) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                Uri uri = photo.getUri();
+                InputStream image_stream = null;
+                Bitmap bitmap = null;
+                try {
+                    image_stream = getContentResolver().openInputStream(uri);
+                }
+                catch (FileNotFoundException e){
+                    // logging message
+                }
+                if(image_stream != null){
+                    bitmap= BitmapFactory.decodeStream(image_stream);
+                }
+                // setting wallpaper with the converted bitmap
+                WallpaperManager myWallpaperManager
+                        = WallpaperManager.getInstance(getApplicationContext());
+                try {
+                    if(bitmap != null) {
+                        myWallpaperManager.setBitmap(bitmap);
+                    }
+                }
+                catch (IOException e) {
+                    // logging message
+                }
             }
-        }
-        catch (IOException e) {
-            // logging message
-        }
+        });
     }
 
-
-
+    /**
+     * Displays a photo in the background, along with its location
+     *
+     * @param photo the photo to display in the background
+     */
     public void setBackgroundImage(DejaPhoto photo) {
         if (photo == null) {
             setNoPhotosModeEnabled(true);
@@ -506,7 +530,7 @@ public class MainActivity extends AppCompatActivity
             return null;
         }
 
-        double largestWeight = 0;
+        double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
         for(int i = 0; i < list.length; i++){
