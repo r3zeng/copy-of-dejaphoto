@@ -242,8 +242,9 @@ public class MainActivity extends AppCompatActivity
         textView = (TextView)findViewById(R.id.textView2);
         textView2 = (TextView)findViewById(R.id.textView3);
         auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time, textView, textView2);
+
         /* Start the runnable task*/
-        auto_switch_handler.post(auto_switch);
+        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
 
         DejaPhoto startingPhoto = getNextRandomImage();
         // if startingPhoto is null, it will display a message telling the user there are no photos
@@ -708,7 +709,7 @@ public class MainActivity extends AppCompatActivity
             setBackgroundImage(CurrentPhoto);
             previousImage.swipeRight(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "next", Toast.LENGTH_SHORT).show();
     }
 
     public void SwipeLeft(){
@@ -720,7 +721,7 @@ public class MainActivity extends AppCompatActivity
             }
             setBackgroundImage(CurrentPhoto);
         }
-        Toast.makeText(MainActivity.this, "left", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "prev", Toast.LENGTH_SHORT).show();
     }
 
     @Override
