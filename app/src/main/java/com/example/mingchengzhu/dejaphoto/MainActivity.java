@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
 
         if (enabled) {
-            Log.d(TAG, "enabling no photos mode");
+            Log.i(TAG, "enabling no photos mode");
 
             int resID = getResources().getIdentifier("default_background", "drawable",  getPackageName());
             Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" +
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
             background.setImageURI(uri);
 
         } else {
-            Log.d(TAG, "disabling no photos mode");
+            Log.i(TAG, "disabling no photos mode");
 
         }
 
@@ -175,6 +175,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeRight(){
                 //put switch wallpaper method here
+
+                Log.i(TAG, "user has swiped right");
+
                 SwipeRight();
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
@@ -184,6 +187,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeTop() {
                 //put addKarma method here
+
+                Log.i(TAG, "user has swiped up");
+
                 if(CurrentPhoto != null){
                     CurrentPhoto.setKarma(true);
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
@@ -195,6 +201,10 @@ public class MainActivity extends AppCompatActivity
             }
             @Override
             public void onSwipeLeft() {
+                //put switch wallpaper method here
+
+                Log.i(TAG, "user has swiped left");
+
                 SwipeLeft();
                 if(auto_switch != null){
                     auto_switch_handler.removeCallbacks(auto_switch);
@@ -204,6 +214,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSwipeDown() {
                 //put release method here
+
+                Log.i(TAG, "user has swiped down");
+
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
@@ -297,6 +310,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        Log.i(TAG, "User selected navigation item " + id);
 
         if(id == R.id.nav_time) {
             if(Deja_Time){
@@ -398,25 +413,40 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            Uri selectedImage = data.getData();
-            CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
-            previousImage.swipeRight(CurrentPhoto);
+        switch (requestCode) {
+            case RESULT_LOAD_IMAGE:
+            {
+                if (resultCode == RESULT_OK && null != data) {
+                    Log.i(TAG, "user selected an image to add");
 
-            //Andy is Testing Writing to File
-            StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
-            setBackgroundImage(CurrentPhoto);
+                    Uri selectedImage = data.getData();
+                    CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
+                    previousImage.swipeRight(CurrentPhoto);
 
-            /* Setting wallpaper */
-            // converting uri to bitmap
-            setWallpaper(CurrentPhoto);
+                    //Andy is Testing Writing to File
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
 
-            // reset timer
-            if(auto_switch != null){
-                auto_switch_handler.removeCallbacks(auto_switch);
-                auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                    // Display the new photo immediately
+                    setBackgroundImage(CurrentPhoto);
+
+                    /* Setting wallpaper */
+                    // converting uri to bitmap
+                    setWallpaper(CurrentPhoto);
+
+                    // reset timer
+                    if(auto_switch != null){
+                        auto_switch_handler.removeCallbacks(auto_switch);
+                        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                    }
+
+                }
+                break;
             }
-
+            default:
+            {
+                Log.w(TAG, "onActivityResult got unknown requestCode: " + requestCode);
+                break;
+            }
         }
     }
 
