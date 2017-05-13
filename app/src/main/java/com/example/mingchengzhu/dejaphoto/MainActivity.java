@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
     private Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private Runnable auto_switch;
+    private AutoSwitch auto_switch;
     TextView textView;
     TextView textView2;
 
@@ -238,11 +238,6 @@ public class MainActivity extends AppCompatActivity
                 // call switch screen
                 tracker.updateLocation(location);
                 tracker.updateTime();
-                /* test */
-                textView = (TextView)findViewById(R.id.textView2);
-                textView.setText(String.valueOf(tracker.getLocation().getLongitude()));
-                textView2 = (TextView)findViewById(R.id.textView3);
-                textView2.setText(String.valueOf(tracker.getTime()));
             }
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -259,10 +254,7 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following is used to implement auto-switch background */
-        //text field for testing: to be deleted in the future
-        textView = (TextView)findViewById(R.id.textView2);
-        textView2 = (TextView)findViewById(R.id.textView3);
-        auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time, textView, textView2);
+        auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time);
 
         /* Start the runnable task*/
         auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
@@ -389,7 +381,12 @@ public class MainActivity extends AppCompatActivity
                 EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.change_frequency_edittext);
                 try {//catch overflow
                     if (!mEdit.getText().toString().equals("")) {//no null strings
-                        Deja_refresh_time = Integer.valueOf(mEdit.getText().toString());
+                        Deja_refresh_time = (Integer.valueOf(mEdit.getText().toString()))*1000;
+                        if(auto_switch != null){
+                            auto_switch.setTime(Deja_refresh_time);
+                            auto_switch_handler.removeCallbacks(auto_switch);
+                            auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                        }
                         popup.dismiss();
                     }
                 }catch(Exception e){
