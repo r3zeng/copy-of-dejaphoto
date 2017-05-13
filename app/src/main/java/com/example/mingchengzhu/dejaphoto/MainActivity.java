@@ -406,32 +406,39 @@ public class MainActivity extends AppCompatActivity
 
             /* Setting wallpaper */
             // converting uri to bitmap
-            Uri uri = photo.getUri();
-            InputStream image_stream = null;
-            Bitmap bitmap = null;
-            try {
-                image_stream = getContentResolver().openInputStream(uri);
-            }
-            catch (FileNotFoundException e){
-                // logging message
-            }
-            if(image_stream != null){
-                bitmap= BitmapFactory.decodeStream(image_stream);
-            }
-            // setting wallpaper with the converted bitmap
-            WallpaperManager myWallpaperManager
-                    = WallpaperManager.getInstance(getApplicationContext());
-            try {
-                if(bitmap != null) {
-                    myWallpaperManager.setBitmap(bitmap);
-                }
-            }
-            catch (IOException e) {
-                // logging message
-            }
+            SetWallpaper(photo);
 
         }
     }
+
+    /* Setting wallpaper method*/
+    private void SetWallpaper(DejaPhoto photo) {
+        Uri uri = photo.getUri();
+        InputStream image_stream = null;
+        Bitmap bitmap = null;
+        try {
+            image_stream = getContentResolver().openInputStream(uri);
+        }
+        catch (FileNotFoundException e){
+            // logging message
+        }
+        if(image_stream != null){
+            bitmap= BitmapFactory.decodeStream(image_stream);
+        }
+        // setting wallpaper with the converted bitmap
+        WallpaperManager myWallpaperManager
+                = WallpaperManager.getInstance(getApplicationContext());
+        try {
+            if(bitmap != null) {
+                myWallpaperManager.setBitmap(bitmap);
+            }
+        }
+        catch (IOException e) {
+            // logging message
+        }
+    }
+
+
 
     public void setBackgroundImage(DejaPhoto photo) {
         if (photo == null) {
@@ -721,6 +728,8 @@ public class MainActivity extends AppCompatActivity
                 CurrentPhoto = getNextRandomImage();
             }
             setBackgroundImage(CurrentPhoto);
+            SetWallpaper(CurrentPhoto);
+
             previousImage.swipeRight(CurrentPhoto);
         }
         Toast.makeText(MainActivity.this, "next", Toast.LENGTH_SHORT).show();
