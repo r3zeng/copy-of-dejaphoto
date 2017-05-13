@@ -10,7 +10,6 @@ import android.widget.TextView;
  * Created by Tianhui Cao, Mingcheng Zhu on 5/10/17.
  * Description: implements auto-switch background
  */
-
 public class AutoSwitch implements Runnable {
     Handler handler;
     private int refresh_time;

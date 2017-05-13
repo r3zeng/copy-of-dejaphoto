@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.Random;
 
 import android.app.WallpaperManager;
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import org.w3c.dom.Text;
 import java.io.File;
@@ -72,7 +74,8 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
     private int Deja_refresh_time = 3000; //3 seconds
-    
+    private int widgetId = 0;
+
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
 
@@ -148,6 +151,7 @@ public class MainActivity extends AppCompatActivity
                     setBackgroundImage(CurrentPhoto);
                     previousImage.swipeRight(CurrentPhoto);
                 }
+
                 Toast.makeText(MainActivity.this, "right", Toast.LENGTH_SHORT).show();
             }
             @Override
@@ -651,4 +655,5 @@ public class MainActivity extends AppCompatActivity
     public void onConnected(Bundle bundle) {
         //TODO:
     }
+
 }
