@@ -127,6 +127,8 @@ public class DejaPhoto {
         return time;
     }
 
+    public void setTime(long timeStamp) {time = timeStamp; }
+
     public Location getLocation() {
         return location;
     }
@@ -144,8 +146,7 @@ public class DejaPhoto {
         return (getPathFromUri(context, this.getUri()) + "\n" +
                 this.getKarma() + "\n" +
                 this.getReleased() + "\n" +
-                this.getTime() + "\n" +
-                this.getLocation() + "\n");
+                this.getTime() + "\n" );
     }
 
     public static String getPathFromUri(final Context context, final Uri uri) {

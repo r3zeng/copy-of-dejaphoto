@@ -42,13 +42,14 @@ public class StateCodec {
             writer.flush();
             writer.close();
             Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
-            PrintState(stateCodecFile.getAbsolutePath());
+            printState(stateCodecFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void PrintState(String fileName){
+    public static void printState(String fileName)
+    {
 
         File currState = new File(fileName);
         try {
@@ -65,6 +66,58 @@ public class StateCodec {
             //You'll need to add proper error handling here
         }
 
+    }
+
+    public static void loadState(Context context, String fileName)
+    {
+
+        File currState = new File(fileName);
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(currState));
+            String line;
+            while ((line = br.readLine()) != null)
+            {
+                int counter = 0;
+                DejaPhoto dejaPhoto = null;
+
+                switch(counter%4)
+                {
+                    case 0:
+                        Uri fromPath = Uri.fromFile(new File(line));
+                        dejaPhoto = new DejaPhoto(fromPath, context);
+                        break;
+                    case 1:
+                        if(line.contains("false"))
+                        {
+                            dejaPhoto.setKarma(false);
+                        }
+                        else
+                        {
+                            dejaPhoto.setKarma(true);
+                        }
+                        break;
+                    case 2:
+                        if(line.contains("false"))
+                        {
+                            dejaPhoto.setReleased(false);
+                        }
+                        else
+                        {
+                            dejaPhoto.setReleased(true);
+                        }
+                        break;
+                    case 3:
+                        dejaPhoto.setTime((long)Integer.parseInt(line));
+
+                }
+
+
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            //You'll need to add proper error handling here
+        }
     }
 
 }

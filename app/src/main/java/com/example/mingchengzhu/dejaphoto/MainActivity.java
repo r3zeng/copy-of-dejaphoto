@@ -491,7 +491,7 @@ public class MainActivity extends AppCompatActivity
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo)
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo);
     }
 
     /**
