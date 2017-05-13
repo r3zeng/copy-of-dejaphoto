@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity
     private boolean Deja_Date = true;
     private boolean Deja_Location = true;
     private boolean Deja_Karma = true;
-    private int Deja_refresh_time = 10000; //3 seconds
+    private int Deja_refresh_time = 10000; //10 seconds
     private final Handler auto_switch_handler = new Handler();
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
