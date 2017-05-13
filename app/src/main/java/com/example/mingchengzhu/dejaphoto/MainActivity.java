@@ -137,11 +137,10 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
-                //TODO: set label text
                 TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
                 locationTextView.setText(resultData.getString(Constants.RESULT_DATA_KEY));
             } else {
-                //TODO: log error
+                Log.e(TAG, "location reverse geocoding failed");
             }
         }
     }
