@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
 {
+
+    //swipes
+    public enum SwipeDirection{
+        right, left, neither
+    }
+
     // Used for logging
     private static final String TAG = "MainActivity";
 
