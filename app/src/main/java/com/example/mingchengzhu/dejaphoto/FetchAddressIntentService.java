@@ -73,15 +73,41 @@ public class FetchAddressIntentService extends IntentService {
             }
             deliverResultToReceiver(Constants.FETCH_ADDRESS_FAILURE, errorMessage);
         } else {
+            Log.i(TAG, "Found the address");
+
+            for (Address address : addresses) {
+                String featureName = address.getFeatureName();
+                if (featureName == null || featureName.length() == 0) {
+                    continue;
+                }
+
+                boolean onlySpaceAndNumbers = true;
+                for (int i = 0; i < featureName.length(); ++i) {
+                    char c = featureName.charAt(i);
+                    if ((c < '0' || c > '9') && c != ' ' && c != '\t' && c != '\n' && c != '\r') {
+                        onlySpaceAndNumbers = false;
+                    }
+                }
+
+                if (!onlySpaceAndNumbers) {
+                    deliverResultToReceiver(Constants.FETCH_ADDRESS_SUCCESS, featureName);
+                    return;
+                }
+            }
+
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<String>();
 
             // Fetch the address lines using getAddressLine,
             // join them, and send them to the thread.
-            for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
-                addressFragments.add(address.getAddressLine(i));
+            int maxIndex = address.getMaxAddressLineIndex();
+            for(int i = 0; i <= maxIndex; i++) {
+                // Don't put "USA" in the address
+                String line = address.getAddressLine(i);
+                if (! line.equalsIgnoreCase("USA") || maxIndex <= 1) {
+                    addressFragments.add(line);
+                }
             }
-            Log.i(TAG, "Found the address");
             deliverResultToReceiver(Constants.FETCH_ADDRESS_SUCCESS,
                     TextUtils.join(System.getProperty("line.separator"),
                             addressFragments));
