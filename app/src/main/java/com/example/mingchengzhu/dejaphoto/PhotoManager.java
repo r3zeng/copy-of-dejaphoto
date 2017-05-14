@@ -295,6 +295,8 @@ public class PhotoManager {
 
             backHistory.swipeRight(currentPhoto);
         }
+
+        client.currentPhotoChanged();
     }
 
     public void prev() {
@@ -305,6 +307,8 @@ public class PhotoManager {
                 currentPhoto = backHistory.swipeLeft();
             }
         }
+
+        client.currentPhotoChanged();
     }
 
     public boolean getMatchTime() {

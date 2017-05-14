@@ -12,13 +12,15 @@ public class AutoSwitch implements Runnable {
     private static final String TAG = "AutoSwitch";
 
     Handler handler;
-    MainActivity activity;
+    PhotoManagerClient client;
+    PhotoManager manager;
     private int refresh_time;
 
 
-    AutoSwitch(MainActivity activity, Handler handler, int refresh_time){
+    AutoSwitch(PhotoManagerClient client, PhotoManager manager, Handler handler, int refresh_time){
         this.handler = handler;
-        this.activity = activity;
+        this.client = client;
+        this.manager = manager;
         this.refresh_time = refresh_time;
     }
 
@@ -27,7 +29,6 @@ public class AutoSwitch implements Runnable {
         Log.i(TAG, "Auto switch timer firing now");
 
         //call the change background method here
-        PhotoManager manager = new PhotoManager(activity);
         manager.next();
 
         handler.postDelayed(this, refresh_time);//3 minutes 180000
@@ -38,7 +39,7 @@ public class AutoSwitch implements Runnable {
     }
 
     public void refresh(){
-        if(this != null){
+        if (this != null) {
             handler.removeCallbacks(this);
             handler.postDelayed(this, refresh_time);
         }

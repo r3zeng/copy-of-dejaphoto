@@ -12,4 +12,6 @@ public interface PhotoManagerClient {
     public SwipeDirection lastSwipe = SwipeDirection.neither;
 
     public Tracker tracker = new Tracker();
+
+    public void currentPhotoChanged();
 }

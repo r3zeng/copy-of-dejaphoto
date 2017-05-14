@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe right action & reset timer
                 photoManager.next();
-                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -188,7 +187,6 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe left action & reset timer
                 photoManager.prev();
-                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -232,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to implement auto-switch */
-        autoSwitch = new AutoSwitch(this, autoSwitchHandler, refreshInterval);
+        autoSwitch = new AutoSwitch(this, photoManager, autoSwitchHandler, refreshInterval);
 
         /* Start the runnable task*/
         autoSwitchHandler.postDelayed(autoSwitch, refreshInterval);
@@ -555,4 +553,7 @@ public class MainActivity extends AppCompatActivity
         setWallpaper(photo, locationText);
     }
 
+    public void currentPhotoChanged() {
+        setBackgroundImage(photoManager.getCurrentPhoto());
+    }
 }
