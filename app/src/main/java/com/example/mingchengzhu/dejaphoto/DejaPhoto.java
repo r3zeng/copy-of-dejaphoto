@@ -40,7 +40,7 @@ public class DejaPhoto {
 
         // Check for duplicate
         for (DejaPhoto photo : currentSearchResults) {
-            if (photo.equals(newPhoto)) {
+            if (photo.equals(newPhoto) & !photo.wasReleased) {
                 return photo;
             }
         }
