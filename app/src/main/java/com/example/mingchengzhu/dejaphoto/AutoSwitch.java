@@ -22,7 +22,7 @@ public class AutoSwitch implements Runnable {
     @Override
     public void run() {
         //call the change background method here
-        WeightAlgo algo = new WeightAlgo(activity);
+        PhotoManager algo = new PhotoManager(activity);
         algo.next();
 
         handler.postDelayed(this, refresh_time);//3 minutes 180000

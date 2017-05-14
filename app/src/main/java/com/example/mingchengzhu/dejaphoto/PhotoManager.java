@@ -11,18 +11,19 @@ import static android.content.ContentValues.TAG;
  * Created by mingchengzhu on 5/13/17.
  */
 
-public class WeightAlgo {
+public class PhotoManager {
     /**
      * gets the next Image to display
      * should be called on right swipe and by the auto-switcher
      */
     MainActivity activity;
-    private boolean matchTime;
-    private boolean matchDate;
-    private boolean matchLocation;
-    private boolean matchKarma;
+    private DejaPhoto currentPhoto = null;
+    private boolean matchTime = true;
+    private boolean matchDate = true;
+    private boolean matchLocation = true;
+    private boolean matchKarma = true;
 
-    public WeightAlgo(MainActivity activity) {
+    public PhotoManager(MainActivity activity) {
         this.activity = activity;
     }
 
@@ -255,26 +256,26 @@ public class WeightAlgo {
 
     public void next() {
         //put switch wallpaper method here
-        activity.currentPhoto = getNextRandomImage();
+        currentPhoto = getNextRandomImage();
 
-        if (activity.currentPhoto != null) {
+        if (currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.left) {
-                activity.currentPhoto = getNextRandomImage();
+                currentPhoto = getNextRandomImage();
             }
-            activity.setBackgroundImage(activity.currentPhoto);
+            activity.setBackgroundImage(currentPhoto);
 
-            activity.previousImage.swipeRight(activity.currentPhoto);
+            activity.previousImage.swipeRight(currentPhoto);
         }
     }
 
     public void prev() {
         //put switch wallpaper method here
-        activity.currentPhoto = activity.previousImage.swipeLeft();
-        if (activity.currentPhoto != null) {
+        currentPhoto = activity.previousImage.swipeLeft();
+        if (currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.right) {
-                activity.currentPhoto = activity.previousImage.swipeLeft();
+                currentPhoto = activity.previousImage.swipeLeft();
             }
-            activity.setBackgroundImage(activity.currentPhoto);
+            activity.setBackgroundImage(currentPhoto);
         }
     }
 
@@ -308,6 +309,14 @@ public class WeightAlgo {
 
     public void setMatchKarma(boolean matchKarma) {
         this.matchKarma = matchKarma;
+    }
+
+    public DejaPhoto getCurrentPhoto() {
+        return currentPhoto;
+    }
+
+    public void setCurrentPhoto(DejaPhoto currentPhoto) {
+        this.currentPhoto = currentPhoto;
     }
 }
 

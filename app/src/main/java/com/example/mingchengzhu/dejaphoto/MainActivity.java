@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
     private static final int RESULT_LOAD_IMAGE = 1;
 
     // Used to receive an address result from FetchAddressIntentService
-    private AddressResultReceiver mResultReceiver;
+    private AddressResultReceiver resultReceiver;
 
     // Used for tracking system time and location
     public Tracker tracker = new Tracker();
@@ -80,9 +80,8 @@ public class MainActivity extends AppCompatActivity
     public int refreshInterval = 10000; //1000 milliseconds = 1 seconds
     private final Handler autoSwitchHandler = new Handler();
     PreviousImage previousImage;
-    DejaPhoto currentPhoto;
 
-    WeightAlgo algo;
+    PhotoManager algo;
 
     /**
      * turns on/off a message about having no photos
@@ -135,7 +134,7 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                gotLocationText(currentPhoto, text);
+                gotLocationText(algo.getCurrentPhoto(), text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -150,9 +149,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         previousImage = new PreviousImage();
-        currentPhoto = null;
 
-        algo = new WeightAlgo(this);
+        algo = new PhotoManager(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -183,9 +181,9 @@ public class MainActivity extends AppCompatActivity
                 // logging message
                 Log.i(TAG, "user has swiped up");
 
-                if(currentPhoto != null){
+                if (algo.getCurrentPhoto() != null) {
                     // set Karma and toast!
-                    currentPhoto.setKarma(true);
+                    algo.getCurrentPhoto().setKarma(true);
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 //refresh timer
@@ -206,8 +204,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped down");
 
                 // Release and toast!
-                if(currentPhoto != null){
-                    currentPhoto.setReleased(true);
+                if (algo.getCurrentPhoto() != null) {
+                    algo.getCurrentPhoto().setReleased(true);
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 // refresh timer
@@ -248,9 +246,9 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to get background when starts the app */
-        currentPhoto = algo.getNextRandomImage();
+        algo.setCurrentPhoto(algo.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
-        setBackgroundImage(currentPhoto);
+        setBackgroundImage(algo.getCurrentPhoto());
     }
 
     @Override
@@ -405,14 +403,14 @@ public class MainActivity extends AppCompatActivity
                     Log.i(TAG, "user selected an image to add");
 
                     Uri selectedImage = data.getData();
-                    currentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
-                    previousImage.swipeRight(currentPhoto);
+                    algo.setCurrentPhoto(DejaPhoto.addPhotoWithUri(selectedImage, this));
+                    previousImage.swipeRight(algo.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
-                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", currentPhoto);
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", algo.getCurrentPhoto());
 
                     // Display the new photo immediately
-                    setBackgroundImage(currentPhoto);
+                    setBackgroundImage(algo.getCurrentPhoto());
 
                     // reset timer
                     autoSwitch.refresh();
@@ -538,12 +536,12 @@ public class MainActivity extends AppCompatActivity
 
         Location location = photo.getLocation();
         if (location != null) {
-            if (mResultReceiver == null) {
-                mResultReceiver = new AddressResultReceiver(new Handler());
+            if (resultReceiver == null) {
+                resultReceiver = new AddressResultReceiver(new Handler());
             }
 
             Intent intent = new Intent(this, FetchAddressIntentService.class);
-            intent.putExtra(Constants.RECEIVER, mResultReceiver);
+            intent.putExtra(Constants.RECEIVER, resultReceiver);
             intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
             startService(intent);
         } else {
