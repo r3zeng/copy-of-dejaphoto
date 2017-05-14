@@ -3,13 +3,17 @@ package com.example.mingchengzhu.dejaphoto;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -31,7 +35,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.TextView;
 
-import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.view.Gravity;
@@ -44,13 +47,8 @@ import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener
-{
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     //swipes
     public enum SwipeDirection{
@@ -68,26 +66,26 @@ public class MainActivity extends AppCompatActivity
     private AddressResultReceiver mResultReceiver;
 
     // Used for tracking system time and location
-    private Tracker tracker = new Tracker();
+    public Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
     private AutoSwitch auto_switch;
-    TextView textView;
-    TextView textView2;
 
     // true if we are currently showing the user a message about having no photos
     boolean noPhotosModeEnabled = false;
 
     private PopupWindow popup;
     // Field for setting panel
-    private boolean Deja_Time = true;
-    private boolean Deja_Date = true;
-    private boolean Deja_Location = true;
-    private boolean Deja_Karma = true;
-    private int Deja_refresh_time = 10000; //10 seconds
+    public boolean Deja_Time = true;
+    public boolean Deja_Date = true;
+    public boolean Deja_Location = true;
+    public boolean Deja_Karma = true;
+    public int Deja_refresh_time = 10000; //10 seconds
     private final Handler auto_switch_handler = new Handler();
     PreviousImage previousImage;
     DejaPhoto CurrentPhoto;
+
+    WeightAlgo algo;
 
     /**
      * turns on/off a message about having no photos
@@ -139,8 +137,8 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
-                TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-                locationTextView.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+                String text = resultData.getString(Constants.RESULT_DATA_KEY);
+                gotLocationText(CurrentPhoto, text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -157,6 +155,8 @@ public class MainActivity extends AppCompatActivity
         previousImage = new PreviousImage();
         CurrentPhoto = null;
 
+        algo = new WeightAlgo(this);
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -167,76 +167,67 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        /* The following is used to implement swiping functionality */
+        /* The following code is used to implement swiping functionality */
         ImageView backgroundImage = (ImageView)findViewById(R.id.backgroundImage);
 
         backgroundImage.setOnTouchListener(new OnSwipeListener(MainActivity.this){
 
             @Override
             public void onSwipeRight(){
-                //put switch wallpaper method here
-
+                // logging message
                 Log.i(TAG, "user has swiped right");
 
-                SwipeRight();
-                if(auto_switch != null){
-                    auto_switch_handler.removeCallbacks(auto_switch);
-                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
-                }
+                // call swipe right action & reset timer
+                algo.next();
+                auto_switch.refresh();
             }
             @Override
             public void onSwipeTop() {
-                //put addKarma method here
-
+                // logging message
                 Log.i(TAG, "user has swiped up");
 
                 if(CurrentPhoto != null){
+                    // set Karma and toast!
                     CurrentPhoto.setKarma(true);
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
-                if(auto_switch != null){
-                    auto_switch_handler.removeCallbacks(auto_switch);
-                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
-                }
+                //refresh timer
+                auto_switch.refresh();
             }
             @Override
             public void onSwipeLeft() {
-                //put switch wallpaper method here
-
+                // logging message
                 Log.i(TAG, "user has swiped left");
 
-                SwipeLeft();
-                if(auto_switch != null){
-                    auto_switch_handler.removeCallbacks(auto_switch);
-                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
-                }
+                // call swipe left action & reset timer
+                algo.prev();
+                auto_switch.refresh();
             }
             @Override
             public void onSwipeDown() {
-                //put release method here
-
+                // logging message
                 Log.i(TAG, "user has swiped down");
 
+                // Release and toast!
                 if(CurrentPhoto != null){
                     CurrentPhoto.setReleased(true);
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
-                if(auto_switch != null){
-                    auto_switch_handler.removeCallbacks(auto_switch);
-                    auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
-                }
+                // refresh timer
+                auto_switch.refresh();
             }
         });
 
 
-        /* The following is used to update screen based on location */
+        /* The following code is used to update screen based on location */
         locationListener = new LocationListener() {
             @Override
+            // update tracker when location is changed
             public void onLocationChanged(Location location) {
-                // call switch screen
                 tracker.updateLocation(location);
                 tracker.updateTime();
             }
+
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {}
             @Override
@@ -247,17 +238,20 @@ public class MainActivity extends AppCompatActivity
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
-        // specified refresh time, 500 meters
+        // refresh time = Deja_refresh_time, location update for every 500 meters
         locationManager.requestLocationUpdates(locationProvider, Deja_refresh_time, 500, locationListener);
 
 
-        /* The following is used to implement auto-switch background */
+
+        /* The following code is used to implement auto-switch */
         auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time);
 
         /* Start the runnable task*/
         auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
 
-        CurrentPhoto = getNextRandomImage();
+
+        /* The following code is used to get background when starts the app */
+        CurrentPhoto = algo.getNextRandomImage();
         // if CurrentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(CurrentPhoto);
     }
@@ -265,7 +259,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart(){
         super.onStart();
-
     }
 
     @Override
@@ -275,6 +268,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Log.i(TAG, "user pressed the back button");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -296,21 +291,17 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-/*
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-*/
         return super.onOptionsItemSelected(item);
     }
 
+    /* The following code is used to implement the navigation bar */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        // logging message
         Log.i(TAG, "User selected navigation item " + id);
 
         if(id == R.id.nav_time) {
@@ -354,9 +345,6 @@ public class MainActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
             changeFrenquencyPopUp();
         }
-
-        //DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -429,16 +417,8 @@ public class MainActivity extends AppCompatActivity
                     // Display the new photo immediately
                     setBackgroundImage(CurrentPhoto);
 
-                    /* Setting wallpaper */
-                    // converting uri to bitmap
-                    setWallpaper(CurrentPhoto);
-
                     // reset timer
-                    if(auto_switch != null){
-                        auto_switch_handler.removeCallbacks(auto_switch);
-                        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
-                    }
-
+                    auto_switch.refresh();
                 }
                 break;
             }
@@ -451,22 +431,83 @@ public class MainActivity extends AppCompatActivity
     }
 
     /* Setting wallpaper method*/
-    private void setWallpaper(final DejaPhoto photo) {
+    void setWallpaper(final DejaPhoto photo, final String locationText) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Uri uri = photo.getUri();
-                InputStream image_stream = null;
                 try {
+                    Log.i(TAG, "attempting to set wallpaper");
+                    InputStream image_stream = getContentResolver().openInputStream(uri);
+                    final BitmapFactory.Options inOptions = new BitmapFactory.Options();
+                    inOptions.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(image_stream, null, inOptions);
+                    final int originalWidth = inOptions.outWidth;
+                    final int originalHeight = inOptions.outHeight;
+
+                    image_stream.close();
                     image_stream = getContentResolver().openInputStream(uri);
 
-                    // setting wallpaper with the converted bitmap
-                    WallpaperManager myWallpaperManager
-                            = WallpaperManager.getInstance(getApplicationContext());
+                    Point screenSize = new Point();
+                    getWindowManager().getDefaultDisplay().getRealSize(screenSize);
 
-                    if (image_stream != null) {
-                        myWallpaperManager.setStream(image_stream);
+                    int screenWidth = screenSize.x;
+                    int screenHeight = screenSize.y;
+                    if (screenWidth > screenHeight) {
+                        int tmp = screenWidth;
+                        screenWidth = screenHeight;
+                        screenHeight = tmp;
                     }
+
+                    int scaleFactor = Math.max(1, Math.min(originalWidth / screenWidth, originalHeight / screenHeight));
+
+                    BitmapFactory.Options decodeBitmapOptions = new BitmapFactory.Options();
+                    decodeBitmapOptions.inSampleSize = scaleFactor;
+
+                    Bitmap bitmap = BitmapFactory.decodeStream(image_stream, null, decodeBitmapOptions);
+                    if (bitmap == null) {
+                        Log.e(TAG, "could not decode bitmap while attempting to set wallpaper");
+                        return;
+                    }
+
+                    float screenRatio = (float)screenHeight / screenWidth;
+                    float bitmapRatio = (float)bitmap.getHeight() / bitmap.getWidth();
+                    if (bitmapRatio > screenRatio) {
+                        int newHeight = (int)(bitmap.getWidth() * screenRatio);
+                        bitmap = bitmap.createBitmap(bitmap, 0, (bitmap.getHeight() - newHeight) / 2, bitmap.getWidth(), newHeight);
+                    } else {
+                        int newWidth = (int)(bitmap.getHeight() / screenRatio);
+                        bitmap = bitmap.createBitmap(bitmap, (bitmap.getWidth() - newWidth) / 2, 0, newWidth, bitmap.getHeight());
+                    }
+
+                    bitmap = bitmap.createScaledBitmap(bitmap, screenWidth, screenHeight, true);
+
+                    if (locationText != null && locationText.length() > 0) {
+                        Canvas canvas = new Canvas(bitmap);
+                        Paint paint = new Paint();
+                        paint.setColor(Color.WHITE);
+                        paint.setTextSize(screenWidth / 18);
+
+                        paint.setShadowLayer(40, 0, 0, Color.BLACK);
+
+                        String[] lines = locationText.split("\n");
+                        final float x = 40.0f;
+                        final float yStart = screenHeight - 80.0f;
+                        float y = yStart;
+                        for (int i = lines.length - 1; i >= 0; --i) {
+                            y -= paint.descent() - paint.ascent();
+                            canvas.drawText(lines[i], x, y, paint);
+                        }
+                    }
+
+                    // setting wallpaper with the converted bitmap
+                    WallpaperManager myWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                    myWallpaperManager.setWallpaperOffsetSteps(1, 1);
+                    myWallpaperManager.suggestDesiredDimensions(bitmap.getWidth(), bitmap.getHeight());
+                    myWallpaperManager.setBitmap(bitmap);
+
+                    Log.i(TAG, "wallpaper should now be set, new dimensions: " + bitmap.getWidth() + "x" + bitmap.getHeight() +
+                            " made for screen size: " + screenWidth + "x" + screenHeight);
                 }
                 catch (FileNotFoundException e) {
                     Log.e(TAG, "file not found while trying to set wallpaper", e);
@@ -508,299 +549,22 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra(Constants.RECEIVER, mResultReceiver);
             intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
             startService(intent);
+        } else {
+            gotLocationText(photo, "La La Land");
         }
     }
 
     /**
-     * sets an image as the background
+     * This method is called when the location text has become available for a photo
      *
-     * @param file java.io.File that contains path to image
+     * @param photo the photo that we now have location text for
+     * @param locationText the location text
      */
-    public void setBackgroundImage(File file){
-        Uri uri = Uri.fromFile(file);
-        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
-        background.setImageURI(uri);
+    void gotLocationText(DejaPhoto photo, String locationText) {
+        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        locationTextView.setText(locationText);
+
+        setWallpaper(photo, locationText);
     }
 
-    /**
-     * Overloaded function to set backgound image
-     *
-     * @param uri path to image
-     */
-    public void setBackgroundImage(Uri uri){
-        ImageView background = (ImageView) findViewById(R.id.backgroundImage);
-        background.setImageURI(uri);
-    }
-
-    /**
-     * gets the next Image to display
-     * should be called on right swipe and by the auto-switcher
-     */
-    public DejaPhoto getNextRandomImage(){
-
-        DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
-        if(list == null || list.length == 0){
-            Log.e(TAG, "Error: getting next image from empty album");
-            return null;
-        }
-
-        double largestWeight = -1;
-        DejaPhoto selectedPhoto = null;
-
-        for (DejaPhoto currentPhoto : list) {
-            double photoWeight = getTotalPhotoWeight(currentPhoto);
-            if (photoWeight > largestWeight) {
-                selectedPhoto = currentPhoto;
-                largestWeight = photoWeight;
-            }
-        }
-
-        return  selectedPhoto;
-    }
-
-    /**
-     * helper function for getNextRandomImage
-     * gets the weight for the probality a photo is displayed
-     *
-     * @param photo deja photo object
-     * @return a value repersenting the likelyness this photo is to be displayed as the background.
-     *  note: This value is not a percentage and should be compared relative to other photo weights
-     */
-    private double getTotalPhotoWeight(DejaPhoto photo){
-        Random rand = new Random();
-        double rand_value = rand.nextDouble();
-        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
-                * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo);
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @return time weight
-     */
-    private double getTimeWeight(DejaPhoto photo){
-        if(!Deja_Time){ /*time from deja mode disabled*/
-            return 1; //base weight
-        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
-            return 1;//invalid data
-        }else{
-            long SystemTime = tracker.getTime();
-            long PhotoTime = photo.getTime();
-
-            final long MILLISECONDS_IN_DAY = 86400000;
-            final long MILLISECONDS_IN_2_HOURS = 7200000;
-
-            long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
-
-            if(difference < MILLISECONDS_IN_2_HOURS){
-                return 2;
-            }else{
-                return 1;
-            }
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @return date weight
-     */
-    private double getDateWeight(DejaPhoto photo){
-        if(!Deja_Date){
-            return 1;
-        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
-            return 1;//invalid datat
-        }else{
-            long SystemTime = tracker.getTime();
-            long PhotoTime= photo.getTime();
-
-            long difference = Math.abs(SystemTime - PhotoTime);
-
-            final long MILLISECONDS_IN_DAY = 86400000;
-            final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
-            final long MILLISECONDS_IN_MONTH = 30 * MILLISECONDS_IN_DAY;
-            final long MILLISECONDS_IN_3_MONTH = 3 * MILLISECONDS_IN_MONTH;
-            final long MILLISECONFS_IN_6_MONTH = 6 * MILLISECONDS_IN_MONTH;
-
-            if(difference < MILLISECONDS_IN_DAY){
-                return 2;
-            }else if(difference < MILLISECONDS_IN_WEEK){
-                return 1.7;
-            }else if(difference < MILLISECONDS_IN_MONTH){
-                return 1.4;
-            }else if(difference < MILLISECONDS_IN_3_MONTH){
-                return  1;
-            }else if(difference < MILLISECONFS_IN_6_MONTH){
-                return 0.7;
-            }else{
-                return 0.5;
-            }
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @return location weight
-     */
-    private double getLocationWeight(DejaPhoto photo){
-        if(!Deja_Location){
-            return 1; //base weight
-        }else if(tracker == null || tracker.getLocation() == null || photo.getLocation() == null) {
-            return 1;//invalid data
-        }else{
-            Location SystemLocation = tracker.getLocation();
-            Location PhotoLocation = photo.getLocation();
-
-            double DistanceInMeters = SystemLocation.distanceTo(PhotoLocation);
-
-            if(DistanceInMeters < 200){
-                return 2;
-            }else{
-                return 1;
-            }
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @return Karma weight
-     */
-    private double getKarmaWeight(DejaPhoto photo){
-        if(!Deja_Karma){
-            return 1;
-        }else{
-            if(photo.getKarma()){
-                return 2;
-            }else{
-                return 1;
-            }
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @return release weight
-     */
-    private double getRelasedWeight(DejaPhoto photo){
-        if(photo.getReleased()){
-            return 0;
-        }else{
-            return 1;
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * shoulf not be called elsewhere
-     *
-     * @param photo
-     * @return recent weight
-     */
-    private double getRecentWeight(DejaPhoto photo){
-        if(previousImage != null && previousImage.PhotoPreviouslySeen(photo)){
-            return 0.1;
-        }else {
-            return 1;
-        }
-    }
-
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     *
-     * @param photo
-     * @return same day weight 
-     */
-    private double getSameDayWeight(DejaPhoto photo){
-        if(!Deja_Date) {
-            return 1;
-        }else if(tracker == null || tracker.getTime() == 0 || photo.getTime() == 0) {
-            return 1;//invalid data
-        }else {
-            final long MILLISECONDS_IN_DAY = 86400000;
-            final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
-
-            long CurrentTime = tracker.getTime();
-            long PhotoTime = photo.getTime();
-
-            CurrentTime = CurrentTime % MILLISECONDS_IN_WEEK;
-            PhotoTime = PhotoTime % MILLISECONDS_IN_WEEK;
-
-            long CurrentDay = CurrentTime / MILLISECONDS_IN_DAY;
-            long PhotoDay = PhotoTime / MILLISECONDS_IN_DAY;
-
-            if (CurrentDay == PhotoDay) {
-                return 2;
-            } else {
-                return 1;
-            }
-        }
-    }
-    
-    /**
-     * helper function for getTotalPhotoWeight
-     * should not be called elsewhere
-     * 
-     * @param photo
-     * @return 0% chance of getting same photo twice unless only 1 photo
-     */
-    private double getLastPhotoWeight(DejaPhoto photo){
-        if(previousImage == null || previousImage.getNumberofPhoto() == 1){
-            return 1;
-        }else if(previousImage.getLastPhoto().equals(photo)){
-            return 0;
-        }else{
-            return 1;
-        }
-    }
-    public void SwipeRight(){
-        //put switch wallpaper method here
-        CurrentPhoto = getNextRandomImage();
-
-        if(CurrentPhoto != null){
-            if(lastSwipe ==  SwipeDirection.left){
-                CurrentPhoto = getNextRandomImage();
-            }
-            setBackgroundImage(CurrentPhoto);
-            setWallpaper(CurrentPhoto);
-
-            previousImage.swipeRight(CurrentPhoto);
-        }
-    }
-
-    public void SwipeLeft(){
-        //put switch wallpaper method here
-        CurrentPhoto = previousImage.swipeLeft();
-        if(CurrentPhoto != null){
-            if(lastSwipe == SwipeDirection.right){
-                CurrentPhoto = previousImage.swipeLeft();
-            }
-            setBackgroundImage(CurrentPhoto);
-            setWallpaper(CurrentPhoto);
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        //TODO:
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        //TODO:
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        //TODO:
-    }
 }
