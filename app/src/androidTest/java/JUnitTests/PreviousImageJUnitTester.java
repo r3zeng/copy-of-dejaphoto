@@ -187,4 +187,26 @@ public class PreviousImageJUnitTester {
         assertEquals(pre10, DummyPhoto2);
         assertEquals(pre11, null);
     }
+    
+    @Test
+    public void TestPhotoSeen(){
+        PreviousImage PI = new PreviousImage();
+        int index_at_start = PI.getNumberofPhoto();
+
+        DejaPhoto DummyPhoto1 = new DejaPhoto("picture 1", 0, 0, false, false, 0);
+
+        boolean seen1 = PI.PhotoPreviouslySeen(DummyPhoto1);//false
+
+        PI.swipeRight(DummyPhoto1);
+
+        boolean seen2 = PI.PhotoPreviouslySeen(DummyPhoto1);//true
+
+        int index_at_end = PI.getNumberofPhoto();
+
+        assertEquals(index_at_start, 0);
+        assertEquals(index_at_end, 1);
+        assertEquals(seen1, false);
+        assertEquals(seen2, true);
+
+    }
 }
