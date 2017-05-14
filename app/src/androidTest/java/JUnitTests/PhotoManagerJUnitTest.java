@@ -34,7 +34,7 @@ public class PhotoManagerJUnitTest {
         DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
         DejaPhoto testPhoto2 = new DejaPhoto("dummytest2", 0, 0, false, true, 1000000);
         double weight = testManager.getKarmaWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         double weight2 = testManager.getKarmaWeight(testPhoto2);
         assertEquals(1.0, weight2, 0.0);
         testManager.setMatchKarma(false);
@@ -58,7 +58,7 @@ public class PhotoManagerJUnitTest {
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime());
         weight = testManager.getTimeWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         testManager.setMatchTime(false);
         weight = testManager.getTimeWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);

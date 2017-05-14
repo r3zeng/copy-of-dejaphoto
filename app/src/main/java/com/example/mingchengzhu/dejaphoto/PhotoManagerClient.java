@@ -11,10 +11,10 @@ public interface PhotoManagerClient {
     /**
      * A composed Tracker object for information on the user's current time and location
      */
-    public Tracker tracker = new Tracker();
+    Tracker tracker = new Tracker();
 
     /**
      * A callback method to inform the client that the currentPhoto field has changed
      */
-    public void currentPhotoChanged();
+    void currentPhotoChanged();
 }

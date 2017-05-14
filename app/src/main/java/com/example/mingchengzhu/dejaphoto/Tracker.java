@@ -7,6 +7,9 @@ import android.content.Context;
 
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
 
 
 /**
@@ -40,6 +43,7 @@ public class Tracker {
      *  update the time to most current system time
      */
     public void updateTime() {
+        Log.d(TAG, "tracker update time");
         this.time = System.currentTimeMillis();
     }
 
@@ -48,6 +52,7 @@ public class Tracker {
      * @param location 
      */
     public void updateLocation(Location location) {
+        Log.d(TAG, "tracker update location");
         if (location != null) {
             lastLocation = location;
         }
