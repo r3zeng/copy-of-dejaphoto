@@ -84,21 +84,47 @@ public class PreviousImageJUnitTester {
         DejaPhoto DummyPhoto3 = new DejaPhoto("picture 3", 0, 0, false, false, 0);
 
         //no photo
-        DejaPhoto prev1 = PI.getCurrentPhoto();
+        DejaPhoto curr1 = PI.getCurrentPhoto();
         PI.swipeRight(DummyPhoto1);//current photo 1
-        DejaPhoto prev2 = PI.getCurrentPhoto();
+        DejaPhoto curr2 = PI.getCurrentPhoto();
         PI.swipeRight(DummyPhoto2);//current photo 2
-        DejaPhoto prev3 = PI.getCurrentPhoto();
+        DejaPhoto curr3 = PI.getCurrentPhoto();
         PI.swipeRight(DummyPhoto3);//current photo 3
-        DejaPhoto prev4 = PI.getCurrentPhoto();
+        DejaPhoto curr4 = PI.getCurrentPhoto();
 
         int index_at_end = PI.getNumberofPhoto();
 
         assertEquals(index_at_start, 0);
         assertEquals(index_at_end, 3);
-        assertEquals(prev1, null);
+        assertEquals(curr1, null);
+        assertEquals(curr2, DummyPhoto1);
+        assertEquals(curr3, DummyPhoto2);
+        assertEquals(curr4, DummyPhoto3);
+    }
+    
+    @Test
+    public void TestBackAndForth(){
+        PreviousImage PI = new PreviousImage();
+        int index_at_start = PI.getNumberofPhoto();
+
+        DejaPhoto DummyPhoto1 = new DejaPhoto("picture 1", 0, 0, false, false, 0);
+        DejaPhoto DummyPhoto2 = new DejaPhoto("picture 2", 0, 0, false, false, 0);
+        DejaPhoto DummyPhoto3 = new DejaPhoto("picture 3", 0, 0, false, false, 0);
+
+        PI.swipeRight(DummyPhoto1);
+        PI.swipeRight(DummyPhoto2);
+        DejaPhoto prev1 = PI.swipeLeft();
+        PI.swipeRight(DummyPhoto3);
+        DejaPhoto prev2 = PI.swipeLeft();
+        PI.swipeRight(DummyPhoto2);
+        DejaPhoto prev3 = PI.swipeLeft();
+
+        int index_at_end = PI.getNumberofPhoto();
+
+        assertEquals(index_at_start, 0);
+        assertEquals(index_at_end, 1);
+        assertEquals(prev1, DummyPhoto1);
         assertEquals(prev2, DummyPhoto1);
-        assertEquals(prev3, DummyPhoto2);
-        assertEquals(prev4, DummyPhoto3);
+        assertEquals(prev3, DummyPhoto1);
     }
 }
