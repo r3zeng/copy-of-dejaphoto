@@ -300,33 +300,41 @@ public class MainActivity extends AppCompatActivity
             if (photoManager.getMatchTime()) {
                 item.setTitle("Time Off");
                 photoManager.setMatchTime(false);
+                Log.i(TAG, "Setting time off");
             } else {
                 item.setTitle("Time On");
                 photoManager.setMatchTime(true);
+                Log.i(TAG, "Setting time on");
             }
         } else if (id == R.id.nav_date) {
             if (photoManager.getMatchDate()) {
                 item.setTitle("Date Off");
                 photoManager.setMatchDate(false);
+                Log.i(TAG, "Setting date off");
             } else {
                 item.setTitle("Date On");
                 photoManager.setMatchDate(true);
+                Log.i(TAG, "Setting date on");
             }
         } else if (id == R.id.nav_location) {
             if (photoManager.getMatchLocation()) {
                 item.setTitle("Location Off");
                 photoManager.setMatchLocation(false);
+                Log.i(TAG, "Setting location off");
             } else {
                 item.setTitle("Location On");
                 photoManager.setMatchLocation(true);
+                Log.i(TAG, "Setting location on");
             }
         } else if (id == R.id.nav_karma) {
             if (photoManager.getMatchKarma()) {
                 item.setTitle("Karma Off");
                 photoManager.setMatchKarma(false);
+                Log.i(TAG, "Setting Karma off");
             } else {
                 item.setTitle("Karma On");
                 photoManager.setMatchKarma(true);
+                Log.i(TAG, "Setting Karma on");
             }
         } else if (id == R.id.add_photo) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
