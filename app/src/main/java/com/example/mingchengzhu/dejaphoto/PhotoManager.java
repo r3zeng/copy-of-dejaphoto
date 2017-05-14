@@ -11,6 +11,7 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by mingchengzhu on 5/13/17.
+ * Description: includes weighting algorithm and next/prev function.
  */
 
 public class PhotoManager {

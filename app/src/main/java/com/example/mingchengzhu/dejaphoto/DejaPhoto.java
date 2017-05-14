@@ -1,6 +1,6 @@
 /**
  * DejaPhoto class
- * Represents a single photo added to the app by the user
+ * Description: Represents a single photo added to the app by the user
  * Created by sterling on 5/6/17.
  */
 

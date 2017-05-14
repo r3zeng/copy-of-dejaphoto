@@ -6,11 +6,10 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by ruihanzeng on 5/8/17.
+ * Description: stores the images that were previously displays.  Includes function nessicary for
+ * storing and loading previously seen images
  */
-
 public class PreviousImage {
-
-
 
     private DejaPhoto[] previous_photo;
     int index;

@@ -50,7 +50,7 @@ public class PreviousImageJUnitTester {
         int index_at_end = PI.getNumberofPhoto();
 
         assertEquals(index_at_start, 0);
-        assertEquals(index_at_end, 0);
+        assertEquals(index_at_end, 1);
         assertEquals(DummyPhoto2, pop1);
         assertEquals(DummyPhoto1, pop2);
         assertEquals(null, pop3);
