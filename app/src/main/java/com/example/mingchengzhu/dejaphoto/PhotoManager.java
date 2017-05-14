@@ -14,7 +14,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PhotoManager {
-    MainActivity activity;
+    PhotoManagerClient client;
     private static DejaPhoto[] allPhotos = {};
     private DejaPhoto currentPhoto = null;
     private boolean matchTime = true;
@@ -23,8 +23,8 @@ public class PhotoManager {
     private boolean matchKarma = true;
     private PreviousImage backHistory = new PreviousImage();
 
-    public PhotoManager(MainActivity activity) {
-        this.activity = activity;
+    public PhotoManager(PhotoManagerClient client) {
+        this.client = client;
     }
 
     public static DejaPhoto[] getAllPhotos() {
@@ -102,10 +102,10 @@ public class PhotoManager {
     private double getTimeWeight(DejaPhoto photo) {
         if (!matchTime) { /*time from deja mode disabled*/
             return 1; //base weight
-        } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
+        } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
         } else {
-            long SystemTime = activity.tracker.getTime();
+            long SystemTime = client.tracker.getTime();
             long PhotoTime = photo.getTime();
 
             final long MILLISECONDS_IN_DAY = 86400000;
@@ -130,10 +130,10 @@ public class PhotoManager {
     private double getDateWeight(DejaPhoto photo) {
         if (!matchDate) {
             return 1;
-        } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
+        } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid datat
         } else {
-            long SystemTime = activity.tracker.getTime();
+            long SystemTime = client.tracker.getTime();
             long PhotoTime = photo.getTime();
 
             long difference = Math.abs(SystemTime - PhotoTime);
@@ -169,10 +169,10 @@ public class PhotoManager {
     private double getLocationWeight(DejaPhoto photo) {
         if (!matchLocation) {
             return 1; //base weight
-        } else if (activity.tracker == null || activity.tracker.getLocation() == null || photo.getLocation() == null) {
+        } else if (client.tracker == null || client.tracker.getLocation() == null || photo.getLocation() == null) {
             return 1;//invalid data
         } else {
-            Location SystemLocation = activity.tracker.getLocation();
+            Location SystemLocation = client.tracker.getLocation();
             Location PhotoLocation = photo.getLocation();
 
             double DistanceInMeters = SystemLocation.distanceTo(PhotoLocation);
@@ -242,13 +242,13 @@ public class PhotoManager {
     private double getSameDayWeight(DejaPhoto photo) {
         if (!matchDate) {
             return 1;
-        } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
+        } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
         } else {
             final long MILLISECONDS_IN_DAY = 86400000;
             final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
 
-            long CurrentTime = activity.tracker.getTime();
+            long CurrentTime = client.tracker.getTime();
             long PhotoTime = photo.getTime();
 
             CurrentTime = CurrentTime % MILLISECONDS_IN_WEEK;
@@ -275,7 +275,9 @@ public class PhotoManager {
     private double getLastPhotoWeight(DejaPhoto photo) {
         if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
-        } else if (backHistory.getLastPhoto().equals(photo)) {
+        } else if (photo != null
+                && backHistory.getLastPhoto() != null
+                && backHistory.getLastPhoto().equals(photo)) {
             return 0;
         } else {
             return 1;
@@ -287,7 +289,7 @@ public class PhotoManager {
         currentPhoto = getNextRandomImage();
 
         if (currentPhoto != null) {
-            if (activity.lastSwipe == MainActivity.SwipeDirection.left) {
+            if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
                 currentPhoto = getNextRandomImage();
             }
 
@@ -299,7 +301,7 @@ public class PhotoManager {
         //put switch wallpaper method here
         currentPhoto = backHistory.swipeLeft();
         if (currentPhoto != null) {
-            if (activity.lastSwipe == MainActivity.SwipeDirection.right) {
+            if (client.lastSwipe == PhotoManagerClient.SwipeDirection.right) {
                 currentPhoto = backHistory.swipeLeft();
             }
         }
