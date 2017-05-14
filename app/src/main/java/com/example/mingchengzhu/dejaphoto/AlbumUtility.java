@@ -23,6 +23,7 @@ import java.nio.channels.FileChannel;
 
 public class AlbumUtility {
 
+
     private final static String path = Environment.getExternalStorageDirectory().toString();
     private final static String filePath = "/dejaphoto/media/app images/";
 

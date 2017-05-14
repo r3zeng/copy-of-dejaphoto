@@ -1,6 +1,7 @@
 package com.example.mingchengzhu.dejaphoto;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -16,6 +17,7 @@ import android.view.View.OnTouchListener;
 public class OnSwipeListener implements OnTouchListener {
 
     private final GestureDetector gestureDetector;
+    private static final String TAG = "OnSwipeListener";
 
     /**
      * Constructor
@@ -50,24 +52,33 @@ public class OnSwipeListener implements OnTouchListener {
                 // Horizontal swipe
                 if (Math.abs(diffX) > Math.abs(diffY)){
                     if (Math.abs(diffX) > THRESHOLD && Math.abs(velocityX) > VELOCITY_THRESHOLD){
-                        if (diffX > 0)
+                        if (diffX > 0){
                             onSwipeLeft();
-                        else
+                            Log.i(TAG, "Swipe LEFT");
+                        }
+                        else {
                             onSwipeRight();
+                            Log.i(TAG, "Swipe RIGHT");
+                        }
                         result = true;
                     }
                 }
                 // Vertical swipe
                 else if (Math.abs(diffY) > THRESHOLD && Math.abs(velocityY) > VELOCITY_THRESHOLD) {
-                    if (diffY > 0)
+                    if (diffY > 0) {
                         onSwipeDown();
-                    else
+                        Log.i(TAG, "Swipe DOWN");
+                    }
+                    else {
                         onSwipeTop();
+                        Log.i(TAG, "Swipe UP");
+                    }
                     result = true;
                 }
             }
             catch (Exception e){
                 e.printStackTrace();
+                Log.d(TAG, "Exception occurs under onFling method");
             }
             return result;
         }

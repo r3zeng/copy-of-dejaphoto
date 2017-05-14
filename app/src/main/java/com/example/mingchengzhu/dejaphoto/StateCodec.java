@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -23,8 +24,11 @@ import java.io.InputStream;
 
 public class StateCodec {
 
+    private static final String TAG = "StateCodec";
+
     public static void addDejaPhotoToSC(Context context, String sFileName, DejaPhoto dejaP)
     {
+        Log.d(TAG, "Begin DejaPhotoToSC");
         if (dejaP.getSavedToFile())
         {
             return;
@@ -43,7 +47,9 @@ public class StateCodec {
             writer.close();
             Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
             printState(stateCodecFile.getAbsolutePath());
+            Log.i(TAG, "DejaPhoto should now be saved to a file");
         } catch (IOException e) {
+            Log.d(TAG, "Exception occurs under addDejaPhotoToSC method");
             e.printStackTrace();
         }
     }
@@ -64,6 +70,7 @@ public class StateCodec {
         }
         catch (IOException e) {
             //You'll need to add proper error handling here
+            Log.d(TAG, "Exception occurs under printState method");
         }
 
     }
@@ -114,9 +121,11 @@ public class StateCodec {
 
             }
             br.close();
+            Log.i(TAG, "The state should have been loaded");
         }
         catch (IOException e) {
             //You'll need to add proper error handling here
+            Log.d(TAG, "Exception occurs under loadState method");
         }
     }
 
