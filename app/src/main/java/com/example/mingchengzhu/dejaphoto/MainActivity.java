@@ -114,8 +114,8 @@ public class MainActivity extends AppCompatActivity
     /**
      * Used to receive address results from FetchAddressIntentService
      */
-    class AddressResultReceiver extends ResultReceiver {
-        public AddressResultReceiver(Handler handler) {
+    private class AddressResultReceiver extends ResultReceiver {
+        AddressResultReceiver(Handler handler) {
             super(handler);
         }
 
