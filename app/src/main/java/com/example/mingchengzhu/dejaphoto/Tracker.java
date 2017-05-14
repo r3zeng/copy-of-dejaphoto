@@ -36,7 +36,6 @@ public class Tracker {
         return time;
     }
 
-
     /**
      *  update the time to most current system time
      */
