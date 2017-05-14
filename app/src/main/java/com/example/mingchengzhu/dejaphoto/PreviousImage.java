@@ -9,7 +9,7 @@ public class PreviousImage {
     private DejaPhoto[] previous_photo;
     int index;
 
-    public PreviousImage(){
+    public PreviousImage() {
         previous_photo = new DejaPhoto[10];
         index = 0;
     }
@@ -21,11 +21,11 @@ public class PreviousImage {
      *
      * @param nextPhoto photo generated on swiping/auto-swiping right
      */
-    public void swipeRight(DejaPhoto nextPhoto){
-        if(isFull()){
+    public void swipeRight(DejaPhoto nextPhoto) {
+        if (isFull()) {
             shiftLeftby1All();
             previous_photo[9] = nextPhoto;
-        }else{
+        } else {
             previous_photo[index] = nextPhoto;
             index++;
         }
@@ -38,11 +38,11 @@ public class PreviousImage {
      *
      * @return the previous photo
      */
-    public DejaPhoto swipeLeft(){
-        if(isEmpty()){
+    public DejaPhoto swipeLeft() {
+        if (isEmpty()) {
             return null;
-        }else{
-            index-=2;
+        } else {
+            index -= 2;
             return previous_photo[index++];
         }
     }
@@ -54,10 +54,10 @@ public class PreviousImage {
      *
      * @return the previous photo
      */
-    public DejaPhoto getLastPhoto(){
-        if(isEmpty()){
+    public DejaPhoto getLastPhoto() {
+        if (isEmpty()) {
             return null;
-        }else{
+        } else {
             return previous_photo[index - 1];
         }
     }
@@ -69,9 +69,9 @@ public class PreviousImage {
      * @param photo photo being checked
      * @return true if photo is in the deque and false if not
      */
-    public boolean PhotoPreviouslySeen(DejaPhoto photo){
-        for(int i = 0; i < index; i++){
-            if(photo.equals(previous_photo[i])){
+    public boolean PhotoPreviouslySeen(DejaPhoto photo) {
+        for(int i = 0; i < index; i++) {
+            if(photo.equals(previous_photo[i])) {
                 return true;
             }
         }
@@ -81,8 +81,8 @@ public class PreviousImage {
     /**
      * helper function only do not use outside this class
      */
-    private void shiftLeftby1All(){
-        for(int i = 0; i < 9; i ++){
+    private void shiftLeftby1All() {
+        for(int i = 0; i < 9; i ++) {
             previous_photo[i] = previous_photo[i + 1];
         }
     }
@@ -90,21 +90,21 @@ public class PreviousImage {
     /**
      * helper function only do not use outside this class
      */
-    private boolean isFull(){
+    private boolean isFull() {
         return index == 10;
     }
 
     /**
      * helper function only do not use outside this class
      */
-    private boolean isEmpty(){
+    private boolean isEmpty() {
         return index == 0;
     }
     
     /**
      * @return the number of images currently being stored
      */
-    public int getNumberofPhoto(){
+    public int getNumberofPhoto() {
         return index;
     }
 
@@ -112,7 +112,7 @@ public class PreviousImage {
      * Getter For testing
      * @return index
      */
-    public int getIndex(){
+    public int getIndex() {
         return this.index;
     }
 }

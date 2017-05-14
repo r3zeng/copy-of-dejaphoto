@@ -18,9 +18,24 @@ import java.io.IOException;
  */
 
 public class DejaPhoto {
+    /**
+     * A URI from the user's gallery that uniquely identifies this photo
+     */
     private Uri galleryUri;
+
+    /**
+     * true if this photo has been given karma, meaning it should appear more frequently
+     */
     private boolean hasKarma;
+
+    /**
+     * true if this photo was released, meaning it should never appear again
+     */
     private boolean wasReleased;
+
+    /**
+     * seconds
+     */
     private long time;
 
     private Location location;
