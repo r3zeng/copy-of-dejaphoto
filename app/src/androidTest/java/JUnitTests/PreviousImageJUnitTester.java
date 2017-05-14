@@ -1,4 +1,4 @@
-package TrackTests;
+package JUnitTests;
 
 import org.junit.Test;
 
