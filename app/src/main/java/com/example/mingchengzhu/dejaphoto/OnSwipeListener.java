@@ -23,12 +23,12 @@ public class OnSwipeListener implements OnTouchListener {
      * Constructor
      * @param context - MainActivity.this
      */
-    public OnSwipeListener(Context context){
+    public OnSwipeListener(Context context) {
         gestureDetector = new GestureDetector(context, new MyGestureListener());
     }
 
     @Override
-    public boolean onTouch(View view, MotionEvent event){
+    public boolean onTouch(View view, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
 
@@ -50,9 +50,9 @@ public class OnSwipeListener implements OnTouchListener {
                 float diffY = event2.getY() - event1.getY();
                 float diffX = event2.getX() - event1.getX();
                 // Horizontal swipe
-                if (Math.abs(diffX) > Math.abs(diffY)){
-                    if (Math.abs(diffX) > THRESHOLD && Math.abs(velocityX) > VELOCITY_THRESHOLD){
-                        if (diffX > 0){
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > THRESHOLD && Math.abs(velocityX) > VELOCITY_THRESHOLD) {
+                        if (diffX > 0) {
                             onSwipeLeft();
                             Log.i(TAG, "Swipe LEFT");
                         }
@@ -76,7 +76,7 @@ public class OnSwipeListener implements OnTouchListener {
                     result = true;
                 }
             }
-            catch (Exception e){
+            catch (Exception e) {
                 e.printStackTrace();
                 Log.d(TAG, "Exception occurs under onFling method");
             }
@@ -88,9 +88,9 @@ public class OnSwipeListener implements OnTouchListener {
     /**
      *  Methods to be defined in MainActivity for functionality
      */
-    public void onSwipeTop(){}
-    public void onSwipeDown(){}
-    public void onSwipeLeft(){}
-    public void onSwipeRight(){}
+    public void onSwipeTop() {}
+    public void onSwipeDown() {}
+    public void onSwipeLeft() {}
+    public void onSwipeRight() {}
 
 }

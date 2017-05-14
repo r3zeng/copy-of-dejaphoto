@@ -9,12 +9,12 @@ import org.junit.Test;
 public class PreviousImageJUnitTester {
 
     @Test
-    public void TestRightSwipe(){
+    public void TestRightSwipe() {
 
     }
 
     @Test
-    public void TestLeftSwipe(){
+    public void TestLeftSwipe() {
 
     }
 }

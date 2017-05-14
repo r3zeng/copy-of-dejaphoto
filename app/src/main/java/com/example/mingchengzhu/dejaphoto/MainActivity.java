@@ -156,10 +156,10 @@ public class MainActivity extends AppCompatActivity
         /* The following code is used to implement swiping functionality */
         ImageView backgroundImage = (ImageView)findViewById(R.id.backgroundImage);
 
-        backgroundImage.setOnTouchListener(new OnSwipeListener(MainActivity.this){
+        backgroundImage.setOnTouchListener(new OnSwipeListener(MainActivity.this) {
 
             @Override
-            public void onSwipeRight(){
+            public void onSwipeRight() {
                 // logging message
                 Log.i(TAG, "user has swiped right");
 
@@ -243,12 +243,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
     }
 
@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity
         // logging message
         Log.i(TAG, "User selected navigation item " + id);
 
-        if(id == R.id.nav_time) {
+        if (id == R.id.nav_time) {
             if (photoManager.getMatchTime()) {
                 item.setTitle("Time Off");
                 photoManager.setMatchTime(false);
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity
                 item.setTitle("Location On");
                 photoManager.setMatchLocation(true);
             }
-        }else if (id == R.id.nav_karma) {
+        } else if (id == R.id.nav_karma) {
             if (photoManager.getMatchKarma()) {
                 item.setTitle("Karma Off");
                 photoManager.setMatchKarma(false);
@@ -322,11 +322,11 @@ public class MainActivity extends AppCompatActivity
                 item.setTitle("Karma On");
                 photoManager.setMatchKarma(true);
             }
-        }else if(id == R.id.add_photo){
+        } else if (id == R.id.add_photo) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             AddPhoto();
-        }else if(id == R.id.change_frequency){
+        } else if(id == R.id.change_frequency) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             changeFrenquencyPopUp();
@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void changeFrenquencyPopUp(){
+    public void changeFrenquencyPopUp() {
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.change_freqency_pop_up, null);
 
@@ -356,29 +356,29 @@ public class MainActivity extends AppCompatActivity
                 try {//catch overflow
                     if (!mEdit.getText().toString().equals("")) {//no null strings
                         refreshInterval = (Integer.valueOf(mEdit.getText().toString()))*1000;
-                        if(autoSwitch != null){
+                        if(autoSwitch != null) {
                             autoSwitch.setTime(refreshInterval);
                             autoSwitchHandler.removeCallbacks(autoSwitch);
                             autoSwitchHandler.postDelayed(autoSwitch, refreshInterval);
                         }
                         popup.dismiss();
                     }
-                }catch(Exception e){
+                } catch(Exception e) {
                     popup.dismiss();
                 }
             }
         });
 
         Button cancel = (Button) popup.getContentView().findViewById(R.id.frequency_cancel);
-        cancel.setOnClickListener(new View.OnClickListener(){
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
-            public  void onClick(View view){
+            public  void onClick(View view) {
                 popup.dismiss();
             }
         });
     }
 
-    public void AddPhoto(){
+    public void AddPhoto() {
         Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(gallery, RESULT_LOAD_IMAGE);
     }
