@@ -14,10 +14,6 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PhotoManager {
-    /**
-     * gets the next Image to display
-     * should be called on right swipe and by the auto-switcher
-     */
     MainActivity activity;
     private static DejaPhoto[] allPhotos = {};
     private DejaPhoto currentPhoto = null;
@@ -25,6 +21,7 @@ public class PhotoManager {
     private boolean matchDate = true;
     private boolean matchLocation = true;
     private boolean matchKarma = true;
+    private PreviousImage backHistory = new PreviousImage();
 
     public PhotoManager(MainActivity activity) {
         this.activity = activity;
@@ -55,7 +52,10 @@ public class PhotoManager {
         return newPhoto;
     }
 
-
+    /**
+     * gets the next Image to display
+     * should be called on right swipe and by the auto-switcher
+     */
     public DejaPhoto getNextRandomImage() {
 
         if (allPhotos == null || allPhotos.length == 0) {
@@ -225,7 +225,7 @@ public class PhotoManager {
      * @return recent weight
      */
     private double getRecentWeight(DejaPhoto photo) {
-        if (activity.previousImage != null && activity.previousImage.PhotoPreviouslySeen(photo)) {
+        if (backHistory != null && backHistory.PhotoPreviouslySeen(photo)) {
             return 0.1;
         } else {
             return 1;
@@ -273,9 +273,9 @@ public class PhotoManager {
      * @return 0% chance of getting same photo twice unless only 1 photo
      */
     private double getLastPhotoWeight(DejaPhoto photo) {
-        if (activity.previousImage == null || activity.previousImage.getNumberofPhoto() == 1) {
+        if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
-        } else if (activity.previousImage.getLastPhoto().equals(photo)) {
+        } else if (backHistory.getLastPhoto().equals(photo)) {
             return 0;
         } else {
             return 1;
@@ -290,20 +290,18 @@ public class PhotoManager {
             if (activity.lastSwipe == MainActivity.SwipeDirection.left) {
                 currentPhoto = getNextRandomImage();
             }
-            activity.setBackgroundImage(currentPhoto);
 
-            activity.previousImage.swipeRight(currentPhoto);
+            backHistory.swipeRight(currentPhoto);
         }
     }
 
     public void prev() {
         //put switch wallpaper method here
-        currentPhoto = activity.previousImage.swipeLeft();
+        currentPhoto = backHistory.swipeLeft();
         if (currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.right) {
-                currentPhoto = activity.previousImage.swipeLeft();
+                currentPhoto = backHistory.swipeLeft();
             }
-            activity.setBackgroundImage(currentPhoto);
         }
     }
 
@@ -345,6 +343,10 @@ public class PhotoManager {
 
     public void setCurrentPhoto(DejaPhoto currentPhoto) {
         this.currentPhoto = currentPhoto;
+    }
+
+    public PreviousImage getBackHistory() {
+        return backHistory;
     }
 }
 

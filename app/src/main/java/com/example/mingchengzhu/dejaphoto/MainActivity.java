@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity
     // Field for setting panel
     public int refreshInterval = 10000; //1000 milliseconds = 1 seconds
     private final Handler autoSwitchHandler = new Handler();
-    PreviousImage previousImage;
 
     PhotoManager photoManager;
 
@@ -148,7 +147,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        previousImage = new PreviousImage();
 
         photoManager = new PhotoManager(this);
 
@@ -174,6 +172,7 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe right action & reset timer
                 photoManager.next();
+                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -196,6 +195,7 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe left action & reset timer
                 photoManager.prev();
+                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity
 
                     Uri selectedImage = data.getData();
                     photoManager.setCurrentPhoto(PhotoManager.addPhotoWithUri(selectedImage, this));
-                    previousImage.swipeRight(photoManager.getCurrentPhoto());
+                    photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
                     StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photoManager.getCurrentPhoto());
