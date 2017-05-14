@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     private final Handler autoSwitchHandler = new Handler();
     PreviousImage previousImage;
 
-    PhotoManager algo;
+    PhotoManager photoManager;
 
     /**
      * turns on/off a message about having no photos
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                gotLocationText(algo.getCurrentPhoto(), text);
+                gotLocationText(photoManager.getCurrentPhoto(), text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         previousImage = new PreviousImage();
 
-        algo = new PhotoManager(this);
+        photoManager = new PhotoManager(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped right");
 
                 // call swipe right action & reset timer
-                algo.next();
+                photoManager.next();
                 autoSwitch.refresh();
             }
             @Override
@@ -181,9 +181,9 @@ public class MainActivity extends AppCompatActivity
                 // logging message
                 Log.i(TAG, "user has swiped up");
 
-                if (algo.getCurrentPhoto() != null) {
+                if (photoManager.getCurrentPhoto() != null) {
                     // set Karma and toast!
-                    algo.getCurrentPhoto().setKarma(true);
+                    photoManager.getCurrentPhoto().setKarma(true);
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 //refresh timer
@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped left");
 
                 // call swipe left action & reset timer
-                algo.prev();
+                photoManager.prev();
                 autoSwitch.refresh();
             }
             @Override
@@ -204,8 +204,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped down");
 
                 // Release and toast!
-                if (algo.getCurrentPhoto() != null) {
-                    algo.getCurrentPhoto().setReleased(true);
+                if (photoManager.getCurrentPhoto() != null) {
+                    photoManager.getCurrentPhoto().setReleased(true);
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 // refresh timer
@@ -246,9 +246,9 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to get background when starts the app */
-        algo.setCurrentPhoto(algo.getNextRandomImage());
+        photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
-        setBackgroundImage(algo.getCurrentPhoto());
+        setBackgroundImage(photoManager.getCurrentPhoto());
     }
 
     @Override
@@ -300,36 +300,36 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "User selected navigation item " + id);
 
         if(id == R.id.nav_time) {
-            if (algo.getMatchTime()) {
+            if (photoManager.getMatchTime()) {
                 item.setTitle("Time Off");
-                algo.setMatchTime(false);
+                photoManager.setMatchTime(false);
             } else {
                 item.setTitle("Time On");
-                algo.setMatchTime(true);
+                photoManager.setMatchTime(true);
             }
         } else if (id == R.id.nav_date) {
-            if (algo.getMatchDate()) {
+            if (photoManager.getMatchDate()) {
                 item.setTitle("Date Off");
-                algo.setMatchDate(false);
+                photoManager.setMatchDate(false);
             } else {
                 item.setTitle("Date On");
-                algo.setMatchDate(true);
+                photoManager.setMatchDate(true);
             }
         } else if (id == R.id.nav_location) {
-            if (algo.getMatchLocation()) {
+            if (photoManager.getMatchLocation()) {
                 item.setTitle("Location Off");
-                algo.setMatchLocation(false);
+                photoManager.setMatchLocation(false);
             } else {
                 item.setTitle("Location On");
-                algo.setMatchLocation(true);
+                photoManager.setMatchLocation(true);
             }
         }else if (id == R.id.nav_karma) {
-            if (algo.getMatchKarma()) {
+            if (photoManager.getMatchKarma()) {
                 item.setTitle("Karma Off");
-                algo.setMatchKarma(false);
+                photoManager.setMatchKarma(false);
             } else {
                 item.setTitle("Karma On");
-                algo.setMatchKarma(true);
+                photoManager.setMatchKarma(true);
             }
         }else if(id == R.id.add_photo){
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -403,14 +403,14 @@ public class MainActivity extends AppCompatActivity
                     Log.i(TAG, "user selected an image to add");
 
                     Uri selectedImage = data.getData();
-                    algo.setCurrentPhoto(DejaPhoto.addPhotoWithUri(selectedImage, this));
-                    previousImage.swipeRight(algo.getCurrentPhoto());
+                    photoManager.setCurrentPhoto(PhotoManager.addPhotoWithUri(selectedImage, this));
+                    previousImage.swipeRight(photoManager.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
-                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", algo.getCurrentPhoto());
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photoManager.getCurrentPhoto());
 
                     // Display the new photo immediately
-                    setBackgroundImage(algo.getCurrentPhoto());
+                    setBackgroundImage(photoManager.getCurrentPhoto());
 
                     // reset timer
                     autoSwitch.refresh();

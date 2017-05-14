@@ -1,6 +1,8 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.content.Context;
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.Random;
@@ -17,6 +19,7 @@ public class PhotoManager {
      * should be called on right swipe and by the auto-switcher
      */
     MainActivity activity;
+    private static DejaPhoto[] allPhotos = {};
     private DejaPhoto currentPhoto = null;
     private boolean matchTime = true;
     private boolean matchDate = true;
@@ -27,10 +30,35 @@ public class PhotoManager {
         this.activity = activity;
     }
 
+    public static DejaPhoto[] getAllPhotos() {
+        return allPhotos;
+    }
+
+    public static DejaPhoto addPhotoWithUri(Uri photoUri, Context context) {
+        DejaPhoto newPhoto = new DejaPhoto(photoUri, context);
+
+        // Check for duplicate
+        for (DejaPhoto photo : allPhotos) {
+            if (photo.equals(newPhoto) && !photo.getReleased()) {
+                return photo;
+            }
+        }
+
+        DejaPhoto[] newList = new DejaPhoto[allPhotos.length + 1];
+        newList[0] = newPhoto;
+        if (allPhotos.length > 0) {
+            System.arraycopy(allPhotos, 0, newList, 1, allPhotos.length);
+        }
+
+        allPhotos = newList;
+
+        return newPhoto;
+    }
+
+
     public DejaPhoto getNextRandomImage() {
 
-        DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
-        if (list == null || list.length == 0) {
+        if (allPhotos == null || allPhotos.length == 0) {
             Log.e(TAG, "Error: getting next image from empty album");
             return null;
         }
@@ -38,7 +66,7 @@ public class PhotoManager {
         double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
-        for (DejaPhoto currentPhoto : list) {
+        for (DejaPhoto currentPhoto : allPhotos) {
             double photoWeight = getTotalPhotoWeight(currentPhoto);
             if (photoWeight > largestWeight) {
                 selectedPhoto = currentPhoto;
