@@ -1,4 +1,4 @@
-/**
+/*
  * DejaPhotoJUnitTest
  * Unit tests for the DejaPhoto class
  * Created by sterling on 5/14/17.
