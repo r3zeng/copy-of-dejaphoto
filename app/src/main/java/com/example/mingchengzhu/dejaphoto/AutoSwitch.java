@@ -40,6 +40,7 @@ public class AutoSwitch implements Runnable {
     }
 
     public void refresh(){
+        Log.i(TAG, "The timer is refresed");
         if (this != null) {
             handler.removeCallbacks(this);
             handler.postDelayed(this, refresh_time);
