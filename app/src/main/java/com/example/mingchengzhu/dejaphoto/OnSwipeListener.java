@@ -1,3 +1,7 @@
+/*
+ * OnSwipeListener class
+ * implements gesture recognition for the app
+ */
 package com.example.mingchengzhu.dejaphoto;
 
 import android.content.Context;
