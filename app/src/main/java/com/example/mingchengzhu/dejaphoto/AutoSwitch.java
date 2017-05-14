@@ -16,7 +16,7 @@ public class AutoSwitch implements Runnable {
     private int refresh_time;
 
 
-    AutoSwitch(PhotoManagerClient client, PhotoManager manager, Handler handler, int refresh_time){
+    public AutoSwitch(PhotoManagerClient client, PhotoManager manager, Handler handler, int refresh_time){
         this.handler = handler;
         this.client = client;
         this.manager = manager;
@@ -32,6 +32,8 @@ public class AutoSwitch implements Runnable {
 
         handler.postDelayed(this, refresh_time);//3 minutes 180000
     }
+
+    public int getTime(){return refresh_time;}
 
     public void setTime(int time){
         refresh_time = time;
