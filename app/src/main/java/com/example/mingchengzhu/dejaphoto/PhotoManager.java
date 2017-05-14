@@ -1,6 +1,8 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.content.Context;
 import android.location.Location;
+import android.net.Uri;
 import android.util.Log;
 
 import java.util.Random;
@@ -11,21 +13,52 @@ import static android.content.ContentValues.TAG;
  * Created by mingchengzhu on 5/13/17.
  */
 
-public class WeightAlgo {
+public class PhotoManager {
+    MainActivity activity;
+    private static DejaPhoto[] allPhotos = {};
+    private DejaPhoto currentPhoto = null;
+    private boolean matchTime = true;
+    private boolean matchDate = true;
+    private boolean matchLocation = true;
+    private boolean matchKarma = true;
+    private PreviousImage backHistory = new PreviousImage();
+
+    public PhotoManager(MainActivity activity) {
+        this.activity = activity;
+    }
+
+    public static DejaPhoto[] getAllPhotos() {
+        return allPhotos;
+    }
+
+    public static DejaPhoto addPhotoWithUri(Uri photoUri, Context context) {
+        DejaPhoto newPhoto = new DejaPhoto(photoUri, context);
+
+        // Check for duplicate
+        for (DejaPhoto photo : allPhotos) {
+            if (photo.equals(newPhoto) && !photo.getReleased()) {
+                return photo;
+            }
+        }
+
+        DejaPhoto[] newList = new DejaPhoto[allPhotos.length + 1];
+        newList[0] = newPhoto;
+        if (allPhotos.length > 0) {
+            System.arraycopy(allPhotos, 0, newList, 1, allPhotos.length);
+        }
+
+        allPhotos = newList;
+
+        return newPhoto;
+    }
+
     /**
      * gets the next Image to display
      * should be called on right swipe and by the auto-switcher
      */
-    MainActivity activity;
-
-    public WeightAlgo(MainActivity activity) {
-        this.activity = activity;
-    }
-
     public DejaPhoto getNextRandomImage() {
 
-        DejaPhoto[] list = DejaPhoto.getCurrentSearchResults();
-        if (list == null || list.length == 0) {
+        if (allPhotos == null || allPhotos.length == 0) {
             Log.e(TAG, "Error: getting next image from empty album");
             return null;
         }
@@ -33,7 +66,7 @@ public class WeightAlgo {
         double largestWeight = -1;
         DejaPhoto selectedPhoto = null;
 
-        for (DejaPhoto currentPhoto : list) {
+        for (DejaPhoto currentPhoto : allPhotos) {
             double photoWeight = getTotalPhotoWeight(currentPhoto);
             if (photoWeight > largestWeight) {
                 selectedPhoto = currentPhoto;
@@ -67,7 +100,7 @@ public class WeightAlgo {
      * @return time weight
      */
     private double getTimeWeight(DejaPhoto photo) {
-        if (!activity.Deja_Time) { /*time from deja mode disabled*/
+        if (!matchTime) { /*time from deja mode disabled*/
             return 1; //base weight
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
@@ -95,7 +128,7 @@ public class WeightAlgo {
      * @return date weight
      */
     private double getDateWeight(DejaPhoto photo) {
-        if (!activity.Deja_Date) {
+        if (!matchDate) {
             return 1;
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid datat
@@ -134,7 +167,7 @@ public class WeightAlgo {
      * @return location weight
      */
     private double getLocationWeight(DejaPhoto photo) {
-        if (!activity.Deja_Location) {
+        if (!matchLocation) {
             return 1; //base weight
         } else if (activity.tracker == null || activity.tracker.getLocation() == null || photo.getLocation() == null) {
             return 1;//invalid data
@@ -159,7 +192,7 @@ public class WeightAlgo {
      * @return Karma weight
      */
     private double getKarmaWeight(DejaPhoto photo) {
-        if (!activity.Deja_Karma) {
+        if (!matchKarma) {
             return 1;
         } else {
             if (photo.getKarma()) {
@@ -192,7 +225,7 @@ public class WeightAlgo {
      * @return recent weight
      */
     private double getRecentWeight(DejaPhoto photo) {
-        if (activity.previousImage != null && activity.previousImage.PhotoPreviouslySeen(photo)) {
+        if (backHistory != null && backHistory.PhotoPreviouslySeen(photo)) {
             return 0.1;
         } else {
             return 1;
@@ -207,7 +240,7 @@ public class WeightAlgo {
      * @return same day weight
      */
     private double getSameDayWeight(DejaPhoto photo) {
-        if (!activity.Deja_Date) {
+        if (!matchDate) {
             return 1;
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
@@ -240,9 +273,9 @@ public class WeightAlgo {
      * @return 0% chance of getting same photo twice unless only 1 photo
      */
     private double getLastPhotoWeight(DejaPhoto photo) {
-        if (activity.previousImage == null || activity.previousImage.getNumberofPhoto() == 1) {
+        if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
-        } else if (activity.previousImage.getLastPhoto().equals(photo)) {
+        } else if (backHistory.getLastPhoto().equals(photo)) {
             return 0;
         } else {
             return 1;
@@ -251,27 +284,69 @@ public class WeightAlgo {
 
     public void next() {
         //put switch wallpaper method here
-        activity.CurrentPhoto = getNextRandomImage();
+        currentPhoto = getNextRandomImage();
 
-        if (activity.CurrentPhoto != null) {
+        if (currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.left) {
-                activity.CurrentPhoto = getNextRandomImage();
+                currentPhoto = getNextRandomImage();
             }
-            activity.setBackgroundImage(activity.CurrentPhoto);
 
-            activity.previousImage.swipeRight(activity.CurrentPhoto);
+            backHistory.swipeRight(currentPhoto);
         }
     }
 
     public void prev() {
         //put switch wallpaper method here
-        activity.CurrentPhoto = activity.previousImage.swipeLeft();
-        if (activity.CurrentPhoto != null) {
+        currentPhoto = backHistory.swipeLeft();
+        if (currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.right) {
-                activity.CurrentPhoto = activity.previousImage.swipeLeft();
+                currentPhoto = backHistory.swipeLeft();
             }
-            activity.setBackgroundImage(activity.CurrentPhoto);
         }
+    }
+
+    public boolean getMatchTime() {
+        return matchTime;
+    }
+
+    public void setMatchTime(boolean matchTime) {
+        this.matchTime = matchTime;
+    }
+
+    public boolean getMatchDate() {
+        return matchDate;
+    }
+
+    public void setMatchDate(boolean matchDate) {
+        this.matchDate = matchDate;
+    }
+
+    public boolean getMatchLocation() {
+        return matchLocation;
+    }
+
+    public void setMatchLocation(boolean matchLocation) {
+        this.matchLocation = matchLocation;
+    }
+
+    public boolean getMatchKarma() {
+        return matchKarma;
+    }
+
+    public void setMatchKarma(boolean matchKarma) {
+        this.matchKarma = matchKarma;
+    }
+
+    public DejaPhoto getCurrentPhoto() {
+        return currentPhoto;
+    }
+
+    public void setCurrentPhoto(DejaPhoto currentPhoto) {
+        this.currentPhoto = currentPhoto;
+    }
+
+    public PreviousImage getBackHistory() {
+        return backHistory;
     }
 }
 
