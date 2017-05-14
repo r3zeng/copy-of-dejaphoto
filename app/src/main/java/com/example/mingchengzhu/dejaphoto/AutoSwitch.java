@@ -7,7 +7,6 @@ import android.util.Log;
  * Created by Tianhui Cao, Mingcheng Zhu on 5/10/17.
  * Description: implements auto-switch background
  */
-
 public class AutoSwitch implements Runnable {
     private static final String TAG = "AutoSwitch";
 

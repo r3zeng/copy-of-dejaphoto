@@ -26,7 +26,17 @@ public class DejaPhoto {
     private Location location;
     private boolean savedToFile;
 
-    DejaPhoto(Uri galleryUri, Context context) {
+    public DejaPhoto(String galleryUriString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
+        this.galleryUri = Uri.parse(galleryUriString);
+        this.hasKarma = hasKarma;
+        this.wasReleased = wasReleased;
+        this.time = time;
+        location = new Location("");
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+    }
+
+    public DejaPhoto(Uri galleryUri, Context context) {
         this.galleryUri = galleryUri;
         hasKarma = false;
         wasReleased = false;
