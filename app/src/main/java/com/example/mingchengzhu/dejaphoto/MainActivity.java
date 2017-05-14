@@ -9,7 +9,13 @@ import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -31,7 +37,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.widget.TextView;
 
-import java.io.File;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.view.Gravity;
@@ -134,8 +139,11 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
+                String text = resultData.getString(Constants.RESULT_DATA_KEY);
                 TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-                locationTextView.setText(resultData.getString(Constants.RESULT_DATA_KEY));
+                locationTextView.setText(text);
+
+                setWallpaper(CurrentPhoto, text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -265,6 +273,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        Log.i(TAG, "user pressed the back button");
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -412,10 +422,6 @@ public class MainActivity extends AppCompatActivity
                     // Display the new photo immediately
                     setBackgroundImage(CurrentPhoto);
 
-                    /* Setting wallpaper */
-                    // converting uri to bitmap
-                    setWallpaper(CurrentPhoto);
-
                     // reset timer
                     auto_switch.refresh();
                 }
@@ -430,22 +436,80 @@ public class MainActivity extends AppCompatActivity
     }
 
     /* Setting wallpaper method*/
-    void setWallpaper(final DejaPhoto photo) {
+    void setWallpaper(final DejaPhoto photo, final String locationText) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
                 Uri uri = photo.getUri();
-                InputStream image_stream = null;
                 try {
+                    Log.i(TAG, "attempting to set wallpaper");
+                    InputStream image_stream = getContentResolver().openInputStream(uri);
+                    final BitmapFactory.Options inOptions = new BitmapFactory.Options();
+                    inOptions.inJustDecodeBounds = true;
+                    BitmapFactory.decodeStream(image_stream, null, inOptions);
+                    final int originalWidth = inOptions.outWidth;
+                    final int originalHeight = inOptions.outHeight;
+
+                    image_stream.close();
                     image_stream = getContentResolver().openInputStream(uri);
 
-                    // setting wallpaper with the converted bitmap
-                    WallpaperManager myWallpaperManager
-                            = WallpaperManager.getInstance(getApplicationContext());
+                    Point screenSize = new Point();
+                    getWindowManager().getDefaultDisplay().getRealSize(screenSize);
 
-                    if (image_stream != null) {
-                        myWallpaperManager.setStream(image_stream);
+                    int screenWidth = screenSize.x;
+                    int screenHeight = screenSize.y;
+                    if (screenWidth > screenHeight) {
+                        int tmp = screenWidth;
+                        screenWidth = screenHeight;
+                        screenHeight = tmp;
                     }
+
+                    int scaleFactor = Math.max(1, Math.min(originalWidth / screenWidth, originalHeight / screenHeight));
+
+                    BitmapFactory.Options decodeBitmapOptions = new BitmapFactory.Options();
+                    decodeBitmapOptions.inSampleSize = scaleFactor;
+
+                    Bitmap bitmap = BitmapFactory.decodeStream(image_stream, null, decodeBitmapOptions);
+                    if (bitmap == null) {
+                        Log.e(TAG, "could not decode bitmap while attempting to set wallpaper");
+                        return;
+                    }
+
+                    float screenRatio = (float)screenHeight / screenWidth;
+                    float bitmapRatio = (float)bitmap.getHeight() / bitmap.getWidth();
+                    if (bitmapRatio > screenRatio) {
+                        int newHeight = (int)(bitmap.getWidth() * screenRatio);
+                        bitmap = bitmap.createBitmap(bitmap, 0, (bitmap.getHeight() - newHeight) / 2, bitmap.getWidth(), newHeight);
+                    } else {
+                        int newWidth = (int)(bitmap.getHeight() / screenRatio);
+                        bitmap = bitmap.createBitmap(bitmap, (bitmap.getWidth() - newWidth) / 2, 0, newWidth, bitmap.getHeight());
+                    }
+
+                    bitmap = bitmap.createScaledBitmap(bitmap, screenWidth, screenHeight, true);
+
+                    if (locationText != null && locationText.length() > 0) {
+                        Canvas canvas = new Canvas(bitmap);
+                        Paint paint = new Paint();
+                        paint.setColor(Color.WHITE);
+                        paint.setTextSize(screenWidth / 18);
+
+                        float x = 40.0f;
+                        float y = screenHeight - 40.0f;
+                        String[] lines = locationText.split("\n");
+                        for (int i = lines.length - 1; i >= 0; --i) {
+                            y -= paint.descent() - paint.ascent();
+                            canvas.drawText(lines[i], x, y, paint);
+                        }
+                    }
+
+                    // setting wallpaper with the converted bitmap
+                    WallpaperManager myWallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                    myWallpaperManager.setWallpaperOffsetSteps(1, 1);
+                    myWallpaperManager.suggestDesiredDimensions(bitmap.getWidth(), bitmap.getHeight());
+                    myWallpaperManager.setBitmap(bitmap);
+
+                    Log.i(TAG, "wallpaper should now be set, new dimensions: " + bitmap.getWidth() + "x" + bitmap.getHeight() +
+                            " made for screen size: " + screenWidth + "x" + screenHeight);
                 }
                 catch (FileNotFoundException e) {
                     Log.e(TAG, "file not found while trying to set wallpaper", e);
@@ -487,6 +551,8 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra(Constants.RECEIVER, mResultReceiver);
             intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
             startService(intent);
+        } else {
+            setWallpaper(photo, "");
         }
     }
 

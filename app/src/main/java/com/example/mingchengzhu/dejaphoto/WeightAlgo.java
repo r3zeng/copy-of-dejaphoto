@@ -258,7 +258,6 @@ public class WeightAlgo {
                 activity.CurrentPhoto = getNextRandomImage();
             }
             activity.setBackgroundImage(activity.CurrentPhoto);
-            activity.setWallpaper(activity.CurrentPhoto);
 
             activity.previousImage.swipeRight(activity.CurrentPhoto);
         }
@@ -272,7 +271,6 @@ public class WeightAlgo {
                 activity.CurrentPhoto = activity.previousImage.swipeLeft();
             }
             activity.setBackgroundImage(activity.CurrentPhoto);
-            activity.setWallpaper(activity.CurrentPhoto);
         }
     }
 }
