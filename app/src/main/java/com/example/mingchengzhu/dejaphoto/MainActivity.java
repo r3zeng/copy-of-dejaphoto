@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity
     private PopupWindow popup;
 
     // Field for setting panel
-    public int refreshInterval = 10000; //1000 milliseconds = 1 seconds
+    public int refreshInterval = 180000; //1000 milliseconds = 1 seconds
     private final Handler autoSwitchHandler = new Handler();
 
     PhotoManager photoManager;
@@ -230,8 +230,8 @@ public class MainActivity extends AppCompatActivity
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
-        // refresh time = refreshInterval, location update for every 500 meters
-        locationManager.requestLocationUpdates(locationProvider, refreshInterval, 500, locationListener);
+        // refresh time = 1 second, location update for every 500 meters
+        locationManager.requestLocationUpdates(locationProvider, 1000, 500, locationListener);
 
 
 

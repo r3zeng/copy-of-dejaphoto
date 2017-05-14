@@ -114,7 +114,7 @@ public class PhotoManager {
             long difference = Math.abs(SystemTime - PhotoTime) % MILLISECONDS_IN_DAY;
 
             if (difference < MILLISECONDS_IN_2_HOURS) {
-                return 2;
+                return 4;
             } else {
                 return 1;
             }
@@ -145,17 +145,17 @@ public class PhotoManager {
             final long MILLISECONFS_IN_6_MONTH = 6 * MILLISECONDS_IN_MONTH;
 
             if (difference < MILLISECONDS_IN_DAY) {
-                return 2;
+                return 4;
             } else if (difference < MILLISECONDS_IN_WEEK) {
-                return 1.7;
+                return 3.4;
             } else if (difference < MILLISECONDS_IN_MONTH) {
-                return 1.4;
+                return 2.8;
             } else if (difference < MILLISECONDS_IN_3_MONTH) {
-                return 1;
+                return 2;
             } else if (difference < MILLISECONFS_IN_6_MONTH) {
-                return 0.7;
+                return 1.4;
             } else {
-                return 0.5;
+                return 1;
             }
         }
     }
@@ -177,8 +177,8 @@ public class PhotoManager {
 
             double DistanceInMeters = SystemLocation.distanceTo(PhotoLocation);
 
-            if (DistanceInMeters < 200) {
-                return 2;
+            if (DistanceInMeters < 1000) {
+                return 4;
             } else {
                 return 1;
             }
@@ -196,7 +196,7 @@ public class PhotoManager {
             return 1;
         } else {
             if (photo.getKarma()) {
-                return 2;
+                return 4;
             } else {
                 return 1;
             }
