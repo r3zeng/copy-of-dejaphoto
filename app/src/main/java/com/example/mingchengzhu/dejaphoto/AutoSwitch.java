@@ -23,7 +23,7 @@ public class AutoSwitch implements Runnable {
     public void run() {
         //call the change background method here
         WeightAlgo algo = new WeightAlgo(activity);
-        algo.SwipeRight();
+        algo.next();
 
         handler.postDelayed(this, refresh_time);//3 minutes 180000
     }

@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped right");
 
                 // call swipe right action & reset timer
-                algo.SwipeRight();
+                algo.next();
                 auto_switch.refresh();
             }
             @Override
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped left");
 
                 // call swipe left action & reset timer
-                algo.SwipeLeft();
+                algo.prev();
                 auto_switch.refresh();
             }
             @Override

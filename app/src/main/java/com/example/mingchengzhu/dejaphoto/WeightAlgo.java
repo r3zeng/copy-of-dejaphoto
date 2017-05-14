@@ -249,7 +249,7 @@ public class WeightAlgo {
         }
     }
 
-    public void SwipeRight() {
+    public void next() {
         //put switch wallpaper method here
         activity.CurrentPhoto = getNextRandomImage();
 
@@ -264,7 +264,7 @@ public class WeightAlgo {
         }
     }
 
-    public void SwipeLeft() {
+    public void prev() {
         //put switch wallpaper method here
         activity.CurrentPhoto = activity.previousImage.swipeLeft();
         if (activity.CurrentPhoto != null) {
