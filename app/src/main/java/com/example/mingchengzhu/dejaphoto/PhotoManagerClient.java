@@ -1,8 +1,9 @@
-package com.example.mingchengzhu.dejaphoto;
-
-/**
+/*
  * Created by sterling on 5/14/17.
+ * Description: Interface to be implemented by classes that use PhotoManager
  */
+
+package com.example.mingchengzhu.dejaphoto;
 
 /**
  * Interface to be implemented by classes that use PhotoManager

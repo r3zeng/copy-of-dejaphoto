@@ -1,3 +1,8 @@
+/*
+ * MainActivity class
+ * The primary activity for the app
+ */
+
 package com.example.mingchengzhu.dejaphoto;
 
 import java.io.FileNotFoundException;
@@ -47,6 +52,9 @@ import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+/**
+ * The primary activity for the app
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, PhotoManagerClient {
 

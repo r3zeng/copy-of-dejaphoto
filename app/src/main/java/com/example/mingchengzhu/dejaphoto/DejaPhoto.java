@@ -1,3 +1,9 @@
+/*
+ * DejaPhoto class
+ * Description: Represents a single photo added to the app by the user
+ * Created by sterling on 5/6/17.
+ */
+
 package com.example.mingchengzhu.dejaphoto;
 
 import android.content.ContentUris;
@@ -13,10 +19,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.IOException;
-
-/**
- * Created by sterling on 5/6/17.
- */
 
 /**
  * Represents a single photo added to the app by the user
@@ -56,6 +58,21 @@ public class DejaPhoto {
      * true if our save state files reference this photo
      */
     private boolean savedToFile;
+
+    /**
+     * Constructor to be used only with JUnit tests
+     * @param galleryUriString a unique string which will be converted to a URI
+     * @param hasKarma true if this photo has karma
+     * @param wasReleased true if this photo was released
+     * @param time seconds since 1970 until the time the photo was taken
+     */
+    public DejaPhoto(String galleryUriString, boolean hasKarma, boolean wasReleased, long time) {
+        this.galleryUri = Uri.parse(galleryUriString);
+        this.hasKarma = hasKarma;
+        this.wasReleased = wasReleased;
+        this.time = time;
+        location = null;
+    }
 
     /**
      * Constructor to be used only with JUnit tests
@@ -133,7 +150,7 @@ public class DejaPhoto {
      * @return true if both have equivalent URI
      */
     public boolean equals(DejaPhoto other) {
-        return galleryUri != null && other.galleryUri != null && galleryUri.equals(other.galleryUri);
+        return other != null && galleryUri != null && other.galleryUri != null && galleryUri.equals(other.galleryUri);
     }
 
     // Getters are setters
