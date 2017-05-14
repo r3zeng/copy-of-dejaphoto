@@ -1,6 +1,11 @@
 package JUnitTests;
 
+import com.example.mingchengzhu.dejaphoto.DejaPhoto;
+import com.example.mingchengzhu.dejaphoto.PreviousImage;
+
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class PreviousImageJUnitTester {
 
