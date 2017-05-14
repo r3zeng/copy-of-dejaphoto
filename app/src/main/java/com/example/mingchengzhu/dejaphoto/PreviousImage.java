@@ -9,7 +9,7 @@ public class PreviousImage {
     private DejaPhoto[] previous_photo;
     int index;
 
-    PreviousImage(){
+    public PreviousImage(){
         previous_photo = new DejaPhoto[10];
         index = 0;
     }
