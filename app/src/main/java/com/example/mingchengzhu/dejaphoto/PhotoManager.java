@@ -90,7 +90,7 @@ public class PhotoManager {
         Log.d(TAG, "getTotalPhotoWeight called");
         Random rand = new Random();
         double rand_value = rand.nextDouble();
-        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
+        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
                 * getSameDayWeight(photo) * getLastPhotoWeight(photo);
     }
@@ -215,7 +215,7 @@ public class PhotoManager {
      *
      * @return release weight
      */
-    public double getRelasedWeight(DejaPhoto photo) {
+    public double getReleasedWeight(DejaPhoto photo) {
         Log.d(TAG, "getReleasedWeight called");
         if (photo.getReleased()) {
             return 0;
