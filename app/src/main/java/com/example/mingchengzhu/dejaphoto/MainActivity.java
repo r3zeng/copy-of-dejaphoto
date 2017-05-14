@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity
     public Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private AutoSwitch auto_switch;
+    private AutoSwitch autoSwitch;
 
     // true if we are currently showing the user a message about having no photos
     boolean noPhotosModeEnabled = false;
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe right action & reset timer
                 algo.next();
-                auto_switch.refresh();
+                autoSwitch.refresh();
             }
             @Override
             public void onSwipeTop() {
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 //refresh timer
-                auto_switch.refresh();
+                autoSwitch.refresh();
             }
             @Override
             public void onSwipeLeft() {
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe left action & reset timer
                 algo.prev();
-                auto_switch.refresh();
+                autoSwitch.refresh();
             }
             @Override
             public void onSwipeDown() {
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 // refresh timer
-                auto_switch.refresh();
+                autoSwitch.refresh();
             }
         });
 
@@ -245,10 +245,10 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to implement auto-switch */
-        auto_switch = new AutoSwitch(this, autoSwitchHandler, Deja_refresh_time);
+        autoSwitch = new AutoSwitch(this, autoSwitchHandler, Deja_refresh_time);
 
         /* Start the runnable task*/
-        autoSwitchHandler.postDelayed(auto_switch, Deja_refresh_time);
+        autoSwitchHandler.postDelayed(autoSwitch, Deja_refresh_time);
 
 
         /* The following code is used to get background when starts the app */
@@ -371,10 +371,10 @@ public class MainActivity extends AppCompatActivity
                 try {//catch overflow
                     if (!mEdit.getText().toString().equals("")) {//no null strings
                         Deja_refresh_time = (Integer.valueOf(mEdit.getText().toString()))*1000;
-                        if(auto_switch != null){
-                            auto_switch.setTime(Deja_refresh_time);
-                            autoSwitchHandler.removeCallbacks(auto_switch);
-                            autoSwitchHandler.postDelayed(auto_switch, Deja_refresh_time);
+                        if(autoSwitch != null){
+                            autoSwitch.setTime(Deja_refresh_time);
+                            autoSwitchHandler.removeCallbacks(autoSwitch);
+                            autoSwitchHandler.postDelayed(autoSwitch, Deja_refresh_time);
                         }
                         popup.dismiss();
                     }
@@ -419,7 +419,7 @@ public class MainActivity extends AppCompatActivity
                     setBackgroundImage(currentPhoto);
 
                     // reset timer
-                    auto_switch.refresh();
+                    autoSwitch.refresh();
                 }
                 break;
             }
