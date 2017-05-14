@@ -8,15 +8,6 @@ package com.example.mingchengzhu.dejaphoto;
  * Interface to be implemented by classes that use PhotoManager
  */
 public interface PhotoManagerClient {
-
-    /**
-     * The most recent swipe direction
-     */
-    public enum SwipeDirection {
-        right, left, neither
-    }
-    public SwipeDirection lastSwipe = SwipeDirection.neither;
-
     /**
      * A composed Tracker object for information on the user's current time and location
      */

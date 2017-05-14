@@ -293,11 +293,6 @@ public class PhotoManager {
         }
 
         currentPhoto = newPhoto;
-
-        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
-            currentPhoto = getNextRandomImage();
-        }
-
         backHistory.swipeRight(currentPhoto);
 
         client.currentPhotoChanged();
@@ -311,10 +306,6 @@ public class PhotoManager {
         }
 
         currentPhoto = previous;
-
-        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.right) {
-            currentPhoto = backHistory.swipeLeft();
-        }
 
         client.currentPhotoChanged();
     }
