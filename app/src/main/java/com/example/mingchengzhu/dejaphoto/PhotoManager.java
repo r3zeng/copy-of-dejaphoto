@@ -79,13 +79,13 @@ public class PhotoManager {
 
     /**
      * helper function for getNextRandomImage
-     * gets the weight for the probality a photo is displayed
+     * gets the weight for the probability a photo is displayed
      *
      * @param photo deja photo object
-     * @return a value repersenting the likelyness this photo is to be displayed as the background.
+     * @return a value representing the likeliness this photo is to be displayed as the background.
      * note: This value is not a percentage and should be compared relative to other photo weights
      */
-    private double getTotalPhotoWeight(DejaPhoto photo) {
+    public double getTotalPhotoWeight(DejaPhoto photo) {
         Random rand = new Random();
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
@@ -99,7 +99,7 @@ public class PhotoManager {
      *
      * @return time weight
      */
-    private double getTimeWeight(DejaPhoto photo) {
+    public double getTimeWeight(DejaPhoto photo) {
         if (!matchTime) { /*time from deja mode disabled*/
             return 1; //base weight
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -127,7 +127,7 @@ public class PhotoManager {
      *
      * @return date weight
      */
-    private double getDateWeight(DejaPhoto photo) {
+    public double getDateWeight(DejaPhoto photo) {
         if (!matchDate) {
             return 1;
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -138,21 +138,21 @@ public class PhotoManager {
 
             long difference = Math.abs(SystemTime - PhotoTime);
 
-            final long MILLISECONDS_IN_DAY = 86400000;
-            final long MILLISECONDS_IN_WEEK = 7 * MILLISECONDS_IN_DAY;
-            final long MILLISECONDS_IN_MONTH = 30 * MILLISECONDS_IN_DAY;
-            final long MILLISECONDS_IN_3_MONTH = 3 * MILLISECONDS_IN_MONTH;
-            final long MILLISECONFS_IN_6_MONTH = 6 * MILLISECONDS_IN_MONTH;
+            final long MILISECONDS_IN_DAY = 86400000;
+            final long MILISECONDS_IN_WEEK = 7 * MILISECONDS_IN_DAY;
+            final long MILISECONDS_IN_MONTH = 30 * MILISECONDS_IN_DAY;
+            final long MILISECONDS_IN_3_MONTH = 3 * MILISECONDS_IN_MONTH;
+            final long MILISECONDS_IN_6_MONTH = 6 * MILISECONDS_IN_MONTH;
 
-            if (difference < MILLISECONDS_IN_DAY) {
+            if (difference < MILISECONDS_IN_DAY) {
                 return 2;
-            } else if (difference < MILLISECONDS_IN_WEEK) {
+            } else if (difference < MILISECONDS_IN_WEEK) {
                 return 1.7;
-            } else if (difference < MILLISECONDS_IN_MONTH) {
+            } else if (difference < MILISECONDS_IN_MONTH) {
                 return 1.4;
-            } else if (difference < MILLISECONDS_IN_3_MONTH) {
+            } else if (difference < MILISECONDS_IN_3_MONTH) {
                 return 1;
-            } else if (difference < MILLISECONFS_IN_6_MONTH) {
+            } else if (difference < MILISECONDS_IN_6_MONTH) {
                 return 0.7;
             } else {
                 return 0.5;
@@ -166,7 +166,7 @@ public class PhotoManager {
      *
      * @return location weight
      */
-    private double getLocationWeight(DejaPhoto photo) {
+    public double getLocationWeight(DejaPhoto photo) {
         if (!matchLocation) {
             return 1; //base weight
         } else if (client.tracker == null || client.tracker.getLocation() == null || photo.getLocation() == null) {
@@ -191,7 +191,7 @@ public class PhotoManager {
      *
      * @return Karma weight
      */
-    private double getKarmaWeight(DejaPhoto photo) {
+    public double getKarmaWeight(DejaPhoto photo) {
         if (!matchKarma) {
             return 1;
         } else {
@@ -209,7 +209,7 @@ public class PhotoManager {
      *
      * @return release weight
      */
-    private double getRelasedWeight(DejaPhoto photo) {
+    public double getRelasedWeight(DejaPhoto photo) {
         if (photo.getReleased()) {
             return 0;
         } else {
@@ -219,12 +219,12 @@ public class PhotoManager {
 
     /**
      * helper function for getTotalPhotoWeight
-     * shoulf not be called elsewhere
+     * should not be called elsewhere
      *
      * @param photo
      * @return recent weight
      */
-    private double getRecentWeight(DejaPhoto photo) {
+    public double getRecentWeight(DejaPhoto photo) {
         if (backHistory != null && backHistory.PhotoPreviouslySeen(photo)) {
             return 0.1;
         } else {
@@ -239,7 +239,7 @@ public class PhotoManager {
      * @param photo
      * @return same day weight
      */
-    private double getSameDayWeight(DejaPhoto photo) {
+    public double getSameDayWeight(DejaPhoto photo) {
         if (!matchDate) {
             return 1;
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -272,7 +272,7 @@ public class PhotoManager {
      * @param photo
      * @return 0% chance of getting same photo twice unless only 1 photo
      */
-    private double getLastPhotoWeight(DejaPhoto photo) {
+    public double getLastPhotoWeight(DejaPhoto photo) {
         if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
         } else if (photo != null
@@ -296,6 +296,7 @@ public class PhotoManager {
 
         if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
             currentPhoto = getNextRandomImage();
+
         }
 
         backHistory.swipeRight(currentPhoto);

@@ -30,7 +30,12 @@ public class Tracker {
      * getter method for current system time
      * @return current system time
      */
-    public long getTime() { return time; }
+
+    public long getTime(){
+        updateTime();
+        return time;
+    }
+
 
     /**
      *  update the time to most current system time
