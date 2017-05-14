@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import java.io.IOException;
 
@@ -17,7 +18,15 @@ import java.io.IOException;
  * Created by sterling on 5/6/17.
  */
 
+/**
+ * Represents a single photo added to the app by the user
+ */
 public class DejaPhoto {
+    /**
+     * Used for logging
+     */
+    private static final String TAG = "DejaPhoto";
+
     /**
      * A URI from the user's gallery that uniquely identifies this photo
      */
@@ -34,13 +43,29 @@ public class DejaPhoto {
     private boolean wasReleased;
 
     /**
-     * seconds
+     * Seconds since 1970 until the time the photo was taken
      */
     private long time;
 
+    /**
+     * The location where this photo was taken, or null if not available
+     */
     private Location location;
+
+    /**
+     * true if our save state files reference this photo
+     */
     private boolean savedToFile;
 
+    /**
+     * Constructor to be used only with JUnit tests
+     * @param galleryUriString a unique string which will be converted to a URI
+     * @param latitude the latitude where this photo was taken
+     * @param longitude the latitude where this photo was taken
+     * @param hasKarma true if this photo has karma
+     * @param wasReleased true if this photo was released
+     * @param time seconds since 1970 until the time the photo was taken
+     */
     public DejaPhoto(String galleryUriString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
         this.galleryUri = Uri.parse(galleryUriString);
         this.hasKarma = hasKarma;
@@ -51,10 +76,17 @@ public class DejaPhoto {
         location.setLongitude(longitude);
     }
 
+    /**
+     * Preferred constructor
+     * @param galleryUri a URI pointing into the user's photo gallery to a specific photo
+     * @param context a Context (such as an Activity) which can be used for getContentResolver()
+     */
     public DejaPhoto(Uri galleryUri, Context context) {
         this.galleryUri = galleryUri;
         hasKarma = false;
         wasReleased = false;
+
+        // Get all the info from the content resolver
 
         String[] columns = {
                 MediaStore.Images.Media.LATITUDE,
@@ -65,6 +97,8 @@ public class DejaPhoto {
         Cursor cursor = context.getContentResolver().query(galleryUri,
                 columns, null, null, null);
         cursor.moveToFirst();
+
+        // Now set the location
 
         int latIndex = cursor.getColumnIndex(columns[0]);
         String latitude = cursor.getString(latIndex);
@@ -78,11 +112,14 @@ public class DejaPhoto {
                 location.setLatitude(Double.parseDouble(latitude));
                 location.setLongitude(Double.parseDouble(longitude));
             } catch (NumberFormatException e) {
+                Log.w(TAG, "The user's gallery contains a photo with a lat/lon that don't parse as a double!", e);
                 location = null;
             }
         } else {
             location = null;
         }
+
+        // And set the time
 
         int dateIndex = cursor.getColumnIndex(columns[2]);
         time = cursor.getLong(dateIndex);
@@ -90,9 +127,16 @@ public class DejaPhoto {
         cursor.close();
     }
 
+    /**
+     * Determines if two DejaPhoto objects are equal
+     * @param other the other photo to compare with
+     * @return true if both have equivalent URI
+     */
     public boolean equals(DejaPhoto other) {
         return galleryUri != null && other.galleryUri != null && galleryUri.equals(other.galleryUri);
     }
+
+    // Getters are setters
 
     public Uri getUri() {
         return galleryUri;
