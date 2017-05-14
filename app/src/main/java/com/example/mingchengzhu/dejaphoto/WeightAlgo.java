@@ -17,6 +17,10 @@ public class WeightAlgo {
      * should be called on right swipe and by the auto-switcher
      */
     MainActivity activity;
+    private boolean matchTime;
+    private boolean matchDate;
+    private boolean matchLocation;
+    private boolean matchKarma;
 
     public WeightAlgo(MainActivity activity) {
         this.activity = activity;
@@ -67,7 +71,7 @@ public class WeightAlgo {
      * @return time weight
      */
     private double getTimeWeight(DejaPhoto photo) {
-        if (!activity.Deja_Time) { /*time from deja mode disabled*/
+        if (!matchTime) { /*time from deja mode disabled*/
             return 1; //base weight
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
@@ -95,7 +99,7 @@ public class WeightAlgo {
      * @return date weight
      */
     private double getDateWeight(DejaPhoto photo) {
-        if (!activity.Deja_Date) {
+        if (!matchDate) {
             return 1;
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid datat
@@ -134,7 +138,7 @@ public class WeightAlgo {
      * @return location weight
      */
     private double getLocationWeight(DejaPhoto photo) {
-        if (!activity.Deja_Location) {
+        if (!matchLocation) {
             return 1; //base weight
         } else if (activity.tracker == null || activity.tracker.getLocation() == null || photo.getLocation() == null) {
             return 1;//invalid data
@@ -159,7 +163,7 @@ public class WeightAlgo {
      * @return Karma weight
      */
     private double getKarmaWeight(DejaPhoto photo) {
-        if (!activity.Deja_Karma) {
+        if (!matchKarma) {
             return 1;
         } else {
             if (photo.getKarma()) {
@@ -207,7 +211,7 @@ public class WeightAlgo {
      * @return same day weight
      */
     private double getSameDayWeight(DejaPhoto photo) {
-        if (!activity.Deja_Date) {
+        if (!matchDate) {
             return 1;
         } else if (activity.tracker == null || activity.tracker.getTime() == 0 || photo.getTime() == 0) {
             return 1;//invalid data
@@ -272,6 +276,38 @@ public class WeightAlgo {
             }
             activity.setBackgroundImage(activity.currentPhoto);
         }
+    }
+
+    public boolean getMatchTime() {
+        return matchTime;
+    }
+
+    public void setMatchTime(boolean matchTime) {
+        this.matchTime = matchTime;
+    }
+
+    public boolean getMatchDate() {
+        return matchDate;
+    }
+
+    public void setMatchDate(boolean matchDate) {
+        this.matchDate = matchDate;
+    }
+
+    public boolean getMatchLocation() {
+        return matchLocation;
+    }
+
+    public void setMatchLocation(boolean matchLocation) {
+        this.matchLocation = matchLocation;
+    }
+
+    public boolean getMatchKarma() {
+        return matchKarma;
+    }
+
+    public void setMatchKarma(boolean matchKarma) {
+        this.matchKarma = matchKarma;
     }
 }
 

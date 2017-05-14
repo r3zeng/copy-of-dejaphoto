@@ -77,10 +77,6 @@ public class MainActivity extends AppCompatActivity
     private PopupWindow popup;
 
     // Field for setting panel
-    public boolean Deja_Time = true;
-    public boolean Deja_Date = true;
-    public boolean Deja_Location = true;
-    public boolean Deja_Karma = true;
     public int Deja_refresh_time = 10000; //10 seconds
     private final Handler autoSwitchHandler = new Handler();
     PreviousImage previousImage;
@@ -306,36 +302,36 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG, "User selected navigation item " + id);
 
         if(id == R.id.nav_time) {
-            if(Deja_Time){
+            if (algo.getMatchTime()) {
                 item.setTitle("Time Off");
-                Deja_Time = false;
-            }else{
+                algo.setMatchTime(false);
+            } else {
                 item.setTitle("Time On");
-                Deja_Time = true;
+                algo.setMatchTime(true);
             }
         } else if (id == R.id.nav_date) {
-            if(Deja_Date){
+            if (algo.getMatchDate()) {
                 item.setTitle("Date Off");
-                Deja_Date = false;
-            }else{
+                algo.setMatchDate(false);
+            } else {
                 item.setTitle("Date On");
-                Deja_Date = true;
+                algo.setMatchDate(true);
             }
         } else if (id == R.id.nav_location) {
-            if(Deja_Location){
+            if (algo.getMatchLocation()) {
                 item.setTitle("Location Off");
-                Deja_Location = false;
-            }else{
+                algo.setMatchLocation(false);
+            } else {
                 item.setTitle("Location On");
-                Deja_Location = true;
+                algo.setMatchLocation(true);
             }
-        }else if (id == R.id.nav_karma){
-            if(Deja_Karma){
+        }else if (id == R.id.nav_karma) {
+            if (algo.getMatchKarma()) {
                 item.setTitle("Karma Off");
-                Deja_Karma = false;
-            }else{
+                algo.setMatchKarma(false);
+            } else {
                 item.setTitle("Karma On");
-                Deja_Karma = true;
+                algo.setMatchKarma(true);
             }
         }else if(id == R.id.add_photo){
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
