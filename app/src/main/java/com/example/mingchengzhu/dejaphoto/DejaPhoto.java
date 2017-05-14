@@ -1,4 +1,4 @@
-/**
+/*
  * DejaPhoto class
  * Represents a single photo added to the app by the user
  * Created by sterling on 5/6/17.
@@ -20,6 +20,9 @@ import android.util.Log;
 
 import java.io.IOException;
 
+/**
+ * Represents a single photo added to the app by the user
+ */
 public class DejaPhoto {
     /**
      * Used for logging
