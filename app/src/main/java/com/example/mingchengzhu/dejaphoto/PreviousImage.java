@@ -1,5 +1,9 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by ruihanzeng on 5/8/17.
  */
@@ -24,6 +28,7 @@ public class PreviousImage {
      * @param nextPhoto photo generated on swiping/auto-swiping right
      */
     public void swipeRight(DejaPhoto nextPhoto){
+        Log.d(TAG, "PrevImg - swipeRight called");
         if(isFull()){
             shiftLeftby1All();
             previous_photo[10] = nextPhoto;
@@ -42,6 +47,7 @@ public class PreviousImage {
      * @return the previous photo
      */
     public DejaPhoto swipeLeft(){
+        Log.d(TAG, "PrevImg - swipeLeft called");
         if(isEmpty() || index == 1){
             return null;
         }else{
@@ -58,6 +64,7 @@ public class PreviousImage {
      * @return the previous photo
      */
     public DejaPhoto getCurrentPhoto(){
+        Log.d(TAG, "PrevImg - getCurrentPhoto called");
         if(isEmpty()){
             return null;
         }else{

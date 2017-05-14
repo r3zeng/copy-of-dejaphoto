@@ -15,7 +15,6 @@ public class AutoSwitch implements Runnable {
     PhotoManager manager;
     private int refresh_time;
 
-
     public AutoSwitch(PhotoManagerClient client, PhotoManager manager, Handler handler, int refresh_time){
         this.handler = handler;
         this.client = client;
