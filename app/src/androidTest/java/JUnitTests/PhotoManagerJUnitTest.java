@@ -19,6 +19,15 @@ public class PhotoManagerJUnitTest {
     PhotoManager testManager;
     Tracker tracker;
     final long MILISECONDS_IN_DAY = 86400000;
+    
+    @Before
+    public void setUp(){
+        testManager = new PhotoManager(testClient);
+        testManager.setMatchDate(true);
+        testManager.setMatchKarma(true);
+        testManager.setMatchLocation(true);
+        testManager.setMatchTime(true);
+    }
 
     @Test
     public void testKarmaWeight(){
