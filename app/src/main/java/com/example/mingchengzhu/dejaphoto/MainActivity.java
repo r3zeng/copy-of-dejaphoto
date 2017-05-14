@@ -3,7 +3,6 @@ package com.example.mingchengzhu.dejaphoto;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Random;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
@@ -15,7 +14,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
