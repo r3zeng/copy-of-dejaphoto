@@ -48,13 +48,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
-    //swipes
-    public enum SwipeDirection{
-        right, left, neither
-    }
-    SwipeDirection lastSwipe = SwipeDirection.neither;         
+        implements NavigationView.OnNavigationItemSelectedListener, PhotoManagerClient {
 
     // Used for logging
     private static final String TAG = "MainActivity";
@@ -66,7 +60,6 @@ public class MainActivity extends AppCompatActivity
     private AddressResultReceiver resultReceiver;
 
     // Used for tracking system time and location
-    public Tracker tracker = new Tracker();
     private LocationManager locationManager;
     private LocationListener locationListener;
     private AutoSwitch autoSwitch;
@@ -172,7 +165,6 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe right action & reset timer
                 photoManager.next();
-                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -195,7 +187,6 @@ public class MainActivity extends AppCompatActivity
 
                 // call swipe left action & reset timer
                 photoManager.prev();
-                setBackgroundImage(photoManager.getCurrentPhoto());
                 autoSwitch.refresh();
             }
             @Override
@@ -239,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to implement auto-switch */
-        autoSwitch = new AutoSwitch(this, autoSwitchHandler, refreshInterval);
+        autoSwitch = new AutoSwitch(this, photoManager, autoSwitchHandler, refreshInterval);
 
         /* Start the runnable task*/
         autoSwitchHandler.postDelayed(autoSwitch, refreshInterval);
@@ -562,4 +553,7 @@ public class MainActivity extends AppCompatActivity
         setWallpaper(photo, locationText);
     }
 
+    public void currentPhotoChanged() {
+        setBackgroundImage(photoManager.getCurrentPhoto());
+    }
 }
