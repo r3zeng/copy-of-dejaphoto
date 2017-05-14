@@ -118,14 +118,13 @@ public class StateCodec {
 
                 }
 
-
             }
             br.close();
             Log.i(TAG, "The state should have been loaded");
         }
         catch (IOException e) {
             //You'll need to add proper error handling here
-            Log.d(TAG, "Exception occurs under loadState method");
+            Log.e(TAG, "Exception occurs under loadState method");
         }
     }
 

@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 String text = resultData.getString(Constants.RESULT_DATA_KEY);
                 gotLocationText(photoManager.getCurrentPhoto(), text);
+                Log.i(TAG, "location reverse geocoding succeeds");
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity
                 // call swipe right action & reset timer
                 photoManager.next();
                 autoSwitch.refresh();
+                Log.i(TAG, "Timer is refreshed after user swipes right to get new photo");
             }
             @Override
             public void onSwipeTop() {
@@ -179,6 +181,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 //refresh timer
                 autoSwitch.refresh();
+                Log.i(TAG, "Timer is refreshed after user swipes up to add the Karma");
             }
             @Override
             public void onSwipeLeft() {
@@ -188,6 +191,7 @@ public class MainActivity extends AppCompatActivity
                 // call swipe left action & reset timer
                 photoManager.prev();
                 autoSwitch.refresh();
+                Log.i(TAG, "Timer is refreshed after user swipes left to see an old photo");
             }
             @Override
             public void onSwipeDown() {
@@ -201,6 +205,7 @@ public class MainActivity extends AppCompatActivity
                 }
                 // refresh timer
                 autoSwitch.refresh();
+                Log.i(TAG, "Timer is refreshed after user swipes down to release a photo");
             }
         });
 
@@ -212,6 +217,7 @@ public class MainActivity extends AppCompatActivity
             public void onLocationChanged(Location location) {
                 tracker.updateLocation(location);
                 tracker.updateTime();
+                Log.i(TAG, "System location and time is updated through tracker");
             }
 
             @Override
@@ -538,6 +544,8 @@ public class MainActivity extends AppCompatActivity
         } else {
             gotLocationText(photo, "La La Land");
         }
+
+        Log.i(TAG, "the app home screen should be set");
     }
 
     /**

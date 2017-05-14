@@ -78,7 +78,7 @@ public class OnSwipeListener implements OnTouchListener {
             }
             catch (Exception e){
                 e.printStackTrace();
-                Log.d(TAG, "Exception occurs under onFling method");
+                Log.e(TAG, "Exception occurs under onFling method");
             }
             return result;
         }
