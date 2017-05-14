@@ -20,21 +20,12 @@ public class PhotoManagerJUnitTest {
     Tracker tracker;
     final long MILISECONDS_IN_DAY = 86400000;
 
-    @Before
-    public void setUp(){
-        testManager = new PhotoManager(testClient);
-        testManager.setMatchDate(true);
-        testManager.setMatchKarma(true);
-        testManager.setMatchLocation(true);
-        testManager.setMatchTime(true);
-    }
-
     @Test
     public void testKarmaWeight(){
         DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
         DejaPhoto testPhoto2 = new DejaPhoto("dummytest2", 0, 0, false, true, 1000000);
         double weight = testManager.getKarmaWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         double weight2 = testManager.getKarmaWeight(testPhoto2);
         assertEquals(1.0, weight2, 0.0);
         testManager.setMatchKarma(false);
@@ -58,7 +49,7 @@ public class PhotoManagerJUnitTest {
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime());
         weight = testManager.getTimeWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         testManager.setMatchTime(false);
         weight = testManager.getTimeWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
@@ -69,22 +60,22 @@ public class PhotoManagerJUnitTest {
         Tracker tracker = new Tracker();
         DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
         double weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(0.5, weight, 0.0);
+        assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime());
         weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-MILISECONDS_IN_DAY);
         weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(1.7, weight, 0.0);
+        assertEquals(3.4, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-7*MILISECONDS_IN_DAY);
         weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(1.4, weight, 0.0);
+        assertEquals(2.8, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-30*MILISECONDS_IN_DAY);
         weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(1.0, weight, 0.0);
+        assertEquals(2.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-3*30*MILISECONDS_IN_DAY);
         weight = testManager.getDateWeight(testPhoto1);
-        assertEquals(0.7, weight, 0.0);
+        assertEquals(1.4, weight, 0.0);
         testManager.setMatchDate(false);
         weight = testManager.getDateWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
@@ -98,13 +89,13 @@ public class PhotoManagerJUnitTest {
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-7*MILISECONDS_IN_DAY + buffer);
         weight = testManager.getSameDayWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()- 5*MILISECONDS_IN_DAY + buffer);
         weight = testManager.getSameDayWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-6*7*MILISECONDS_IN_DAY + buffer);
         weight = testManager.getSameDayWeight(testPhoto1);
-        assertEquals(2.0, weight, 0.0);
+        assertEquals(4.0, weight, 0.0);
         testManager.setMatchDate(false);
         weight = testManager.getSameDayWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
@@ -112,6 +103,17 @@ public class PhotoManagerJUnitTest {
 
     @Test
     public void testLocationWeight(){
+        // very difficult to test through junit testing
+        // tested through other, mostly qualitative, means
+    }
+    @Test
+    public void testRecentWeight(){
+        // tested in PreviousImage testing
+    }
+    @Test
+    public void testTotalWeight() {
+        // this method is simply multiplication. because all the factors in the multiplication
+        // were tested we decided not to test it.
 
     }
 
