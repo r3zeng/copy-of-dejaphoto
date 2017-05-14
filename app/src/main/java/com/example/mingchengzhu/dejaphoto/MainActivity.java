@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     private PopupWindow popup;
 
     // Field for setting panel
-    public int Deja_refresh_time = 10000; //10 seconds
+    public int refreshInterval = 10000; //1000 milliseconds = 1 seconds
     private final Handler autoSwitchHandler = new Handler();
     PreviousImage previousImage;
     DejaPhoto currentPhoto;
@@ -235,16 +235,16 @@ public class MainActivity extends AppCompatActivity
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         String locationProvider = LocationManager.GPS_PROVIDER;
-        // refresh time = Deja_refresh_time, location update for every 500 meters
-        locationManager.requestLocationUpdates(locationProvider, Deja_refresh_time, 500, locationListener);
+        // refresh time = refreshInterval, location update for every 500 meters
+        locationManager.requestLocationUpdates(locationProvider, refreshInterval, 500, locationListener);
 
 
 
         /* The following code is used to implement auto-switch */
-        autoSwitch = new AutoSwitch(this, autoSwitchHandler, Deja_refresh_time);
+        autoSwitch = new AutoSwitch(this, autoSwitchHandler, refreshInterval);
 
         /* Start the runnable task*/
-        autoSwitchHandler.postDelayed(autoSwitch, Deja_refresh_time);
+        autoSwitchHandler.postDelayed(autoSwitch, refreshInterval);
 
 
         /* The following code is used to get background when starts the app */
@@ -366,11 +366,11 @@ public class MainActivity extends AppCompatActivity
                 EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.change_frequency_edittext);
                 try {//catch overflow
                     if (!mEdit.getText().toString().equals("")) {//no null strings
-                        Deja_refresh_time = (Integer.valueOf(mEdit.getText().toString()))*1000;
+                        refreshInterval = (Integer.valueOf(mEdit.getText().toString()))*1000;
                         if(autoSwitch != null){
-                            autoSwitch.setTime(Deja_refresh_time);
+                            autoSwitch.setTime(refreshInterval);
                             autoSwitchHandler.removeCallbacks(autoSwitch);
-                            autoSwitchHandler.postDelayed(autoSwitch, Deja_refresh_time);
+                            autoSwitchHandler.postDelayed(autoSwitch, refreshInterval);
                         }
                         popup.dismiss();
                     }
