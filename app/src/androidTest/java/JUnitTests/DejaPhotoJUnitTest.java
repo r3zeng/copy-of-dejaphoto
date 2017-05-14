@@ -1,22 +1,19 @@
-package JUnitTests;
+/**
+ * DejaPhotoJUnitTest
+ * Unit tests for the DejaPhoto class
+ * Created by sterling on 5/14/17.
+ */
 
-import android.content.Context;
+package JUnitTests;
 
 import com.example.mingchengzhu.dejaphoto.DejaPhoto;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-
-/**
- * Created by sterling on 5/14/17.
- */
 
 public class DejaPhotoJUnitTest {
 
