@@ -6,12 +6,9 @@ package com.example.mingchengzhu.dejaphoto;
 
 public class PreviousImage {
 
-    private enum lastSwipeDirection{
-        Left, Right, Start
-    }
+
 
     private DejaPhoto[] previous_photo;
-    private lastSwipeDirection lastSwipe = lastSwipeDirection.Start;
     int index;
 
     public PreviousImage(){
@@ -33,7 +30,7 @@ public class PreviousImage {
         }else{
             previous_photo[index] = nextPhoto;
             index++;
-            lastSwipe = lastSwipe.Right;
+
         }
     }
 
@@ -45,22 +42,11 @@ public class PreviousImage {
      * @return the previous photo
      */
     public DejaPhoto swipeLeft(){
-        if(isEmpty()){
+        if(isEmpty() || index == 1){
             return null;
         }else{
-            if(lastSwipe == lastSwipeDirection.Right){
-                if(getNumberofPhoto() == 1){
-                    return null;
-                }
-                index = index - 2;
-                lastSwipe = lastSwipeDirection.Left;
-                return previous_photo[index];
-            }
-            else{
-                index = index - 1;
-                lastSwipe = lastSwipeDirection.Left;
-                return previous_photo[index];
-            }
+            index = index - 1;
+            return previous_photo[index -1];
         }
     }
     
