@@ -266,7 +266,7 @@ public class PhotoManager {
             long PhotoDay = PhotoTime / MILLISECONDS_IN_DAY;
 
             if (CurrentDay == PhotoDay) {
-                return 2;
+                return 4;
             } else {
                 return 1;
             }
