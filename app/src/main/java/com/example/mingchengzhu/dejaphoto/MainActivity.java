@@ -371,6 +371,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 } catch(Exception e) {
                     popup.dismiss();
+                    Log.d(TAG, "Overflow detected");
                 }
             }
         });
