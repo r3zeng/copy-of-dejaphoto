@@ -488,9 +488,12 @@ public class MainActivity extends AppCompatActivity
                         paint.setColor(Color.WHITE);
                         paint.setTextSize(screenWidth / 18);
 
-                        float x = 40.0f;
-                        float y = screenHeight - 40.0f;
+                        paint.setShadowLayer(40, 0, 0, Color.BLACK);
+
                         String[] lines = locationText.split("\n");
+                        final float x = 40.0f;
+                        final float yStart = screenHeight - 80.0f;
+                        float y = yStart;
                         for (int i = lines.length - 1; i >= 0; --i) {
                             y -= paint.descent() - paint.ascent();
                             canvas.drawText(lines[i], x, y, paint);
