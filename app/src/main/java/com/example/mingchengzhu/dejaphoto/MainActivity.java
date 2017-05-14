@@ -138,10 +138,7 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-                locationTextView.setText(text);
-
-                setWallpaper(CurrentPhoto, text);
+                gotLocationText(CurrentPhoto, text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -550,8 +547,21 @@ public class MainActivity extends AppCompatActivity
             intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
             startService(intent);
         } else {
-            setWallpaper(photo, "");
+            gotLocationText(photo, "La La Land");
         }
+    }
+
+    /**
+     * This method is called when the location text has become available for a photo
+     *
+     * @param photo the photo that we now have location text for
+     * @param locationText the location text
+     */
+    void gotLocationText(DejaPhoto photo, String locationText) {
+        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        locationTextView.setText(locationText);
+
+        setWallpaper(photo, locationText);
     }
 
 }
