@@ -285,27 +285,35 @@ public class PhotoManager {
     }
 
     public void next() {
-        //put switch wallpaper method here
-        currentPhoto = getNextRandomImage();
-
-        if (currentPhoto != null) {
-            if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
-                currentPhoto = getNextRandomImage();
-            }
-
-            backHistory.swipeRight(currentPhoto);
+        DejaPhoto newPhoto = getNextRandomImage();
+        if (newPhoto == null) {
+            Log.w(TAG, "getNextRandomImage() returned null");
+            // failed to determine what photo is next, so abort
+            return;
         }
+
+        currentPhoto = newPhoto;
+
+        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
+            currentPhoto = getNextRandomImage();
+        }
+
+        backHistory.swipeRight(currentPhoto);
 
         client.currentPhotoChanged();
     }
 
     public void prev() {
-        //put switch wallpaper method here
-        currentPhoto = backHistory.swipeLeft();
-        if (currentPhoto != null) {
-            if (client.lastSwipe == PhotoManagerClient.SwipeDirection.right) {
-                currentPhoto = backHistory.swipeLeft();
-            }
+        DejaPhoto previous = backHistory.swipeLeft();
+        if (previous == null) {
+            // there are no previous photos, so abort
+            return;
+        }
+
+        currentPhoto = previous;
+
+        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.right) {
+            currentPhoto = backHistory.swipeLeft();
         }
 
         client.currentPhotoChanged();
