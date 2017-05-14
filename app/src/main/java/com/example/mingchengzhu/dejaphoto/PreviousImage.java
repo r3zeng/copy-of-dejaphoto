@@ -1,22 +1,23 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.util.Log;
+
+import java.util.LinkedList;
+
 /**
  * Created by ruihanzeng on 5/8/17.
  */
 
 public class PreviousImage {
+    // Used for logging
+    private static final String TAG = "PreviousImage";
 
-    private enum lastSwipeDirection{
-        Left, Right, Start
-    }
+    private LinkedList<DejaPhoto> previousPhotos;
+    DejaPhoto currentPhoto;
 
-    private DejaPhoto[] previous_photo;
-    private lastSwipeDirection lastSwipe = lastSwipeDirection.Start;
-    int index;
-
-    public PreviousImage(){
-        previous_photo = new DejaPhoto[11];
-        index = 0;
+    public PreviousImage() {
+        previousPhotos = new LinkedList<DejaPhoto>();
+        currentPhoto = null;
     }
 
     /**
@@ -24,17 +25,20 @@ public class PreviousImage {
      * adds newest photo to photo deque. If already 10 photos in deque,
      * oldest one is removed
      *
-     * @param nextPhoto photo generated on swiping/auto-swiping right
+     * @param newCurrentPhoto the new current photo
      */
-    public void swipeRight(DejaPhoto nextPhoto){
-        if(isFull()){
-            shiftLeftby1All();
-            previous_photo[10] = nextPhoto;
-        }else{
-            previous_photo[index] = nextPhoto;
-            index++;
-            lastSwipe = lastSwipe.Right;
+    public void setCurrentPhoto(DejaPhoto newCurrentPhoto) {
+        if (newCurrentPhoto == null) {
+            Log.w(TAG, "setCurrentPhoto called with null!!!");
+            return;
         }
+
+        // if we have a currentPhoto, push it
+        if (currentPhoto != null) {
+            previousPhotos.addLast(currentPhoto);
+        }
+
+        currentPhoto = newCurrentPhoto;
     }
 
     /**
@@ -44,24 +48,14 @@ public class PreviousImage {
      *
      * @return the previous photo
      */
-    public DejaPhoto swipeLeft(){
-        if(isEmpty()){
-            return null;
-        }else{
-            if(lastSwipe == lastSwipeDirection.Right){
-                if(getNumberofPhoto() == 1){
-                    return null;
-                }
-                index = index - 2;
-                lastSwipe = lastSwipeDirection.Left;
-                return previous_photo[index];
-            }
-            else{
-                index = index - 1;
-                lastSwipe = lastSwipeDirection.Left;
-                return previous_photo[index];
-            }
+    public DejaPhoto swipeLeft() {
+        DejaPhoto previous = previousPhotos.pollLast();
+        if (previous != null) {
+            // this is the new current photo
+            currentPhoto = previous;
         }
+
+        return previous;
     }
     
     /**
@@ -71,12 +65,8 @@ public class PreviousImage {
      *
      * @return the previous photo
      */
-    public DejaPhoto getCurrentPhoto(){
-        if(isEmpty()){
-            return null;
-        }else{
-            return previous_photo[index - 1];
-        }
+    public DejaPhoto getCurrentPhoto() {
+        return currentPhoto;
     }
     
 
@@ -86,43 +76,24 @@ public class PreviousImage {
      * @param photo photo being checked
      * @return true if photo is in the deque and false if not
      */
-    public boolean PhotoPreviouslySeen(DejaPhoto photo){
-        for(int i = 0; i < index; i++){
-            if(photo.equals(previous_photo[i])){
-                return true;
-            }
+    public boolean PhotoPreviouslySeen(DejaPhoto photo) {
+        if (photo == null) {
+            Log.w(TAG, "PhotoPreviouslySeen called with null!!!");
+            return false;
         }
-        return false;
-    }
 
-    /**
-     * helper function only do not use outside this class
-     */
-    private void shiftLeftby1All(){
-        for(int i = 0; i < 10; i ++){
-            previous_photo[i] = previous_photo[i + 1];
+        if (currentPhoto != null && currentPhoto.equals(photo)) {
+            return true;
         }
+
+        return previousPhotos.contains(photo);
     }
 
-    /**
-     * helper function only do not use outside this class
-     */
-    private boolean isFull(){
-        return index == 11;
-    }
-
-    /**
-     * helper function only do not use outside this class
-     */
-    private boolean isEmpty(){
-        return index == 0;
-    }
-    
     /**
      * @return the number of images currently being stored
      */
-    public int getNumberofPhoto(){
-        return index;
+    public boolean canSwipeBack() {
+        return previousPhotos.size() > 0;
     }
 
 }

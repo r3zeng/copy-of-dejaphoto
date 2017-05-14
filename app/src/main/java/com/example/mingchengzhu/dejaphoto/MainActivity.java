@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity
 
                     Uri selectedImage = data.getData();
                     photoManager.setCurrentPhoto(PhotoManager.addPhotoWithUri(selectedImage, this));
-                    photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
+                    photoManager.getBackHistory().setCurrentPhoto(photoManager.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
                     StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photoManager.getCurrentPhoto());

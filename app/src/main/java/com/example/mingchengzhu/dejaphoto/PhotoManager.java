@@ -273,7 +273,7 @@ public class PhotoManager {
      * @return 0% chance of getting same photo twice unless only 1 photo
      */
     private double getLastPhotoWeight(DejaPhoto photo) {
-        if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
+        if (backHistory == null || !backHistory.canSwipeBack()) {
             return 1;
         } else if (photo != null
                 && backHistory.getCurrentPhoto() != null
@@ -293,12 +293,7 @@ public class PhotoManager {
         }
 
         currentPhoto = newPhoto;
-
-        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.left) {
-            currentPhoto = getNextRandomImage();
-        }
-
-        backHistory.swipeRight(currentPhoto);
+        backHistory.setCurrentPhoto(currentPhoto);
 
         client.currentPhotoChanged();
     }
@@ -311,10 +306,6 @@ public class PhotoManager {
         }
 
         currentPhoto = previous;
-
-        if (client.lastSwipe == PhotoManagerClient.SwipeDirection.right) {
-            currentPhoto = backHistory.swipeLeft();
-        }
 
         client.currentPhotoChanged();
     }
