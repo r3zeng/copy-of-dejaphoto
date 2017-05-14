@@ -21,6 +21,8 @@ import android.view.View.OnTouchListener;
 public class OnSwipeListener implements OnTouchListener {
 
     private final GestureDetector gestureDetector;
+
+    // Used for logging
     private static final String TAG = "OnSwipeListener";
 
     /**
