@@ -251,26 +251,26 @@ public class WeightAlgo {
 
     public void next() {
         //put switch wallpaper method here
-        activity.CurrentPhoto = getNextRandomImage();
+        activity.currentPhoto = getNextRandomImage();
 
-        if (activity.CurrentPhoto != null) {
+        if (activity.currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.left) {
-                activity.CurrentPhoto = getNextRandomImage();
+                activity.currentPhoto = getNextRandomImage();
             }
-            activity.setBackgroundImage(activity.CurrentPhoto);
+            activity.setBackgroundImage(activity.currentPhoto);
 
-            activity.previousImage.swipeRight(activity.CurrentPhoto);
+            activity.previousImage.swipeRight(activity.currentPhoto);
         }
     }
 
     public void prev() {
         //put switch wallpaper method here
-        activity.CurrentPhoto = activity.previousImage.swipeLeft();
-        if (activity.CurrentPhoto != null) {
+        activity.currentPhoto = activity.previousImage.swipeLeft();
+        if (activity.currentPhoto != null) {
             if (activity.lastSwipe == MainActivity.SwipeDirection.right) {
-                activity.CurrentPhoto = activity.previousImage.swipeLeft();
+                activity.currentPhoto = activity.previousImage.swipeLeft();
             }
-            activity.setBackgroundImage(activity.CurrentPhoto);
+            activity.setBackgroundImage(activity.currentPhoto);
         }
     }
 }

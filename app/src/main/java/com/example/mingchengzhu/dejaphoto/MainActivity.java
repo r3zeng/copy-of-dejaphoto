@@ -75,15 +75,16 @@ public class MainActivity extends AppCompatActivity
     boolean noPhotosModeEnabled = false;
 
     private PopupWindow popup;
+
     // Field for setting panel
     public boolean Deja_Time = true;
     public boolean Deja_Date = true;
     public boolean Deja_Location = true;
     public boolean Deja_Karma = true;
     public int Deja_refresh_time = 10000; //10 seconds
-    private final Handler auto_switch_handler = new Handler();
+    private final Handler autoSwitchHandler = new Handler();
     PreviousImage previousImage;
-    DejaPhoto CurrentPhoto;
+    DejaPhoto currentPhoto;
 
     WeightAlgo algo;
 
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                gotLocationText(CurrentPhoto, text);
+                gotLocationText(currentPhoto, text);
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         previousImage = new PreviousImage();
-        CurrentPhoto = null;
+        currentPhoto = null;
 
         algo = new WeightAlgo(this);
 
@@ -186,9 +187,9 @@ public class MainActivity extends AppCompatActivity
                 // logging message
                 Log.i(TAG, "user has swiped up");
 
-                if(CurrentPhoto != null){
+                if(currentPhoto != null){
                     // set Karma and toast!
-                    CurrentPhoto.setKarma(true);
+                    currentPhoto.setKarma(true);
                     Toast.makeText(MainActivity.this, "Karma !", Toast.LENGTH_SHORT).show();
                 }
                 //refresh timer
@@ -209,8 +210,8 @@ public class MainActivity extends AppCompatActivity
                 Log.i(TAG, "user has swiped down");
 
                 // Release and toast!
-                if(CurrentPhoto != null){
-                    CurrentPhoto.setReleased(true);
+                if(currentPhoto != null){
+                    currentPhoto.setReleased(true);
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 // refresh timer
@@ -244,16 +245,16 @@ public class MainActivity extends AppCompatActivity
 
 
         /* The following code is used to implement auto-switch */
-        auto_switch = new AutoSwitch(this, auto_switch_handler, Deja_refresh_time);
+        auto_switch = new AutoSwitch(this, autoSwitchHandler, Deja_refresh_time);
 
         /* Start the runnable task*/
-        auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+        autoSwitchHandler.postDelayed(auto_switch, Deja_refresh_time);
 
 
         /* The following code is used to get background when starts the app */
-        CurrentPhoto = algo.getNextRandomImage();
-        // if CurrentPhoto is null, it will display a message telling the user there are no photos
-        setBackgroundImage(CurrentPhoto);
+        currentPhoto = algo.getNextRandomImage();
+        // if currentPhoto is null, it will display a message telling the user there are no photos
+        setBackgroundImage(currentPhoto);
     }
 
     @Override
@@ -372,8 +373,8 @@ public class MainActivity extends AppCompatActivity
                         Deja_refresh_time = (Integer.valueOf(mEdit.getText().toString()))*1000;
                         if(auto_switch != null){
                             auto_switch.setTime(Deja_refresh_time);
-                            auto_switch_handler.removeCallbacks(auto_switch);
-                            auto_switch_handler.postDelayed(auto_switch, Deja_refresh_time);
+                            autoSwitchHandler.removeCallbacks(auto_switch);
+                            autoSwitchHandler.postDelayed(auto_switch, Deja_refresh_time);
                         }
                         popup.dismiss();
                     }
@@ -408,14 +409,14 @@ public class MainActivity extends AppCompatActivity
                     Log.i(TAG, "user selected an image to add");
 
                     Uri selectedImage = data.getData();
-                    CurrentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
-                    previousImage.swipeRight(CurrentPhoto);
+                    currentPhoto = DejaPhoto.addPhotoWithUri(selectedImage, this);
+                    previousImage.swipeRight(currentPhoto);
 
                     //Andy is Testing Writing to File
-                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", CurrentPhoto);
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", currentPhoto);
 
                     // Display the new photo immediately
-                    setBackgroundImage(CurrentPhoto);
+                    setBackgroundImage(currentPhoto);
 
                     // reset timer
                     auto_switch.refresh();
