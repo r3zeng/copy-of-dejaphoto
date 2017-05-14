@@ -276,8 +276,8 @@ public class PhotoManager {
         if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
         } else if (photo != null
-                && backHistory.getLastPhoto() != null
-                && backHistory.getLastPhoto().equals(photo)) {
+                && backHistory.getCurrentPhoto() != null
+                && backHistory.getCurrentPhoto().equals(photo)) {
             return 0;
         } else {
             return 1;
