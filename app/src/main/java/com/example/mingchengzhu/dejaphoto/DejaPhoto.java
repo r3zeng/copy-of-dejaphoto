@@ -173,11 +173,8 @@ public class DejaPhoto {
     }
 
 
-    //Andy
-
     /**
-     * @name toString()
-     * @param context
+     * @param context the context that will be used to retrieve the absolute path of a Uri
      * @return DejaPhoto member variables in string format.
      */
     public  String toString(Context context)
@@ -188,6 +185,12 @@ public class DejaPhoto {
                 this.getTime() + "\n" );
     }
 
+    /**
+     *
+     * @param context the context that will be used to retrieve the absolute path of a Uri
+     * @param uri the uri whose absolute path will be returned
+     * @return the absolute file path of the parameter Uri
+     */
     public static String getPathFromUri(final Context context, final Uri uri) {
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
