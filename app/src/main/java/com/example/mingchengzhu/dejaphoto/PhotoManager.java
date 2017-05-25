@@ -11,6 +11,7 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by mingchengzhu on 5/13/17.
+ * Description: includes weighting algorithm and next/prev function.
  */
 
 public class PhotoManager {
@@ -21,6 +22,8 @@ public class PhotoManager {
     private boolean matchDate = true;
     private boolean matchLocation = true;
     private boolean matchKarma = true;
+    private boolean showMine = true;
+    private boolean showFriends = true;
     private PreviousImage backHistory = new PreviousImage();
 
     public PhotoManager(PhotoManagerClient client) {
@@ -86,11 +89,13 @@ public class PhotoManager {
      * note: This value is not a percentage and should be compared relative to other photo weights
      */
     public double getTotalPhotoWeight(DejaPhoto photo) {
+        Log.d(TAG, "getTotalPhotoWeight called");
         Random rand = new Random();
         double rand_value = rand.nextDouble();
-        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getRelasedWeight(photo)
+        return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo);
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight()
+                * getShowMineWeight();
     }
 
     /**
@@ -100,6 +105,7 @@ public class PhotoManager {
      * @return time weight
      */
     public double getTimeWeight(DejaPhoto photo) {
+        Log.d(TAG, "getTimeWeight called");
         if (!matchTime) { /*time from deja mode disabled*/
             return 1; //base weight
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -128,6 +134,7 @@ public class PhotoManager {
      * @return date weight
      */
     public double getDateWeight(DejaPhoto photo) {
+        Log.d(TAG, "getDateWeight called");
         if (!matchDate) {
             return 1;
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -167,6 +174,7 @@ public class PhotoManager {
      * @return location weight
      */
     public double getLocationWeight(DejaPhoto photo) {
+        Log.d(TAG, "getLocationWeight called");
         if (!matchLocation) {
             return 1; //base weight
         } else if (client.tracker == null || client.tracker.getLocation() == null || photo.getLocation() == null) {
@@ -192,6 +200,7 @@ public class PhotoManager {
      * @return Karma weight
      */
     public double getKarmaWeight(DejaPhoto photo) {
+        Log.d(TAG, "getKarmaWeight called");
         if (!matchKarma) {
             return 1;
         } else {
@@ -209,7 +218,8 @@ public class PhotoManager {
      *
      * @return release weight
      */
-    public double getRelasedWeight(DejaPhoto photo) {
+    public double getReleasedWeight(DejaPhoto photo) {
+        Log.d(TAG, "getReleasedWeight called");
         if (photo.getReleased()) {
             return 0;
         } else {
@@ -225,7 +235,9 @@ public class PhotoManager {
      * @return recent weight
      */
     public double getRecentWeight(DejaPhoto photo) {
-        if (backHistory != null && backHistory.PhotoPreviouslySeen(photo)) {
+        Log.d(TAG, "getRecentWeight called");
+        if (backHistory != null && backHistory
+                .PhotoPreviouslySeen(photo)) {
             return 0.1;
         } else {
             return 1;
@@ -240,6 +252,7 @@ public class PhotoManager {
      * @return same day weight
      */
     public double getSameDayWeight(DejaPhoto photo) {
+        Log.d(TAG, "getSameDatWeight called");
         if (!matchDate) {
             return 1;
         } else if (client.tracker == null || client.tracker.getTime() == 0 || photo.getTime() == 0) {
@@ -270,9 +283,10 @@ public class PhotoManager {
      * should not be called elsewhere
      *
      * @param photo
-     * @return 0% chance of getting same photo twice unless only 1 photo
+     * @return % chance of getting same photo twice unless only 1 photo
      */
     public double getLastPhotoWeight(DejaPhoto photo) {
+        Log.d(TAG, "getLastPhotoWeight called");
         if (backHistory == null || backHistory.getNumberofPhoto() == 1) {
             return 1;
         } else if (photo != null
@@ -283,8 +297,24 @@ public class PhotoManager {
             return 1;
         }
     }
+    public double getShowMineWeight() {
+        Log.d(TAG, "getShowMineWeight called");
+        if (showMine)
+            return 1;
+        else
+            return 0;
 
+    }
+    public double getShowFriendsWeight() {
+        Log.d(TAG, "getShowFriendsWeight called");
+        if (showFriends)
+            return 1;
+        else
+            return 0;
+
+    }
     public void next() {
+        Log.d(TAG, "next called");
         DejaPhoto newPhoto = getNextRandomImage();
         if (newPhoto == null) {
             Log.w(TAG, "getNextRandomImage() returned null");
@@ -299,6 +329,7 @@ public class PhotoManager {
     }
 
     public void prev() {
+        Log.d(TAG, "prev called");
         DejaPhoto previous = backHistory.swipeLeft();
         if (previous == null) {
             // there are no previous photos, so abort
@@ -340,6 +371,20 @@ public class PhotoManager {
 
     public void setMatchKarma(boolean matchKarma) {
         this.matchKarma = matchKarma;
+    }
+
+    public boolean getShowFriends() {
+        return showFriends;
+    }
+
+    public void setShowFriends(boolean showFriends) {
+        this.showFriends = showFriends;
+    }
+
+    public boolean getShowMine() { return showMine; }
+
+    public void setShowMine(boolean showMine) {
+        this.showMine = showMine;
     }
 
     public DejaPhoto getCurrentPhoto() {

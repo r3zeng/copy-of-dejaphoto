@@ -26,6 +26,12 @@ public class StateCodec {
 
     private static final String TAG = "StateCodec";
 
+    /**
+     *
+     * @param context the context that will be used to retrieve the absolute path of a Uri
+     * @param sFileName the file name that the state is being saved
+     * @param dejaP the dejaPhoto to be stored to file
+     */
     public static void addDejaPhotoToSC(Context context, String sFileName, DejaPhoto dejaP)
     {
         Log.d(TAG, "Begin DejaPhotoToSC");
@@ -54,7 +60,11 @@ public class StateCodec {
         }
     }
 
-    public static void printState(String fileName)
+    /**
+     *
+     * @param fileName used for visual pre-testing
+     */
+    private static void printState(String fileName)
     {
 
         File currState = new File(fileName);
@@ -75,6 +85,11 @@ public class StateCodec {
 
     }
 
+    /**
+     *
+     * @param context the context that will be used to retrieve the absolute path of a StateCodec.txt
+     * @param fileName the filename that contains a state
+     */
     public static void loadState(Context context, String fileName)
     {
 

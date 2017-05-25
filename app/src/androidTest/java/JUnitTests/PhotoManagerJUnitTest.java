@@ -19,7 +19,7 @@ public class PhotoManagerJUnitTest {
     PhotoManager testManager;
     Tracker tracker;
     final long MILISECONDS_IN_DAY = 86400000;
-
+    
     @Before
     public void setUp(){
         testManager = new PhotoManager(testClient);
@@ -44,10 +44,10 @@ public class PhotoManagerJUnitTest {
     @Test
     public void testRelasedWeight() {
         DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
-        double weight = testManager.getRelasedWeight(testPhoto1);
+        double weight = testManager.getReleasedWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setReleased(true);
-        weight = testManager.getRelasedWeight(testPhoto1);
+        weight = testManager.getReleasedWeight(testPhoto1);
         assertEquals(0.0, weight, 0.0);
     }
     @Test

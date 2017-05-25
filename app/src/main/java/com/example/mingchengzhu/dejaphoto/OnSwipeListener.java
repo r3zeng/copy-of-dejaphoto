@@ -1,3 +1,7 @@
+/*
+ * OnSwipeListener class
+ * implements gesture recognition for the app
+ */
 package com.example.mingchengzhu.dejaphoto;
 
 import android.content.Context;
@@ -17,6 +21,8 @@ import android.view.View.OnTouchListener;
 public class OnSwipeListener implements OnTouchListener {
 
     private final GestureDetector gestureDetector;
+
+    // Used for logging
     private static final String TAG = "OnSwipeListener";
 
     /**
