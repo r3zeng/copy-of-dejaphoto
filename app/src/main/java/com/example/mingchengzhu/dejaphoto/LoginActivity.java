@@ -107,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void signIn(){
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
+        Log.i(TAG, "Account should have been signed in");
     }
 
 

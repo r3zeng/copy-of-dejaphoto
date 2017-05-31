@@ -605,6 +605,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void signOut() {
+        Log.i(TAG, "The account should be signed out");
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
@@ -612,6 +613,7 @@ public class MainActivity extends AppCompatActivity
                         // [START_EXCLUDE]
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
+                        Log.i(TAG, "Should have returned to login screen");
                         // [END_EXCLUDE]
                     }
                 });
@@ -620,8 +622,9 @@ public class MainActivity extends AppCompatActivity
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_out_button:
-                if (mGoogleApiClient.isConnected())
+                if (mGoogleApiClient.isConnected()) {
                     signOut();
+                }
                 break;
 
         }
