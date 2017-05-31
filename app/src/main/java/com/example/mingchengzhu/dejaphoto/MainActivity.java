@@ -19,6 +19,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -53,7 +54,9 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -276,6 +279,11 @@ public class MainActivity extends AppCompatActivity
         photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
+
+        // Get the email from google account 
+        Bundle extras = getIntent().getExtras();
+        String email = extras.getString("email");
+
     }
 
     @Override
@@ -720,11 +728,13 @@ public class MainActivity extends AppCompatActivity
 
     private void signOut() {
         Log.i(TAG, "The account should be signed out");
+
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         // [START_EXCLUDE]
+                        Toast.makeText(getApplicationContext(),"Logged Out",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                         Log.i(TAG, "Should have returned to login screen");
