@@ -52,18 +52,25 @@ import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+
 /**
  * The primary activity for the app
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, PhotoManagerClient {
+        implements NavigationView.OnNavigationItemSelectedListener, PhotoManagerClient,GoogleApiClient.OnConnectionFailedListener {
 
     // Used for logging
     private static final String TAG = "MainActivity";
 
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
-
+    GoogleApiClient mGoogleApiClient;
     // Used to receive an address result from FetchAddressIntentService
     private AddressResultReceiver resultReceiver;
 
@@ -152,6 +159,18 @@ public class MainActivity extends AppCompatActivity
 
         //Intent intent = new Intent(this, LoginActivity.class);
         //startActivity(intent);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // [END configure_signin]
+
+        // [START build_client]
+        // Build a GoogleApiClient with access to the Google Sign-In API and the
+        // options specified by gso.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
         photoManager = new PhotoManager(this);
 
@@ -584,4 +603,35 @@ public class MainActivity extends AppCompatActivity
     public void currentPhotoChanged() {
         setBackgroundImage(photoManager.getCurrentPhoto());
     }
+
+    private void signOut() {
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        // [START_EXCLUDE]
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        // [END_EXCLUDE]
+                    }
+                });
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.sign_out_button:
+                if (mGoogleApiClient.isConnected())
+                    signOut();
+                break;
+
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
 }

@@ -13,6 +13,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 /**
  * Created by tianhui on 5/25/17.
@@ -43,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+        
     }
 /*
 
@@ -106,13 +109,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+
     @Override
     public void onClick(View view){
         switch (view.getId()) {
             case R.id.sign_in_button:
                 signIn();
                 break;
-            // ...
         }
     }
 
