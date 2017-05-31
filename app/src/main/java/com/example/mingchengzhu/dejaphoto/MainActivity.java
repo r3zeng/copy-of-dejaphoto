@@ -316,12 +316,14 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /* The following code is used to implement the navigation bar */
+        /* The following code is used to implement the navigation bar */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+
 
         // logging message
         Log.i(TAG, "User selected navigation item " + id);
@@ -374,8 +376,120 @@ public class MainActivity extends AppCompatActivity
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
             changeFrenquencyPopUp();
+        } else if(id == R.id.setting){
+            SettingsPopup();
         }
         return true;
+    }
+
+    public void SettingsPopup(){
+        LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.settings_menu, null);
+
+        popup = new PopupWindow(container, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT, true);
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
+
+        final Button time_button = (Button) popup.getContentView().findViewById(R.id.nav_time_button);
+        if(photoManager.getMatchTime()){
+            time_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            time_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        time_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getMatchTime()) {
+                    photoManager.setMatchTime(false);
+                    Toast.makeText(MainActivity.this, "Time Off", Toast.LENGTH_SHORT).show();
+                    time_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setMatchTime(true);
+                    Toast.makeText(MainActivity.this, "Time On", Toast.LENGTH_SHORT).show();
+                    time_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button date_button = (Button) popup.getContentView().findViewById(R.id.nav_date_button);
+        if(photoManager.getMatchDate()){
+            date_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            date_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        date_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getMatchDate()) {
+                    photoManager.setMatchDate(false);
+                    Toast.makeText(MainActivity.this, "Date Off", Toast.LENGTH_SHORT).show();
+                    date_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setMatchDate(true);
+                    Toast.makeText(MainActivity.this, "Date On", Toast.LENGTH_SHORT).show();
+                    date_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button location_button = (Button) popup.getContentView().findViewById(R.id.nav_location_button);
+        if(photoManager.getMatchLocation()){
+            location_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            location_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        location_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getMatchLocation()) {
+                    photoManager.setMatchLocation(false);
+                    Toast.makeText(MainActivity.this, "Location Off", Toast.LENGTH_SHORT).show();
+                    location_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setMatchLocation(true);
+                    Toast.makeText(MainActivity.this, "Location On", Toast.LENGTH_SHORT).show();
+                    location_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button karma_button = (Button) popup.getContentView().findViewById(R.id.nav_karma_button);
+        if(photoManager.getMatchKarma()){
+            karma_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            karma_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        karma_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getMatchKarma()) {
+                    photoManager.setMatchKarma(false);
+                    Toast.makeText(MainActivity.this, "Karma Off", Toast.LENGTH_SHORT).show();
+                    karma_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setMatchKarma(true);
+                    Toast.makeText(MainActivity.this, "Karma On", Toast.LENGTH_SHORT).show();
+                    karma_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button exit_button = (Button) popup.getContentView().findViewById(R.id.Setting_exit);
+        exit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popup.dismiss();
+            }
+        });
+
     }
 
     public void changeFrenquencyPopUp() {
