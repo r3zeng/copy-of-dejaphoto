@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@drawable/frame"
+    android:orientation="vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n\n\n\n\n\n"/>
+
+    <Button
+        android:id="@+id/nav_time_button"
+        android:layout_width="324dp"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:enabled="true"
+        android:icon="@drawable/clock"
+        android:text="Time"
+        android:title="Time On" />
+
+    <Button
+        android:id="@+id/nav_date_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/date"
+        android:text="Date"
+        android:title="Date On" />
+
+    <Button
+        android:id="@+id/nav_location_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/location"
+        android:text="Location"
+        android:title="Location On" />
+
+    <Button
+        android:id="@+id/nav_karma_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/karma"
+        android:text="Karma"
+        android:title="Karma On" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n\n\n\n"/>
+
+    <Button
+        android:id="@+id/Setting_exit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Back" />
+
+
+</LinearLayout>
