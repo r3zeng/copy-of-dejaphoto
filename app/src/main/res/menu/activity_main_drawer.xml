@@ -23,24 +23,32 @@
     <group android:checkableBehavior="all">
 
         <item
+            android:id="@+id/setting"
+            android:title="Settings"
+            />
+
+        <item
             android:id="@+id/nav_time"
             android:checkable="true"
             android:enabled="true"
             android:icon="@drawable/clock"
             android:title="Time On"
-            android:visible="true" />
+            android:visible="false" />
         <item
             android:id="@+id/nav_date"
             android:icon="@drawable/date"
-            android:title="Date On" />
+            android:title="Date On"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_location"
             android:icon="@drawable/location"
-            android:title="Location On" />
+            android:title="Location On"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_karma"
             android:icon="@drawable/karma"
-            android:title="Karma On" />
+            android:title="Karma On"
+            android:visible="false"/>
     </group>
 
 
