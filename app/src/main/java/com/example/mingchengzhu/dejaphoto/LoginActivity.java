@@ -126,4 +126,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
+
 }
