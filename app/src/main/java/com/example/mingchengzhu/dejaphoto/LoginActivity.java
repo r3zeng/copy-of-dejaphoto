@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -14,7 +15,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
- * Created by tianhuic on 5/25/17.
+ * Created by tianhui on 5/25/17.
  */
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener{
@@ -82,6 +83,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             GoogleSignInAccount acct = result.getSignInAccount();
            // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             //updateUI(true);
+            Toast.makeText(this, "You have already signed in!",
+                    Toast.LENGTH_LONG).show();
+
+            Intent menuIntent = new Intent(this, MainActivity.class);
+            startActivity(menuIntent);
+
+
         } else {
             // Signed out, show unauthenticated UI.
            // updateUI(false);
