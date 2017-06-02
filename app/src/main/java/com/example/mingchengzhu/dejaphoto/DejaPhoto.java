@@ -60,6 +60,11 @@ public class DejaPhoto {
     private boolean savedToFile;
 
     /**
+     * Cached name of the location
+     */
+    private String locationName;
+
+    /**
      * Constructor to be used only with JUnit tests
      * @param galleryUriString a unique string which will be converted to a URI
      * @param hasKarma true if this photo has karma
@@ -332,5 +337,15 @@ public class DejaPhoto {
         return null;
     }
 
+    /**
+     * Cached name of the location
+     */
+    public String getLocationName() {
+        return locationName;
+    }
+
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
 }
 
