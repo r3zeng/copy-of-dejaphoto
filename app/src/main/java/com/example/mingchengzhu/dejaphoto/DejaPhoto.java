@@ -19,11 +19,19 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Represents a single photo added to the app by the user
  */
 public class DejaPhoto {
+
+    public static final String PHOTO_KEY_KCOUNT = "karmaCount";
+    public static final String PHOTO_KEY_LATITUDE = "latitude";
+    public static final String PHOTO_KEY_LONGITUDE = "longitude";
+    public static final String PHOTO_KEY_LNAME = "locationName";
+    public static final String PHOTO_KEY_TIME_TAKEN = "timeTaken";
+
     /**
      * Used for logging
      */
@@ -63,6 +71,26 @@ public class DejaPhoto {
      * Cached name of the location
      */
     private String locationName;
+
+    /**
+     * Contructor from map objects from Firebase
+     */
+    public DejaPhoto(Map<String, Object> map, Uri galleryUri) {
+        this.galleryUri = galleryUri;
+        this.hasKarma = false;
+        this.wasReleased = false;
+        this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
+
+        Number latitude = (Number)map.get(PHOTO_KEY_LATITUDE);
+        Number longitude = (Number)map.get(PHOTO_KEY_LONGITUDE);
+        if (latitude != null && longitude != null) {
+            this.location = new Location("");
+            this.location.setLatitude(latitude.doubleValue());
+            this.location.setLongitude(longitude.doubleValue());
+        }
+
+        this.locationName = (String)map.get(PHOTO_KEY_LNAME);
+    }
 
     /**
      * Constructor to be used only with JUnit tests
