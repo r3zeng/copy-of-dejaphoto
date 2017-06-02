@@ -31,6 +31,7 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_LONGITUDE = "longitude";
     public static final String PHOTO_KEY_LNAME = "locationName";
     public static final String PHOTO_KEY_TIME_TAKEN = "timeTaken";
+    public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
 
     /**
      * Used for logging
@@ -71,6 +72,12 @@ public class DejaPhoto {
      * Cached name of the location
      */
     private String locationName;
+
+
+    /**
+     * ID of the person whose picture it is
+     */
+    private String pictureOrigin;
 
     /**
      * Contructor from map objects from Firebase
