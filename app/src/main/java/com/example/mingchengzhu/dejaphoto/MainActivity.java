@@ -487,6 +487,53 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        
+        final Button myPhoto_button = (Button) popup.getContentView().findViewById(R.id.nav_my_photo_button);
+        if(photoManager.getShowMine()){
+            myPhoto_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            myPhoto_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        myPhoto_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getShowMine()) {
+                    photoManager.setShowMine(false);
+                    Toast.makeText(MainActivity.this, "Hide my Photos", Toast.LENGTH_SHORT).show();
+                    myPhoto_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setShowMine(true);
+                    Toast.makeText(MainActivity.this, "Show my Photos", Toast.LENGTH_SHORT).show();
+                    myPhoto_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button myFriend_button = (Button) popup.getContentView().findViewById(R.id.nav_friend_photo_button);
+        if(photoManager.getShowFriends()){
+            myFriend_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            myFriend_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        myFriend_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getShowFriends()) {
+                    photoManager.setShowFriends(false);
+                    Toast.makeText(MainActivity.this, "Hide Friends Photos", Toast.LENGTH_SHORT).show();
+                    myFriend_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setShowFriends(true);
+                    Toast.makeText(MainActivity.this, "Show Friends Photos", Toast.LENGTH_SHORT).show();
+                    myFriend_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
 
         final Button exit_button = (Button) popup.getContentView().findViewById(R.id.Setting_exit);
         exit_button.setOnClickListener(new View.OnClickListener() {
