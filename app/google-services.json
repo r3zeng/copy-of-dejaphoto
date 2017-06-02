@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "507673076118-rrsrj6nqbeopfqhinfjjqhfhna8i99ou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mingchengzhu.dejaphoto",
+            "certificate_hash": "5a41f5e39cb29dc4a6af79d407c2c781f72025da"
+          }
+        },
+        {
+          "client_id": "507673076118-en6i99mqbsqh273muttrlso4jr6e3i56.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mingchengzhu.dejaphoto",
+            "certificate_hash": "f0b33877426c281f018a1f7b42fe90f016911f6f"
+          }
+        },
+        {
           "client_id": "507673076118-qanhpvqoe11dpoh8aole18enugkeoqp2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -30,6 +46,9 @@
       "api_key": [
         {
           "current_key": "AIzaSyAHddoM1y0r2CzwnJPDsQTXowAS_0K14XY"
+        },
+        {
+          "current_key": "AIzaSyBDdcay5KJUDFe5qR9iZB_-GYb8Dz6X1ps"
         }
       ],
       "services": {

@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 /**
  * The primary activity for the app
@@ -92,6 +95,7 @@ public class MainActivity extends AppCompatActivity
     private final Handler autoSwitchHandler = new Handler();
 
     PhotoManager photoManager;
+    iFirebase server;
 
     /**
      * turns on/off a message about having no photos
@@ -176,6 +180,7 @@ public class MainActivity extends AppCompatActivity
                 .build();
 
         photoManager = new PhotoManager(this);
+        server = new RealFirebase();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -572,6 +577,19 @@ public class MainActivity extends AppCompatActivity
 
                     // reset timer
                     autoSwitch.refresh();
+
+                    // Upload the photo
+                    server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            Log.i(TAG, "Image uploaded successfully!");
+                        }
+                    }, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //TODO:
+                        }
+                    });
                 }
                 break;
             }
