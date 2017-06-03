@@ -55,7 +55,9 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -282,6 +284,12 @@ public class MainActivity extends AppCompatActivity
         photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
+
+        // Get the email from the current google account
+        Bundle extras = getIntent().getExtras();
+        String email = extras.getString("email");
+
+
     }
 
     @Override
@@ -487,6 +495,53 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        
+        final Button myPhoto_button = (Button) popup.getContentView().findViewById(R.id.nav_my_photo_button);
+        if(photoManager.getShowMine()){
+            myPhoto_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            myPhoto_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        myPhoto_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getShowMine()) {
+                    photoManager.setShowMine(false);
+                    Toast.makeText(MainActivity.this, "Hide my Photos", Toast.LENGTH_SHORT).show();
+                    myPhoto_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setShowMine(true);
+                    Toast.makeText(MainActivity.this, "Show my Photos", Toast.LENGTH_SHORT).show();
+                    myPhoto_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
+        final Button myFriend_button = (Button) popup.getContentView().findViewById(R.id.nav_friend_photo_button);
+        if(photoManager.getShowFriends()){
+            myFriend_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+        }else{
+            myFriend_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+        }
+        myFriend_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                if (photoManager.getShowFriends()) {
+                    photoManager.setShowFriends(false);
+                    Toast.makeText(MainActivity.this, "Hide Friends Photos", Toast.LENGTH_SHORT).show();
+                    myFriend_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                }else{
+                    photoManager.setShowFriends(true);
+                    Toast.makeText(MainActivity.this, "Show Friends Photos", Toast.LENGTH_SHORT).show();
+                    myFriend_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+
+                }
+            }
+        });
+
 
         final Button exit_button = (Button) popup.getContentView().findViewById(R.id.Setting_exit);
         exit_button.setOnClickListener(new View.OnClickListener() {
@@ -739,11 +794,13 @@ public class MainActivity extends AppCompatActivity
 
     private void signOut() {
         Log.i(TAG, "The account should be signed out");
+
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         // [START_EXCLUDE]
+                        Toast.makeText(getApplicationContext(),"Logged Out",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
                         Log.i(TAG, "Should have returned to login screen");
