@@ -57,9 +57,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -102,7 +100,7 @@ public class MainActivity extends AppCompatActivity
     iFirebase server;
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
-    public static String currentUserEmail = null;
+    public static String currentUserEmail;
 
     public static String getCurrentUser()
     {
@@ -159,9 +157,12 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
-                String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                gotLocationText(photoManager.getCurrentPhoto(), text);
-                Log.i(TAG, "location reverse geocoding succeeds");
+                //here
+                if(photoManager.getCurrentPhoto().userDefinedLocation = false) {
+                    String text = resultData.getString(Constants.RESULT_DATA_KEY);
+                    gotLocationText(photoManager.getCurrentPhoto(), text);
+                    Log.i(TAG, "location reverse geocoding succeeds");
+                }
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -302,6 +303,16 @@ public class MainActivity extends AppCompatActivity
         photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
+
+        // Get the email from the current google account
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            currentUserEmail = extras.getString("email");
+        }else{
+            currentUserEmail = "nullEmail@gmail.com";
+        }
+
+
     }
 
     @Override
@@ -404,8 +415,41 @@ public class MainActivity extends AppCompatActivity
             changeFrenquencyPopUp();
         } else if(id == R.id.setting){
             SettingsPopup();
+        } else if(id == R.id.add_friend){
+            add_friend();
+        } else if(id == R.id.take_photo){
+            take_photo();
         }
         return true;
+    }
+
+    public void add_friend(){
+        LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.add_friend_menu, null);
+
+        popup = new PopupWindow(container, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT, true);
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
+
+        Button confirm = (Button) popup.getContentView().findViewById(R.id.add_friend_confirm);
+        confirm.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                popup.dismiss();
+            }
+        });
+
+        Button cancel = (Button) popup.getContentView().findViewById(R.id.add_friend_cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popup.dismiss();
+            }
+        });
+    }
+
+    public void take_photo(){
+
     }
 
     public void SettingsPopup(){
@@ -507,7 +551,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-        
+
         final Button myPhoto_button = (Button) popup.getContentView().findViewById(R.id.nav_my_photo_button);
         if(photoManager.getShowMine()){
             myPhoto_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
@@ -792,11 +836,21 @@ public class MainActivity extends AppCompatActivity
         background.setImageURI(Uri.fromFile(photo.getFile()));
         background.invalidate();
 
+        //here
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+
+        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+
         locationTextView.setText("");
 
         Location location = photo.getLocation();
-        if (location != null) {
+
+        // for userDefinedLocation
+        if(photo.userDefinedLocation){
+            gotLocationText(photo, photo.getLocationName());
+        }
+
+        else if (location != null) {
             if (resultReceiver == null) {
                 resultReceiver = new AddressResultReceiver(new Handler());
             }
@@ -819,7 +873,11 @@ public class MainActivity extends AppCompatActivity
      * @param locationText the location text
      */
     void gotLocationText(DejaPhoto photo, String locationText) {
+
+        // setting up the textview and editview
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        locationEditText.setText (locationText);
         locationTextView.setText(locationText);
 
         setWallpaper(photo, locationText);
@@ -866,6 +924,33 @@ public class MainActivity extends AppCompatActivity
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    // location name edit mode
+    public void hideLocationName(View view){
+        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        final Button locationButton = (Button) findViewById(R.id.locationButton);
+        locationEditText.setVisibility(View.VISIBLE);
+        locationButton.setVisibility(View.VISIBLE);
+        locationTextView.setVisibility(View.INVISIBLE);
+    }
+
+    // location name update mode
+    public void showLocationName(View view){
+        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        final Button locationButton = (Button) findViewById(R.id.locationButton);
+        locationEditText.setVisibility(View.INVISIBLE);
+        locationButton.setVisibility(View.INVISIBLE);
+        locationTextView.setVisibility(View.VISIBLE);
+
+        photoManager.getCurrentPhoto().userDefinedLocation = true;
+        String newLocationName = locationEditText.getText().toString();
+
+        locationTextView.setText(newLocationName);
+        photoManager.getCurrentPhoto().setLocationName(newLocationName);
+        gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
 
