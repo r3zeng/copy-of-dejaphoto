@@ -7,20 +7,27 @@
     android:layout_height="match_parent"
     tools:context="com.example.mingchengzhu.dejaphoto.MainActivity">
 
+    <include layout="@layout/content_main"/>
+
     <android.support.design.widget.AppBarLayout
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="55dp"
+        android:layout_marginLeft="-290dp"
+        android:background="@android:color/transparent"
+        android:theme="@style/Theme.AppCompat.NoActionBar"
+        android:weightSum="1">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimaryDark"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.23"
+            android:background="@android:color/transparent"
+            android:elevation="30dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_main"/>
 
 </android.support.design.widget.CoordinatorLayout>
