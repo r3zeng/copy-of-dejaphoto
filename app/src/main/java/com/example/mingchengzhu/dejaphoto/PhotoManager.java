@@ -328,7 +328,7 @@ public class PhotoManager {
 
 
     public void next() {
-        Log.d(TAG, "next called");
+        Log.i(TAG, "next called");
         DejaPhoto newPhoto = getNextRandomImage();
         if (newPhoto == null) {
             Log.w(TAG, "getNextRandomImage() returned null");

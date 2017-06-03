@@ -850,7 +850,7 @@ public class MainActivity extends AppCompatActivity
             gotLocationText(photo, photo.getLocationName());
         }
 
-        else if (location != null) {
+        if (location != null) {
             if (resultReceiver == null) {
                 resultReceiver = new AddressResultReceiver(new Handler());
             }
