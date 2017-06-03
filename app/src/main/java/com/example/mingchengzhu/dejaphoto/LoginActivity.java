@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -45,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
-        
+
     }
 /*
 
@@ -89,9 +90,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this, "You have already signed in!",
                     Toast.LENGTH_LONG).show();
 
-            Intent menuIntent = new Intent(this, MainActivity.class);
-            startActivity(menuIntent);
+            String personEmail = acct.getEmail();
 
+            Intent menuIntent = new Intent(this, MainActivity.class);
+            menuIntent.putExtra("email", personEmail);
+            startActivity(menuIntent);
 
         } else {
             // Signed out, show unauthenticated UI.

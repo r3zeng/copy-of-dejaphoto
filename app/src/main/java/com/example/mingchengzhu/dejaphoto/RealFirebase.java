@@ -16,6 +16,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by andymeza on 6/1/17.
@@ -38,9 +39,9 @@ public class RealFirebase implements iFirebase {
 
         //From Firebase Example
         Uri file = photo.getUri();
-        String lastSegment = file.getLastPathSegment();
+        String uploadFilename = UUID.randomUUID().toString();
 
-        StorageReference riversRef = storageRef.child("images").child(lastSegment);
+        StorageReference riversRef = storageRef.child("images").child(uploadFilename);
         UploadTask uploadTask = riversRef.putFile(file);
 
         /******************************
@@ -51,7 +52,7 @@ public class RealFirebase implements iFirebase {
         Location location = photo.getLocation();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(lastSegment);
+        DatabaseReference imageRef = database.child("images").child(uploadFilename);
         imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
         imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
