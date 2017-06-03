@@ -31,8 +31,8 @@ public class PhotoManagerJUnitTest {
 
     @Test
     public void testKarmaWeight(){
-        DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
-        DejaPhoto testPhoto2 = new DejaPhoto("dummytest2", 0, 0, false, true, 1000000);
+        DejaPhoto testPhoto1 = new DejaPhoto("user@ucsd.edu", "dummytest", 0, 0, true, false, 1000000);
+        DejaPhoto testPhoto2 = new DejaPhoto("user@ucsd.edu", "dummytest2", 0, 0, false, true, 1000000);
         double weight = testManager.getKarmaWeight(testPhoto1);
         assertEquals(4.0, weight, 0.0);
         double weight2 = testManager.getKarmaWeight(testPhoto2);
@@ -43,7 +43,7 @@ public class PhotoManagerJUnitTest {
     }
     @Test
     public void testRelasedWeight() {
-        DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
+        DejaPhoto testPhoto1 = new DejaPhoto("user@ucsd.edu", "dummytest", 0, 0, true, false, 1000000);
         double weight = testManager.getReleasedWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setReleased(true);
@@ -53,7 +53,7 @@ public class PhotoManagerJUnitTest {
     @Test
     public void testTimeWeight(){
         Tracker tracker = new Tracker();
-        DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
+        DejaPhoto testPhoto1 = new DejaPhoto("user@ucsd.edu", "dummytest", 0, 0, true, false, 1000000);
         double weight = testManager.getTimeWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime());
@@ -67,7 +67,7 @@ public class PhotoManagerJUnitTest {
     @Test
     public void testDateWeight(){
         Tracker tracker = new Tracker();
-        DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 1000000);
+        DejaPhoto testPhoto1 = new DejaPhoto("user@ucsd.edu", "dummytest", 0, 0, true, false, 1000000);
         double weight = testManager.getDateWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime());
@@ -93,7 +93,7 @@ public class PhotoManagerJUnitTest {
     public void testSameDayWeight(){
         long buffer = 100000;
         Tracker tracker = new Tracker();
-        DejaPhoto testPhoto1 = new DejaPhoto("dummytest", 0, 0, true, false, 0);
+        DejaPhoto testPhoto1 = new DejaPhoto("user@ucsd.edu", "dummytest", 0, 0, true, false, 0);
         double weight = testManager.getSameDayWeight(testPhoto1);
         assertEquals(1.0, weight, 0.0);
         testPhoto1.setTime(tracker.getTime()-7*MILISECONDS_IN_DAY + buffer);

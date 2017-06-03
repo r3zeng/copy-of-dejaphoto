@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity
     iFirebase server;
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
-    public static String USER_ID;
+    public static String currentUserEmail = null;
 
     public static String getCurrentUser()
     {
-        return USER_ID;
+        return currentUserEmail;
     }
 
     /**
@@ -190,6 +190,12 @@ public class MainActivity extends AppCompatActivity
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
+        // Get the email from the current google account
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            Bundle extras = getIntent().getExtras();
+            currentUserEmail = extras.getString("email");
+        }
 
         photoManager = new PhotoManager(this);
         server = new RealFirebase();
@@ -296,12 +302,6 @@ public class MainActivity extends AppCompatActivity
         photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
-
-        // Get the email from the current google account
-        Bundle extras = getIntent().getExtras();
-        String email = extras.getString("email");
-
-
     }
 
     @Override

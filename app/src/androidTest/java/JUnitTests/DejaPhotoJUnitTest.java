@@ -25,10 +25,10 @@ public class DejaPhotoJUnitTest {
     public void setUp() {
         // initialize our private member variables
 
-        photo1 = new DejaPhoto("content://photo1", coords[0][0], coords[0][1], false, false, System.currentTimeMillis());
-        photo2 = new DejaPhoto("content://photo2", coords[1][0], coords[1][1], false, true, System.currentTimeMillis());
-        photo1Imposter = new DejaPhoto("content://photo1", coords[2][0], coords[2][1], false, true, System.currentTimeMillis());
-        photoNoLocation = new DejaPhoto("content://noLocation", true, false, System.currentTimeMillis());
+        photo1 = new DejaPhoto("user@ucsd.edu", "content://photo1", coords[0][0], coords[0][1], false, false, System.currentTimeMillis());
+        photo2 = new DejaPhoto("user@ucsd.edu", "content://photo2", coords[1][0], coords[1][1], false, true, System.currentTimeMillis());
+        photo1Imposter = new DejaPhoto("user@ucsd.edu", "content://photo1", coords[2][0], coords[2][1], false, true, System.currentTimeMillis());
+        photoNoLocation = new DejaPhoto("user@ucsd.edu", "content://noLocation", true, false, System.currentTimeMillis());
 
         locationPhotos = new DejaPhoto[]{photo1, photo2, photo1Imposter};
     }

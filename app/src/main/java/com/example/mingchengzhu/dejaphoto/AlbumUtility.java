@@ -157,12 +157,22 @@ public class AlbumUtility {
 
     @Nullable
     public static DejaPhoto addInAppCameraPhoto(Uri cameraPhoto, Context applicationContext) {
-        return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, applicationContext);
+        DejaPhoto photo = addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, applicationContext);
+
+        photo.setPictureOrigin(MainActivity.currentUserEmail);
+        photo.setFromCamera(true);
+
+        return photo;
     }
 
     @Nullable
     public static DejaPhoto addGalleryPhoto(Uri galleryPhoto, Context applicationContext) {
-        return addPhoto(ALBUM_COPIED, galleryPhoto, applicationContext);
+        DejaPhoto photo = addPhoto(ALBUM_COPIED, galleryPhoto, applicationContext);
+
+        photo.setPictureOrigin(MainActivity.currentUserEmail);
+        photo.setFromCamera(false);
+
+        return photo;
     }
 
     @Nullable

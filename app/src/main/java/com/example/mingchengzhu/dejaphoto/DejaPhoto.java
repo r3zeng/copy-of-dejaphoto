@@ -118,8 +118,10 @@ public class DejaPhoto {
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String localFileString, boolean hasKarma, boolean wasReleased, long time) {
+    public DejaPhoto(String userID, String localFileString, boolean hasKarma, boolean wasReleased, long time) {
         this.localFile = new File(localFileString);
+        this.pictureOrigin = userID;
+        this.isFromCamera = false;
         this.hasKarma = hasKarma;
         this.wasReleased = wasReleased;
         this.time = time;
@@ -135,8 +137,10 @@ public class DejaPhoto {
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String localFileString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
+    public DejaPhoto(String userID, String localFileString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
         this.localFile = new File(localFileString);
+        this.pictureOrigin = userID;
+        this.isFromCamera = false;
         this.hasKarma = hasKarma;
         this.wasReleased = wasReleased;
         this.time = time;
