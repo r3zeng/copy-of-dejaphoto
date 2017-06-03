@@ -133,7 +133,9 @@ public class CameraActivity extends Activity {
                 resultIntent.putExtra("Uri", mCurrentURI);
                 setResult(Activity.RESULT_OK, resultIntent);
                 finish();
-
+        }
+        else{
+            finish();
         }
     }
 
