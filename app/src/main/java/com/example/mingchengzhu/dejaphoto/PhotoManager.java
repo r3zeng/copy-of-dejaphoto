@@ -297,22 +297,38 @@ public class PhotoManager {
             return 1;
         }
     }
-    public double getShowMineWeight() {
+    public double getShowMineWeight(DejaPhoto photo) {
         Log.d(TAG, "getShowMineWeight called");
-        if (showMine)
-            return 1;
-        else
-            return 0;
+        if (showMine){
+            if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
+                return 1;
+            else
+                return 0;
+        }
+        else {
+            if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
+                return 0;
+            else
+                return 1;
+        }
 
     }
-    public double getShowFriendsWeight() {
+    public double getShowFriendsWeight(DejaPhoto photo) {
         Log.d(TAG, "getShowFriendsWeight called");
-        if (showFriends)
-            return 1;
-        else
-            return 0;
-
+        if (showFriends) {
+            if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
+                return 0;
+            else
+                return 1;
+        } else {
+            if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
+                return 1;
+            else
+                return 0;
+        }
     }
+
+
     public void next() {
         Log.d(TAG, "next called");
         DejaPhoto newPhoto = getNextRandomImage();
