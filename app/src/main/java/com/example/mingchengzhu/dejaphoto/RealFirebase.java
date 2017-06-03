@@ -38,7 +38,9 @@ public class RealFirebase implements iFirebase {
 
         //From Firebase Example
         Uri file = photo.getUri();
-        StorageReference riversRef = storageRef.child("images/" + file.getLastPathSegment());
+        String lastSegment = file.getLastPathSegment();
+
+        StorageReference riversRef = storageRef.child("images").child(lastSegment);
         UploadTask uploadTask = riversRef.putFile(file);
 
         /******************************
@@ -49,7 +51,7 @@ public class RealFirebase implements iFirebase {
         Location location = photo.getLocation();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(file.getLastPathSegment());
+        DatabaseReference imageRef = database.child("images").child(lastSegment);
         imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
         imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());

@@ -619,7 +619,7 @@ public class MainActivity extends AppCompatActivity
                     autoSwitch.refresh();
 
                     // Upload the photo
-                    /*server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
+                    server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
                         @Override
                         public void onSuccess(Object o) {
                             Log.i(TAG, "Image uploaded successfully!");
@@ -629,7 +629,7 @@ public class MainActivity extends AppCompatActivity
                         public void onFailure(@NonNull Exception e) {
                             //TODO:
                         }
-                    });*/
+                    });
                 }
                 break;
             }

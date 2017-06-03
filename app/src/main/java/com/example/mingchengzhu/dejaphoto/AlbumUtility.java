@@ -10,7 +10,6 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
@@ -31,7 +30,7 @@ public class AlbumUtility {
     /**
      * Album for photos taken in the app
      */
-    public static final String ALBUM_CAMERA = "DejaPhoto";
+    public static final String ALBUM_INAPP_CAMERA = "DejaPhoto";
 
     /**
      * Album for friend's photos downloaded by the app
@@ -43,7 +42,7 @@ public class AlbumUtility {
     }
 
     public static String[] allAlbumNames() {
-        return new String[]{ALBUM_CAMERA, ALBUM_COPIED, ALBUM_FRIENDS};
+        return new String[]{ALBUM_INAPP_CAMERA, ALBUM_COPIED, ALBUM_FRIENDS};
     }
 
     public static boolean albumsExist() {
@@ -80,10 +79,10 @@ public class AlbumUtility {
     }
 
     @Nullable
-    public static File copyGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
+    private static File addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
         String res = null;
         String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = contentResolver.query(galleryPhoto, proj, null, null, null);
+        Cursor cursor = contentResolver.query(photoUri, proj, null, null, null);
         if (cursor == null) {
             Log.e(TAG, "contentResolver.query returned null!");
             return null;
@@ -101,7 +100,7 @@ public class AlbumUtility {
         }
 
         File sourceFile = new File(res);
-        File destFolder = new File(albumParentFolder(), ALBUM_COPIED);
+        File destFolder = new File(albumParentFolder(), targetAlbum);
         File destFile = new File(destFolder, java.util.UUID.randomUUID().toString());
         if (!sourceFile.exists()) {
             return null;
@@ -135,6 +134,16 @@ public class AlbumUtility {
         }
 
         return destFile;
+    }
+
+    @Nullable
+    public static File addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
+        return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, contentResolver);
+    }
+
+    @Nullable
+    public static File addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
+        return addPhoto(ALBUM_COPIED, galleryPhoto, contentResolver);
     }
 
 
