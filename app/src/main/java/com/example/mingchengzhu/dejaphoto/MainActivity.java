@@ -299,7 +299,11 @@ public class MainActivity extends AppCompatActivity
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
-        String email = extras.getString("email");
+        if(extras != null) {
+            USER_ID = extras.getString("email");
+        }else{
+            USER_ID = "nullEmail@gmail.com";
+        }
 
 
     }
@@ -404,10 +408,43 @@ public class MainActivity extends AppCompatActivity
             changeFrenquencyPopUp();
         } else if(id == R.id.setting){
             SettingsPopup();
+        } else if(id == R.id.add_friend){
+            add_friend();
+        } else if(id == R.id.take_photo){
+            take_photo();
         }
         return true;
     }
 
+    public void add_friend(){
+        LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.add_friend_menu, null);
+
+        popup = new PopupWindow(container, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT, true);
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
+        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
+
+        Button confirm = (Button) popup.getContentView().findViewById(R.id.add_friend_confirm);
+        confirm.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                popup.dismiss();
+            }
+        });
+
+        Button cancel = (Button) popup.getContentView().findViewById(R.id.add_friend_cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popup.dismiss();
+            }
+        });
+    }
+
+    public void take_photo(){
+
+    }
+    
     public void SettingsPopup(){
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.settings_menu, null);

@@ -73,10 +73,6 @@ public class DejaPhoto {
      */
     private String locationName;
 
-    // for indicating userdefined location
-    public boolean userDefinedLocation = false;
-
-
     /**
      * ID of the person whose picture it is
      */
@@ -100,6 +96,7 @@ public class DejaPhoto {
         }
 
         this.locationName = (String)map.get(PHOTO_KEY_LNAME);
+        this.pictureOrigin = (String)map.get(PHOTO_KEY_PICTURE_ORIGIN);
     }
 
     /**
@@ -384,6 +381,14 @@ public class DejaPhoto {
 
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public String getPictureOrigin() {
+        return pictureOrigin;
+    }
+
+    public void setPictureOrigin(String pictureOrigin) {
+        this.pictureOrigin = pictureOrigin;
     }
 }
 
