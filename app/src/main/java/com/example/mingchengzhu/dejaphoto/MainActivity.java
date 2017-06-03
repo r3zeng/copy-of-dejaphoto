@@ -295,7 +295,11 @@ public class MainActivity extends AppCompatActivity
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
-        String email = extras.getString("email");
+        if(extras != null) {
+            USER_ID = extras.getString("email");
+        }else{
+            USER_ID = "nullEmail@gmail.com";
+        }
 
 
     }
