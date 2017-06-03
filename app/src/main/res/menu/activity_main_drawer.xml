@@ -3,14 +3,34 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:id="@+id/group_settings"
+    android:layout_gravity="center_horizontal"
+    android:checkableBehavior="single">
+
+    <item android:id="@+id/add_photo"
+        android:title="Add Photo"
+        />
+
+    </group>
+    <group android:id="@+id/take_photo_group"
         android:layout_gravity="center_horizontal"
         android:checkableBehavior="single">
 
-        <item android:id="@+id/add_photo"
-            android:title="Add Photo"
+        <item android:id="@+id/take_photo"
+            android:title="Take Photo"
             />
 
     </group>
+
+    <group android:id="@+id/add_friend_group"
+        android:layout_gravity="center_horizontal"
+        android:checkableBehavior="single">
+
+        <item android:id="@+id/add_friend"
+            android:title="Add Friend"
+            />
+
+    </group>
+
     <group android:id="@+id/g"
         android:layout_gravity="center_horizontal"
         android:checkableBehavior="single">

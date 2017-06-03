@@ -94,10 +94,8 @@ public class PhotoManager {
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo);
-
-                //* getShowFriendsWeight()
-                //* getShowMineWeight();
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight()
+                * getShowMineWeight();
     }
 
     /**
@@ -299,7 +297,6 @@ public class PhotoManager {
             return 1;
         }
     }
-    /*
     public double getShowMineWeight(DejaPhoto photo) {
         Log.d(TAG, "getShowMineWeight called");
         if (showMine){
@@ -330,7 +327,7 @@ public class PhotoManager {
                 return 0;
         }
     }
-*/
+
 
     public void next() {
         Log.d(TAG, "next called");

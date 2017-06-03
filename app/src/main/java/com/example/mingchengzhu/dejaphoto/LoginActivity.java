@@ -83,13 +83,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+
+        // for debugging
+        Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
+
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
            // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
             //updateUI(true);
-            Toast.makeText(this, "You have already signed in!",
-                    Toast.LENGTH_LONG).show();
+            /*uncoment below later */
+            //Toast.makeText(this, "Welcome!",
+                    //Toast.LENGTH_LONG).show();
 
             String personEmail = acct.getEmail();
 

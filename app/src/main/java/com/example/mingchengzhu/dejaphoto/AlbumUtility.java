@@ -45,6 +45,10 @@ public class AlbumUtility {
         return new String[]{ALBUM_INAPP_CAMERA, ALBUM_COPIED, ALBUM_FRIENDS};
     }
 
+    public static String albumForParameters(boolean isFriend, boolean fromCamera) {
+        return isFriend ? ALBUM_FRIENDS : fromCamera ? ALBUM_INAPP_CAMERA : ALBUM_COPIED;
+    }
+
     public static boolean albumsExist() {
         File parentFolder = albumParentFolder();
 
@@ -79,7 +83,9 @@ public class AlbumUtility {
     }
 
     @Nullable
-    private static File addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
+    private static DejaPhoto addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
+        createAlbums();
+
         String res = null;
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = contentResolver.query(photoUri, proj, null, null, null);
@@ -100,8 +106,7 @@ public class AlbumUtility {
         }
 
         File sourceFile = new File(res);
-        File destFolder = new File(albumParentFolder(), targetAlbum);
-        File destFile = new File(destFolder, java.util.UUID.randomUUID().toString());
+        File destFile = createNewPhotoFilename(targetAlbum, null);
         if (!sourceFile.exists()) {
             return null;
         }
@@ -133,17 +138,27 @@ public class AlbumUtility {
             }
         }
 
-        return destFile;
+        return new DejaPhoto(destFile, photoUri, contentResolver);
     }
 
     @Nullable
-    public static File addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
+    public static DejaPhoto addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
         return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, contentResolver);
     }
 
     @Nullable
-    public static File addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
+    public static DejaPhoto addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
         return addPhoto(ALBUM_COPIED, galleryPhoto, contentResolver);
+    }
+
+    @Nullable
+    public static File createNewPhotoFilename(String targetAlbum, String filename) {
+        if (filename == null || filename.length() == 0) {
+            filename = java.util.UUID.randomUUID().toString();
+        }
+
+        File destFolder = new File(albumParentFolder(), targetAlbum);
+        return new File(destFolder, filename);
     }
 
 

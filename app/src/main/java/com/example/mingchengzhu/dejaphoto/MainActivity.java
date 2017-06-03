@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -77,8 +76,6 @@ public class MainActivity extends AppCompatActivity
 
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
-    private static final int CAMERA_PHOTO = 2;
-
     GoogleApiClient mGoogleApiClient;
     // Used to receive an address result from FetchAddressIntentService
     private AddressResultReceiver resultReceiver;
@@ -298,7 +295,7 @@ public class MainActivity extends AppCompatActivity
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
-        String USER_ID = extras.getString("email");
+        String email = extras.getString("email");
 
 
     }
@@ -652,28 +649,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             }
-            case CAMERA_PHOTO:
-            {
-                if (resultCode == RESULT_OK && null != data) {
-                    Log.i(TAG, "user took a picture using camera");
-
-                    Uri picture = data.getData();
-
-                    Bundle extras = data.getExtras();
-                    Uri image = (Uri) extras.get("Uri");
-                    try {
-                        InputStream image_stream = getContentResolver().openInputStream(image);
-
-                        Bitmap imageBitmap = BitmapFactory.decodeStream(image_stream);
-
-                        ImageView imageView = (ImageView) findViewById(R.id.backgroundImage);
-                        imageView.setImageBitmap(imageBitmap);
-                    }
-                    catch(IOException e){
-
-                    }
-                }
-            }
             default:
             {
                 Log.w(TAG, "onActivityResult got unknown requestCode: " + requestCode);
@@ -849,9 +824,7 @@ public class MainActivity extends AppCompatActivity
                     signOut();
                 }
                 break;
-            case R.id.camera_button:
-                Intent cameraIntent = new Intent(this, CameraActivity.class);
-                startActivityForResult(cameraIntent, CAMERA_PHOTO);
+
         }
     }
 

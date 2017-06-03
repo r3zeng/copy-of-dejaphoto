@@ -12,7 +12,7 @@ public class MockFirebase implements iFirebase {
     public void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener) {
     }
 
-    public void downloadDejaPhoto(String pathName, OnSuccessListener successListener, final OnFailureListener failureListener) {
+    public void downloadDejaPhoto(final String filename, OnSuccessListener successListener, final OnFailureListener failureListener) {
     }
 
 }
