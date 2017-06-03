@@ -1,7 +1,9 @@
 package com.example.mingchengzhu.dejaphoto;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -83,8 +85,10 @@ public class AlbumUtility {
     }
 
     @Nullable
-    private static DejaPhoto addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
+    private static DejaPhoto addPhoto(String targetAlbum, Uri photoUri, Context applicationContext) {
         createAlbums();
+
+        ContentResolver contentResolver = applicationContext.getContentResolver();
 
         String res = null;
         String[] proj = { MediaStore.Images.Media.DATA };
@@ -138,23 +142,33 @@ public class AlbumUtility {
             }
         }
 
+        String[] paths = {destFile.getAbsolutePath()};
+        MediaScannerConnection.scanFile(applicationContext,
+                paths,
+                null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        // scanned path and uri
+                    }
+                });
+
         return new DejaPhoto(destFile, photoUri, contentResolver);
     }
 
     @Nullable
-    public static DejaPhoto addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
-        return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, contentResolver);
+    public static DejaPhoto addInAppCameraPhoto(Uri cameraPhoto, Context applicationContext) {
+        return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, applicationContext);
     }
 
     @Nullable
-    public static DejaPhoto addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
-        return addPhoto(ALBUM_COPIED, galleryPhoto, contentResolver);
+    public static DejaPhoto addGalleryPhoto(Uri galleryPhoto, Context applicationContext) {
+        return addPhoto(ALBUM_COPIED, galleryPhoto, applicationContext);
     }
 
     @Nullable
     public static File createNewPhotoFilename(String targetAlbum, String filename) {
         if (filename == null || filename.length() == 0) {
-            filename = java.util.UUID.randomUUID().toString();
+            filename = java.util.UUID.randomUUID().toString() + ".jpg";
         }
 
         File destFolder = new File(albumParentFolder(), targetAlbum);

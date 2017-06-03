@@ -39,8 +39,13 @@ public class RealFirebase implements iFirebase {
         StorageReference storageRef = storage.getReference();
 
         //From Firebase Example
+        String filename = photo.getFile().getName();
+        String extension = filename.substring(filename.lastIndexOf('.') + 1);
+        if (extension == null || extension.length() == 0) {
+            extension = ".jpg";
+        }
         Uri file = Uri.fromFile(photo.getFile());
-        String uploadFilename = UUID.randomUUID().toString();
+        String uploadFilename = UUID.randomUUID().toString() + extension;
 
         StorageReference riversRef = storageRef.child("images").child(uploadFilename);
         UploadTask uploadTask = riversRef.putFile(file);

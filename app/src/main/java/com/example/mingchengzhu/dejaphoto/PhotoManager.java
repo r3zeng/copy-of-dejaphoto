@@ -34,9 +34,7 @@ public class PhotoManager {
         return allPhotos;
     }
 
-    public static DejaPhoto addPhotoWithUri(Uri photoUri, Context context) {
-        DejaPhoto newPhoto = new DejaPhoto(photoUri, context);
-
+    public static DejaPhoto addPhoto(DejaPhoto newPhoto) {
         // Check for duplicate
         for (DejaPhoto photo : allPhotos) {
             if (photo.equals(newPhoto) && !photo.getReleased()) {
@@ -94,8 +92,8 @@ public class PhotoManager {
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight()
-                * getShowMineWeight();
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight(photo)
+                * getShowMineWeight(photo);
     }
 
     /**
