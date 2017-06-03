@@ -105,8 +105,9 @@ public class StateCodec {
                 switch(counter%4)
                 {
                     case 0:
-                        Uri fromPath = Uri.fromFile(new File(line));
-                        dejaPhoto = new DejaPhoto(fromPath, context);
+                        //Uri fromPath = Uri.fromFile(new File(line));
+                        //dejaPhoto = new DejaPhoto(fromPath, context);
+                        dejaPhoto = new DejaPhoto(line, false, false, 0);
                         break;
                     case 1:
                         if(line.contains("false"))

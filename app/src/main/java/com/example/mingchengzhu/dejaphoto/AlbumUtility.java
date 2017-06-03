@@ -83,7 +83,9 @@ public class AlbumUtility {
     }
 
     @Nullable
-    private static File addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
+    private static DejaPhoto addPhoto(String targetAlbum, Uri photoUri, ContentResolver contentResolver) {
+        createAlbums();
+
         String res = null;
         String[] proj = { MediaStore.Images.Media.DATA };
         Cursor cursor = contentResolver.query(photoUri, proj, null, null, null);
@@ -136,16 +138,16 @@ public class AlbumUtility {
             }
         }
 
-        return destFile;
+        return new DejaPhoto(destFile, photoUri, contentResolver);
     }
 
     @Nullable
-    public static File addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
+    public static DejaPhoto addInAppCameraPhoto(Uri cameraPhoto, ContentResolver contentResolver) {
         return addPhoto(ALBUM_INAPP_CAMERA, cameraPhoto, contentResolver);
     }
 
     @Nullable
-    public static File addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
+    public static DejaPhoto addGalleryPhoto(Uri galleryPhoto, ContentResolver contentResolver) {
         return addPhoto(ALBUM_COPIED, galleryPhoto, contentResolver);
     }
 

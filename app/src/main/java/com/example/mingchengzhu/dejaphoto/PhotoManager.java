@@ -1,5 +1,6 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.location.Location;
 import android.net.Uri;
@@ -34,9 +35,7 @@ public class PhotoManager {
         return allPhotos;
     }
 
-    public static DejaPhoto addPhotoWithUri(Uri photoUri, Context context) {
-        DejaPhoto newPhoto = new DejaPhoto(photoUri, context);
-
+    public static DejaPhoto addPhoto(DejaPhoto newPhoto) {
         // Check for duplicate
         for (DejaPhoto photo : allPhotos) {
             if (photo.equals(newPhoto) && !photo.getReleased()) {

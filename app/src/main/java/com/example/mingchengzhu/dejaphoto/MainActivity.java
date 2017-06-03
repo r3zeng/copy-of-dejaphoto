@@ -5,6 +5,8 @@
 
 package com.example.mingchengzhu.dejaphoto;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -663,7 +665,10 @@ public class MainActivity extends AppCompatActivity
                     Log.i(TAG, "user selected an image to add");
 
                     Uri selectedImage = data.getData();
-                    photoManager.setCurrentPhoto(PhotoManager.addPhotoWithUri(selectedImage, this));
+
+                    DejaPhoto photo = AlbumUtility.addGalleryPhoto(selectedImage, getContentResolver());
+
+                    photoManager.setCurrentPhoto(PhotoManager.addPhoto(photo));
                     photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
@@ -703,10 +708,10 @@ public class MainActivity extends AppCompatActivity
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                Uri uri = photo.getUri();
+                File albumFile = photo.getFile();
                 try {
                     Log.i(TAG, "attempting to set wallpaper");
-                    InputStream image_stream = getContentResolver().openInputStream(uri);
+                    FileInputStream image_stream = new FileInputStream(albumFile);
                     final BitmapFactory.Options inOptions = new BitmapFactory.Options();
                     inOptions.inJustDecodeBounds = true;
                     BitmapFactory.decodeStream(image_stream, null, inOptions);
@@ -714,7 +719,7 @@ public class MainActivity extends AppCompatActivity
                     final int originalHeight = inOptions.outHeight;
 
                     image_stream.close();
-                    image_stream = getContentResolver().openInputStream(uri);
+                    image_stream = new FileInputStream(albumFile);
 
                     Point screenSize = new Point();
                     getWindowManager().getDefaultDisplay().getRealSize(screenSize);
@@ -801,7 +806,7 @@ public class MainActivity extends AppCompatActivity
         setNoPhotosModeEnabled(false);
 
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
-        background.setImageURI(photo.getUri());
+        background.setImageURI(Uri.fromFile(photo.getFile()));
         background.invalidate();
 
         //here
