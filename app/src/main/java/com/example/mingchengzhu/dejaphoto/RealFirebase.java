@@ -58,6 +58,7 @@ public class RealFirebase implements iFirebase {
         imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(photo.getLocationName());
         imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(photo.getTime());
+        imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(photo.getPictureOrigin());
     }
 
     public void downloadDejaPhoto(String pathName, OnSuccessListener successListener, final OnFailureListener failureListener) {
