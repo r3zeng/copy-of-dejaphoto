@@ -94,8 +94,8 @@ public class PhotoManager {
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight()
-                * getShowMineWeight();
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight(photo)
+                * getShowMineWeight(photo);
     }
 
     /**
