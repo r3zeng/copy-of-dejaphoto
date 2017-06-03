@@ -285,9 +285,10 @@ public class MainActivity extends AppCompatActivity
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
 
-        // Get the email from google account 
+        // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
         String email = extras.getString("email");
+
 
     }
 
