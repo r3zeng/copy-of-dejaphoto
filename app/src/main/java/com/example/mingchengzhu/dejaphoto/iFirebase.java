@@ -11,6 +11,6 @@ public interface iFirebase {
 
     void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener);
 
-    void downloadDejaPhoto(String pathName, OnSuccessListener successListener, OnFailureListener failureListener);
+    void downloadDejaPhoto(final String filename, OnSuccessListener successListener, OnFailureListener failureListener);
 
 }
