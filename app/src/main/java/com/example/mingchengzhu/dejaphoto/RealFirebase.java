@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.util.Map;
 import java.util.UUID;
 
@@ -38,8 +39,13 @@ public class RealFirebase implements iFirebase {
         StorageReference storageRef = storage.getReference();
 
         //From Firebase Example
-        Uri file = photo.getUri();
-        String uploadFilename = UUID.randomUUID().toString();
+        String filename = photo.getFile().getName();
+        String extension = filename.substring(filename.lastIndexOf('.') + 1);
+        if (extension == null || extension.length() == 0) {
+            extension = ".jpg";
+        }
+        Uri file = Uri.fromFile(photo.getFile());
+        String uploadFilename = UUID.randomUUID().toString() + extension;
 
         StorageReference riversRef = storageRef.child("images").child(uploadFilename);
         UploadTask uploadTask = riversRef.putFile(file);
@@ -59,13 +65,12 @@ public class RealFirebase implements iFirebase {
         imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(photo.getLocationName());
         imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(photo.getTime());
         imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(photo.getPictureOrigin());
+        imageRef.child(DejaPhoto.PHOTO_KEY_FROM_CAMERA).setValue(photo.isFromCamera());
     }
 
-    public void downloadDejaPhoto(String pathName, OnSuccessListener successListener, final OnFailureListener failureListener) {
-        final Uri uri = Uri.parse(pathName);
-
+    public void downloadDejaPhoto(final String filename, OnSuccessListener successListener, final OnFailureListener failureListener) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(uri.getLastPathSegment());
+        DatabaseReference imageRef = database.child("images").child(filename);
         imageRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -75,10 +80,11 @@ public class RealFirebase implements iFirebase {
                     return;
                 }
 
-                //TODO: pass a local uri instead of this remote uri
-
                 Map<String, Object> imageData = (Map<String, Object>)value;
-                DejaPhoto photo = new DejaPhoto(imageData, uri);
+                DejaPhoto photo = new DejaPhoto(imageData, filename);
+
+                File localDestination = photo.getFile();
+                //TODO: download
             }
 
             @Override

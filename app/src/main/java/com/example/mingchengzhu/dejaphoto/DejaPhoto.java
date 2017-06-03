@@ -6,6 +6,7 @@
 
 package com.example.mingchengzhu.dejaphoto;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,7 +19,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -32,6 +33,7 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_LNAME = "locationName";
     public static final String PHOTO_KEY_TIME_TAKEN = "timeTaken";
     public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
+    public static final String PHOTO_KEY_FROM_CAMERA = "isFromCamera";
 
     /**
      * Used for logging
@@ -39,9 +41,9 @@ public class DejaPhoto {
     private static final String TAG = "DejaPhoto";
 
     /**
-     * A URI from the user's gallery that uniquely identifies this photo
+     * A local File pointing into the app's custom album that uniquely identifies this photo
      */
-    private Uri galleryUri;
+    private File localFile;
 
     /**
      * true if this photo has been given karma, meaning it should appear more frequently
@@ -81,12 +83,12 @@ public class DejaPhoto {
     // for indicating userdefined location
     public boolean userDefinedLocation = false;
 
+    private boolean isFromCamera;
 
     /**
      * Contructor from map objects from Firebase
      */
-    public DejaPhoto(Map<String, Object> map, Uri galleryUri) {
-        this.galleryUri = galleryUri;
+    public DejaPhoto(Map<String, Object> map, String filename) {
         this.hasKarma = false;
         this.wasReleased = false;
         this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
@@ -101,17 +103,23 @@ public class DejaPhoto {
 
         this.locationName = (String)map.get(PHOTO_KEY_LNAME);
         this.pictureOrigin = (String)map.get(PHOTO_KEY_PICTURE_ORIGIN);
+        this.isFromCamera = (Boolean)map.get(PHOTO_KEY_FROM_CAMERA);
+
+        String myUsername = MainActivity.getCurrentUser();
+        boolean isFriend = ! myUsername.equalsIgnoreCase(pictureOrigin);
+        String targetAlbum = AlbumUtility.albumForParameters(isFriend, isFromCamera);
+        this.localFile = AlbumUtility.createNewPhotoFilename(targetAlbum, filename);
     }
 
     /**
      * Constructor to be used only with JUnit tests
-     * @param galleryUriString a unique string which will be converted to a URI
+     * @param localFileString a unique string which will be converted to a URI
      * @param hasKarma true if this photo has karma
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String galleryUriString, boolean hasKarma, boolean wasReleased, long time) {
-        this.galleryUri = Uri.parse(galleryUriString);
+    public DejaPhoto(String localFileString, boolean hasKarma, boolean wasReleased, long time) {
+        this.localFile = new File(localFileString);
         this.hasKarma = hasKarma;
         this.wasReleased = wasReleased;
         this.time = time;
@@ -120,15 +128,15 @@ public class DejaPhoto {
 
     /**
      * Constructor to be used only with JUnit tests
-     * @param galleryUriString a unique string which will be converted to a URI
+     * @param localFileString a unique string which will be converted to a File
      * @param latitude the latitude where this photo was taken
      * @param longitude the latitude where this photo was taken
      * @param hasKarma true if this photo has karma
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String galleryUriString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
-        this.galleryUri = Uri.parse(galleryUriString);
+    public DejaPhoto(String localFileString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
+        this.localFile = new File(localFileString);
         this.hasKarma = hasKarma;
         this.wasReleased = wasReleased;
         this.time = time;
@@ -139,11 +147,12 @@ public class DejaPhoto {
 
     /**
      * Preferred constructor
-     * @param galleryUri a URI pointing into the user's photo gallery to a specific photo
-     * @param context a Context (such as an Activity) which can be used for getContentResolver()
+     * @param localFile a File pointing into the app's custom album to a specific photo
+     *
+     * @param contentResolver a ContentResolver that can be used to query
      */
-    public DejaPhoto(Uri galleryUri, Context context) {
-        this.galleryUri = galleryUri;
+    public DejaPhoto(File localFile, Uri galleryUri, ContentResolver contentResolver) {
+        this.localFile = localFile;
         hasKarma = false;
         wasReleased = false;
 
@@ -155,8 +164,7 @@ public class DejaPhoto {
                 MediaStore.Audio.Media.DATE_ADDED
         };
 
-        Cursor cursor = context.getContentResolver().query(galleryUri,
-                columns, null, null, null);
+        Cursor cursor = contentResolver.query(galleryUri, columns, null, null, null);
         cursor.moveToFirst();
 
         // Now set the location
@@ -173,7 +181,7 @@ public class DejaPhoto {
                 location.setLatitude(Double.parseDouble(latitude));
                 location.setLongitude(Double.parseDouble(longitude));
             } catch (NumberFormatException e) {
-                Log.w(TAG, "The user's gallery contains a photo with a lat/lon that don't parse as a double!", e);
+                Log.w(TAG, "Encountered a photo with a lat/lon that don't parse as a double!", e);
                 location = null;
             }
         } else {
@@ -194,13 +202,13 @@ public class DejaPhoto {
      * @return true if both have equivalent URI
      */
     public boolean equals(DejaPhoto other) {
-        return other != null && galleryUri != null && other.galleryUri != null && galleryUri.equals(other.galleryUri);
+        return other != null && localFile != null && other.localFile != null && localFile.equals(other.localFile);
     }
 
     // Getters are setters
 
-    public Uri getUri() {
-        return galleryUri;
+    public File getFile() {
+        return localFile;
     }
 
     public boolean getKarma() {
@@ -238,9 +246,9 @@ public class DejaPhoto {
      * @param context the context that will be used to retrieve the absolute path of a Uri
      * @return DejaPhoto member variables in string format.
      */
-    public  String toString(Context context)
+    public String toString(Context context)
     {
-        return (getPathFromUri(context, this.getUri()) + "\n" +
+        return (this.getFile().getAbsolutePath() + "\n" +
                 this.getKarma() + "\n" +
                 this.getReleased() + "\n" +
                 this.getTime() + "\n" );
@@ -393,6 +401,14 @@ public class DejaPhoto {
 
     public void setPictureOrigin(String pictureOrigin) {
         this.pictureOrigin = pictureOrigin;
+    }
+
+    public boolean isFromCamera() {
+        return isFromCamera;
+    }
+
+    public void setFromCamera(boolean fromCamera) {
+        isFromCamera = fromCamera;
     }
 }
 

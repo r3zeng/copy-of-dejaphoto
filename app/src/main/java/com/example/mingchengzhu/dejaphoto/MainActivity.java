@@ -5,6 +5,8 @@
 
 package com.example.mingchengzhu.dejaphoto;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +55,6 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
-import android.graphics.PorterDuff;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity
 
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
+    private static final int CAMERA_PHOTO = 2;
+
     GoogleApiClient mGoogleApiClient;
     // Used to receive an address result from FetchAddressIntentService
     private AddressResultReceiver resultReceiver;
@@ -156,12 +159,9 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
-                //here
-                if(photoManager.getCurrentPhoto().userDefinedLocation = false) {
-                    String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                    gotLocationText(photoManager.getCurrentPhoto(), text);
-                    Log.i(TAG, "location reverse geocoding succeeds");
-                }
+                String text = resultData.getString(Constants.RESULT_DATA_KEY);
+                gotLocationText(photoManager.getCurrentPhoto(), text);
+                Log.i(TAG, "location reverse geocoding succeeds");
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -299,11 +299,7 @@ public class MainActivity extends AppCompatActivity
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
-            USER_ID = extras.getString("email");
-        }else{
-            USER_ID = "nullEmail@gmail.com";
-        }
+        String email = extras.getString("email");
 
 
     }
@@ -408,43 +404,10 @@ public class MainActivity extends AppCompatActivity
             changeFrenquencyPopUp();
         } else if(id == R.id.setting){
             SettingsPopup();
-        } else if(id == R.id.add_friend){
-            add_friend();
-        } else if(id == R.id.take_photo){
-            take_photo();
         }
         return true;
     }
 
-    public void add_friend(){
-        LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.add_friend_menu, null);
-
-        popup = new PopupWindow(container, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.MATCH_PARENT, true);
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.main_relative_layout);
-        popup.showAtLocation(relativeLayout, Gravity.NO_GRAVITY, 0, 0);
-
-        Button confirm = (Button) popup.getContentView().findViewById(R.id.add_friend_confirm);
-        confirm.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                popup.dismiss();
-            }
-        });
-
-        Button cancel = (Button) popup.getContentView().findViewById(R.id.add_friend_cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popup.dismiss();
-            }
-        });
-    }
-
-    public void take_photo(){
-
-    }
-    
     public void SettingsPopup(){
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.settings_menu, null);
@@ -663,7 +626,10 @@ public class MainActivity extends AppCompatActivity
                     Log.i(TAG, "user selected an image to add");
 
                     Uri selectedImage = data.getData();
-                    photoManager.setCurrentPhoto(PhotoManager.addPhotoWithUri(selectedImage, this));
+
+                    DejaPhoto photo = AlbumUtility.addGalleryPhoto(selectedImage, getApplicationContext());
+
+                    photoManager.setCurrentPhoto(PhotoManager.addPhoto(photo));
                     photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
 
                     //Andy is Testing Writing to File
@@ -690,6 +656,28 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             }
+            case CAMERA_PHOTO:
+            {
+                if (resultCode == RESULT_OK && null != data) {
+                    Log.i(TAG, "user took a picture using camera");
+
+                    Uri picture = data.getData();
+
+                    Bundle extras = data.getExtras();
+                    Uri image = (Uri) extras.get("Uri");
+                    try {
+                        InputStream image_stream = getContentResolver().openInputStream(image);
+
+                        Bitmap imageBitmap = BitmapFactory.decodeStream(image_stream);
+
+                        ImageView imageView = (ImageView) findViewById(R.id.backgroundImage);
+                        imageView.setImageBitmap(imageBitmap);
+                    }
+                    catch(IOException e){
+
+                    }
+                }
+            }
             default:
             {
                 Log.w(TAG, "onActivityResult got unknown requestCode: " + requestCode);
@@ -703,10 +691,10 @@ public class MainActivity extends AppCompatActivity
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                Uri uri = photo.getUri();
+                File albumFile = photo.getFile();
                 try {
                     Log.i(TAG, "attempting to set wallpaper");
-                    InputStream image_stream = getContentResolver().openInputStream(uri);
+                    FileInputStream image_stream = new FileInputStream(albumFile);
                     final BitmapFactory.Options inOptions = new BitmapFactory.Options();
                     inOptions.inJustDecodeBounds = true;
                     BitmapFactory.decodeStream(image_stream, null, inOptions);
@@ -714,7 +702,7 @@ public class MainActivity extends AppCompatActivity
                     final int originalHeight = inOptions.outHeight;
 
                     image_stream.close();
-                    image_stream = getContentResolver().openInputStream(uri);
+                    image_stream = new FileInputStream(albumFile);
 
                     Point screenSize = new Point();
                     getWindowManager().getDefaultDisplay().getRealSize(screenSize);
@@ -801,24 +789,14 @@ public class MainActivity extends AppCompatActivity
         setNoPhotosModeEnabled(false);
 
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
-        background.setImageURI(photo.getUri());
+        background.setImageURI(Uri.fromFile(photo.getFile()));
         background.invalidate();
 
-        //here
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-
-        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-
         locationTextView.setText("");
 
         Location location = photo.getLocation();
-
-        // for userDefinedLocation
-        if(photo.userDefinedLocation){
-            gotLocationText(photo, photo.getLocationName());
-        }
-
-        else if (location != null) {
+        if (location != null) {
             if (resultReceiver == null) {
                 resultReceiver = new AddressResultReceiver(new Handler());
             }
@@ -841,11 +819,7 @@ public class MainActivity extends AppCompatActivity
      * @param locationText the location text
      */
     void gotLocationText(DejaPhoto photo, String locationText) {
-
-        // setting up the textview and editview
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-        locationEditText.setText (locationText);
         locationTextView.setText(locationText);
 
         setWallpaper(photo, locationText);
@@ -879,8 +853,12 @@ public class MainActivity extends AppCompatActivity
                     signOut();
                 }
                 break;
+            case R.id.camera_button:
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                startActivityForResult(intent, CAMERA_PHOTO);
 
         }
+
     }
 
     @Override
@@ -888,33 +866,6 @@ public class MainActivity extends AppCompatActivity
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-    }
-
-    // location name edit mode
-    public void hideLocationName(View view){
-        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-        final Button locationButton = (Button) findViewById(R.id.locationButton);
-        locationEditText.setVisibility(View.VISIBLE);
-        locationButton.setVisibility(View.VISIBLE);
-        locationTextView.setVisibility(View.INVISIBLE);
-    }
-
-    // location name update mode
-    public void showLocationName(View view){
-        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
-        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-        final Button locationButton = (Button) findViewById(R.id.locationButton);
-        locationEditText.setVisibility(View.INVISIBLE);
-        locationButton.setVisibility(View.INVISIBLE);
-        locationTextView.setVisibility(View.VISIBLE);
-
-        photoManager.getCurrentPhoto().userDefinedLocation = true;
-        String newLocationName = locationEditText.getText().toString();
-
-        locationTextView.setText(newLocationName);
-        photoManager.getCurrentPhoto().setLocationName(newLocationName);
-        gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
 
