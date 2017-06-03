@@ -27,8 +27,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:label=""
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="">
         </activity>
         <activity
             android:launchMode="singleTop"
@@ -54,6 +53,7 @@
         </provider>
 
     </application>
+
 
 
 </manifest>
