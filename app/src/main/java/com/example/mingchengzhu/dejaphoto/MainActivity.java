@@ -95,6 +95,14 @@ public class MainActivity extends AppCompatActivity
     PhotoManager photoManager;
     iFirebase server;
 
+    //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
+    public static String USER_ID;
+
+    public static String getCurrentUser()
+    {
+        return USER_ID;
+    }
+
     /**
      * turns on/off a message about having no photos
      *
@@ -816,5 +824,6 @@ public class MainActivity extends AppCompatActivity
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
+
 
 }
