@@ -53,6 +53,7 @@ import android.view.ViewGroup;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
 import android.widget.Toast;
+import android.graphics.PorterDuff;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -155,9 +156,12 @@ public class MainActivity extends AppCompatActivity
             */
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
-                String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                gotLocationText(photoManager.getCurrentPhoto(), text);
-                Log.i(TAG, "location reverse geocoding succeeds");
+                //here
+                if(photoManager.getCurrentPhoto().userDefinedLocation = false) {
+                    String text = resultData.getString(Constants.RESULT_DATA_KEY);
+                    gotLocationText(photoManager.getCurrentPhoto(), text);
+                    Log.i(TAG, "location reverse geocoding succeeds");
+                }
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
             }
@@ -763,11 +767,21 @@ public class MainActivity extends AppCompatActivity
         background.setImageURI(photo.getUri());
         background.invalidate();
 
+        //here
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+
+        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+
         locationTextView.setText("");
 
         Location location = photo.getLocation();
-        if (location != null) {
+
+        // for userDefinedLocation
+        if(photo.userDefinedLocation){
+            gotLocationText(photo, photo.getLocationName());
+        }
+
+        else if (location != null) {
             if (resultReceiver == null) {
                 resultReceiver = new AddressResultReceiver(new Handler());
             }
@@ -790,7 +804,11 @@ public class MainActivity extends AppCompatActivity
      * @param locationText the location text
      */
     void gotLocationText(DejaPhoto photo, String locationText) {
+
+        // setting up the textview and editview
         TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        locationEditText.setText (locationText);
         locationTextView.setText(locationText);
 
         setWallpaper(photo, locationText);
@@ -833,6 +851,33 @@ public class MainActivity extends AppCompatActivity
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    // location name edit mode
+    public void hideLocationName(View view){
+        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        final Button locationButton = (Button) findViewById(R.id.locationButton);
+        locationEditText.setVisibility(View.VISIBLE);
+        locationButton.setVisibility(View.VISIBLE);
+        locationTextView.setVisibility(View.INVISIBLE);
+    }
+
+    // location name update mode
+    public void showLocationName(View view){
+        final TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        final EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+        final Button locationButton = (Button) findViewById(R.id.locationButton);
+        locationEditText.setVisibility(View.INVISIBLE);
+        locationButton.setVisibility(View.INVISIBLE);
+        locationTextView.setVisibility(View.VISIBLE);
+
+        photoManager.getCurrentPhoto().userDefinedLocation = true;
+        String newLocationName = locationEditText.getText().toString();
+
+        locationTextView.setText(newLocationName);
+        photoManager.getCurrentPhoto().setLocationName(newLocationName);
+        gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
 

@@ -73,6 +73,9 @@ public class DejaPhoto {
      */
     private String locationName;
 
+    // for indicating userdefined location
+    public boolean userDefinedLocation = false;
+
 
     /**
      * ID of the person whose picture it is

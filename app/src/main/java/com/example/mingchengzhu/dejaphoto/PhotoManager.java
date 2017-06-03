@@ -94,8 +94,8 @@ public class PhotoManager {
         double rand_value = rand.nextDouble();
         return rand_value * getTimeWeight(photo) * getKarmaWeight(photo) * getReleasedWeight(photo)
                 * getDateWeight(photo) * getLocationWeight(photo) * getRecentWeight(photo)
-                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight()
-                * getShowMineWeight();
+                * getSameDayWeight(photo) * getLastPhotoWeight(photo) * getShowFriendsWeight(photo)
+                * getShowMineWeight(photo);
     }
 
     /**
@@ -299,23 +299,25 @@ public class PhotoManager {
     }
     public double getShowMineWeight(DejaPhoto photo) {
         Log.d(TAG, "getShowMineWeight called");
-        if (showMine){
+        /*if (showMine){
             if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
                 return 1;
             else
                 return 0;
+
         }
         else {
             if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
                 return 0;
             else
                 return 1;
-        }
 
+        }*/
+        return 0;
     }
     public double getShowFriendsWeight(DejaPhoto photo) {
         Log.d(TAG, "getShowFriendsWeight called");
-        if (showFriends) {
+        /*if (showFriends) {
             if (photo.getPictureOrigin().equals(MainActivity.getCurrentUser()))
                 return 0;
             else
@@ -325,7 +327,8 @@ public class PhotoManager {
                 return 1;
             else
                 return 0;
-        }
+        }*/
+        return 0;
     }
 
 
