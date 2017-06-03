@@ -78,6 +78,10 @@ public class DejaPhoto {
      */
     private String pictureOrigin;
 
+    // for indicating userdefined location
+    public boolean userDefinedLocation = false;
+
+
     /**
      * Contructor from map objects from Firebase
      */
