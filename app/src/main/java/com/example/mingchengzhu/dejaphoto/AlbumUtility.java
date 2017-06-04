@@ -185,5 +185,15 @@ public class AlbumUtility {
         return new File(destFolder, filename);
     }
 
+    @Nullable
+    public static void releasePhoto(DejaPhoto photo)
+    {
+        if (photo.getFile().delete())
+        {
+            Log.e(TAG, "Failed to delete: " + photo.getFile().getPath());
+        }
+    }
+
+
 
 }

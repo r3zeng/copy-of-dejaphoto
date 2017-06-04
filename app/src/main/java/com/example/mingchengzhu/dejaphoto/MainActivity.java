@@ -258,6 +258,7 @@ public class MainActivity extends AppCompatActivity
                 // Release and toast!
                 if (photoManager.getCurrentPhoto() != null) {
                     photoManager.getCurrentPhoto().setReleased(true);
+                    AlbumUtility.releasePhoto(photoManager.getCurrentPhoto());
                     Toast.makeText(MainActivity.this, "Released !", Toast.LENGTH_SHORT).show();
                 }
                 // refresh timer
