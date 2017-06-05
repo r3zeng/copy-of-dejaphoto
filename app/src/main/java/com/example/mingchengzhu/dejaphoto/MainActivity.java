@@ -456,7 +456,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void take_photo(){
-
+        Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+        startActivityForResult(intent, CAMERA_PHOTO);
     }
 
     public void SettingsPopup(){
@@ -715,7 +716,7 @@ public class MainActivity extends AppCompatActivity
 
                     Bundle extras = data.getExtras();
                     Uri selectedImage = (Uri) extras.get("Uri");
-                    DejaPhoto photo = AlbumUtility.addGalleryPhoto(selectedImage, getApplicationContext());
+                    DejaPhoto photo = AlbumUtility.addInAppCameraPhoto(selectedImage, getApplicationContext());
 
                     photoManager.setCurrentPhoto(PhotoManager.addPhoto(photo));
                     photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
@@ -952,10 +953,6 @@ public class MainActivity extends AppCompatActivity
                     signOut();
                 }
                 break;
-            case R.id.camera_button:
-
-               Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                startActivityForResult(intent, CAMERA_PHOTO);
         }
 
     }

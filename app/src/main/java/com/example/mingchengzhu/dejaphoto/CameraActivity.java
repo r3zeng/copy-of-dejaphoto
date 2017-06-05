@@ -40,6 +40,7 @@ public class CameraActivity extends Activity {
     private String mCurrentPhotoPath;
     private Uri mCurrentURI;
     private String mCurrentFileName;
+    private File mCurrentFile;
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -76,7 +77,7 @@ public class CameraActivity extends Activity {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
-
+                mCurrentFile = photoFile;
                 Log.i(TAG, "Image file is created");
             } catch (IOException ex) {
                 // Error occurred while creating the File
@@ -131,14 +132,16 @@ public class CameraActivity extends Activity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
-                galleryAddPic();
+                //galleryAddPic();
 
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("Uri", mCurrentURI);
                 setResult(Activity.RESULT_OK, resultIntent);
+                mCurrentFile.delete();
                 finish();
         }
         else{
+            mCurrentFile.delete();
             finish();
         }
     }
