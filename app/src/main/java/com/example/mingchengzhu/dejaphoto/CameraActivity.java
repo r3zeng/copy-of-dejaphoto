@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -38,12 +39,16 @@ public class CameraActivity extends Activity {
 
     private String mCurrentPhotoPath;
     private Uri mCurrentURI;
+    private String mCurrentFileName;
 
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir =  getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        mCurrentFileName = imageFileName;
+       // File storageDir =  getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+      //  File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File storageDir = new File(Environment.getExternalStorageDirectory(), "DCIM/DejaPhoto");
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -71,21 +76,28 @@ public class CameraActivity extends Activity {
             File photoFile = null;
             try {
                 photoFile = createImageFile();
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                mCurrentURI = Uri.fromFile(photoFile);
+
                 Log.i(TAG, "Image file is created");
             } catch (IOException ex) {
                 // Error occurred while creating the File
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-               // Uri photoURI = FileProvider.getUriForFile(this,
-                //        "com.example.android.fileprovider",
-                   //    photoFile);
-              //  Uri photoURI = Uri.fromFile(photoFile);
-                //Log.i(TAG, "Uri is " + photoURI);
-                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.mingchengzhu.fileprovider",
+                       photoFile);
+                mCurrentURI = photoURI;
+
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, mCurrentFileName);
+                Uri mCapturedImageURI = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                mCurrentURI = mCapturedImageURI;
+
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+
+                Log.i(TAG, "Uri is " + mCapturedImageURI);
+
             }
         }
     }
@@ -108,14 +120,6 @@ public class CameraActivity extends Activity {
         mImageBitmap = null;
 
         dispatchTakePictureIntent();
-/*
-        Button picBtn = (Button) findViewById(R.id.btnIntend);
-        setBtnListenerOrDisable(
-                picBtn,
-                mTakePicOnClickListener,
-                MediaStore.ACTION_IMAGE_CAPTURE
-        );
-        */
     }
 
     @Override
@@ -126,7 +130,7 @@ public class CameraActivity extends Activity {
             Log.i(TAG, "the intent is not null");
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-          //  Bundle extras = data.getExtras();
+
                 galleryAddPic();
 
                 Intent resultIntent = new Intent();
@@ -156,15 +160,6 @@ public class CameraActivity extends Activity {
                 savedInstanceState.getBoolean(IMAGEVIEW_VISIBILITY_STORAGE_KEY) ?
                         ImageView.VISIBLE : ImageView.INVISIBLE
         );
-    }
-
-    private void setBtnListenerOrDisable(
-            Button btn,
-            Button.OnClickListener onClickListener,
-            String intentName
-    ) {
-            btn.setOnClickListener(onClickListener);
-
     }
 
 }

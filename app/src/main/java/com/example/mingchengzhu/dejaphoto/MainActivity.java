@@ -10,11 +10,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,11 +26,13 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity
 
     // Used with the photo chooser intent
     private static final int RESULT_LOAD_IMAGE = 1;
-    private static final int CAMERA_PHOTO = 2;
+    private static final int CAMERA_PHOTO = 800;
 
     GoogleApiClient mGoogleApiClient;
     // Used to receive an address result from FetchAddressIntentService
@@ -312,6 +317,7 @@ public class MainActivity extends AppCompatActivity
         }else{
             currentUserEmail = "nullEmail@gmail.com";
         }
+
 
 
     }
@@ -703,25 +709,41 @@ public class MainActivity extends AppCompatActivity
             }
             case CAMERA_PHOTO:
             {
-                if (resultCode == RESULT_OK && null != data) {
+                if (resultCode == RESULT_OK) {
                     Log.i(TAG, "user took a picture using camera");
 
-                    Uri picture = data.getData();
 
                     Bundle extras = data.getExtras();
-                    Uri image = (Uri) extras.get("Uri");
-                    try {
-                        InputStream image_stream = getContentResolver().openInputStream(image);
+                    Uri selectedImage = (Uri) extras.get("Uri");
+                    DejaPhoto photo = AlbumUtility.addGalleryPhoto(selectedImage, getApplicationContext());
 
-                        Bitmap imageBitmap = BitmapFactory.decodeStream(image_stream);
+                    photoManager.setCurrentPhoto(PhotoManager.addPhoto(photo));
+                    photoManager.getBackHistory().swipeRight(photoManager.getCurrentPhoto());
 
-                        ImageView imageView = (ImageView) findViewById(R.id.backgroundImage);
-                        imageView.setImageBitmap(imageBitmap);
-                    }
-                    catch(IOException e){
+                    //Andy is Testing Writing to File
+                    StateCodec.addDejaPhotoToSC(this, "stateCodec.txt", photoManager.getCurrentPhoto());
 
-                    }
+                    // Display the new photo immediately
+                    setBackgroundImage(photoManager.getCurrentPhoto());
+
+                    // reset timer
+                    autoSwitch.refresh();
+
+                    // Upload the photo
+                    server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            Log.i(TAG, "Image uploaded successfully!");
+                        }
+                    }, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //TODO:
+                        }
+                    });
                 }
+                break;
+
             }
             default:
             {
@@ -729,6 +751,24 @@ public class MainActivity extends AppCompatActivity
                 break;
             }
         }
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+
+        try {
+            String[] proj = { MediaStore.Images.Media.DATA };
+            cursor = context.getContentResolver().query(contentUri,  proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+
     }
 
     /* Setting wallpaper method*/
@@ -913,9 +953,9 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
             case R.id.camera_button:
-                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
-                startActivityForResult(intent, CAMERA_PHOTO);
 
+               Intent intent = new Intent(MainActivity.this, CameraActivity.class);
+                startActivityForResult(intent, CAMERA_PHOTO);
         }
 
     }
@@ -953,6 +993,7 @@ public class MainActivity extends AppCompatActivity
         photoManager.getCurrentPhoto().setLocationName(newLocationName);
         gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
+
 
 
 }
