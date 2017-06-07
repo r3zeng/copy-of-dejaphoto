@@ -9,9 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
@@ -26,13 +23,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -875,18 +870,20 @@ public class MainActivity extends AppCompatActivity
         setNoPhotosModeEnabled(false);
 
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
         background.setImageURI(Uri.fromFile(photo.getFile()));
         background.invalidate();
 
-        //here
-        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        // code for karma count
+        final TextView karmaTextView = (TextView) findViewById(R.id.karmaTextView);
+        server.displayKCount(photoManager.getCurrentPhoto().getId(), karmaTextView);
+        TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
+        karmaShape.setVisibility(View.VISIBLE);
+        //
 
         EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-
         locationTextView.setText("");
-
         Location location = photo.getLocation();
-
         // for userDefinedLocation
         if(photo.userDefinedLocation){
             gotLocationText(photo, photo.getLocationName());
@@ -991,6 +988,14 @@ public class MainActivity extends AppCompatActivity
         gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
-
+    // onClick method for the karma shape
+    public void updateKarmaC(View view){
+        long count = photoManager.getCurrentPhoto().getKarmaCount();
+        // increment the kcount
+        count++;
+        photoManager.getCurrentPhoto().increKarmaCount();
+        server.setKCount(photoManager.getCurrentPhoto().getId(), count);
+    }
+    //
 
 }

@@ -88,9 +88,12 @@ public class DejaPhoto {
     private String pictureOrigin;
 
     // for indicating userdefined location
-    public boolean userDefinedLocation = false;
+    boolean userDefinedLocation = false;
 
     private boolean isFromCamera;
+
+    // karma count field
+    private int karmaCount;
 
     /**
      * Contructor from map objects from Firebase
@@ -101,6 +104,7 @@ public class DejaPhoto {
         this.hasKarma = false;
         this.wasReleased = false;
         this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
+        this.karmaCount = 0;
 
         Number latitude = (Number)map.get(PHOTO_KEY_LATITUDE);
         Number longitude = (Number)map.get(PHOTO_KEY_LONGITUDE);
@@ -415,6 +419,16 @@ public class DejaPhoto {
                 cursor.close();
         }
         return null;
+    }
+
+    // getter for karmaCount
+    public int getKarmaCount(){
+        return karmaCount;
+    }
+
+    // setter for karmaCount
+    public void increKarmaCount(){
+        this.karmaCount++;
     }
 
     /**

@@ -16,6 +16,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.Map;
@@ -120,4 +121,34 @@ public class RealFirebase implements iFirebase {
             }
         });
     }
+
+    public RealFirebase() {
+    }
+
+    // added for karma count
+    public void displayKCount(final String id, final TextView view){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference imageRef = database.child("images").child(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Long data = dataSnapshot.getValue(Long.class);
+                view.setText(data.toString());
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setKCount(final String id, final long count){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference imageRef = database.child("images").child(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
+        myRef.setValue(count);
+    }
+    //
 }
