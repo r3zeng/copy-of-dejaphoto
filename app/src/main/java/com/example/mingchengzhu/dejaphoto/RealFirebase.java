@@ -39,16 +39,11 @@ public class RealFirebase implements iFirebase {
         StorageReference storageRef = storage.getReference();
 
         //From Firebase Example
-        String filename = photo.getFile().getName();
-        String extension = filename.substring(filename.lastIndexOf('.') + 1);
-        if (extension == null || extension.length() == 0) {
-            extension = ".jpg";
-        }
         Uri file = Uri.fromFile(photo.getFile());
-        String uploadFilename = UUID.randomUUID().toString() + extension;
+        String uploadFilename =  photo.getId() + photo.getFileExtension();
 
-        StorageReference riversRef = storageRef.child("images").child(uploadFilename);
-        UploadTask uploadTask = riversRef.putFile(file);
+        StorageReference filenameRef = storageRef.child("images").child(uploadFilename);
+        UploadTask uploadTask = filenameRef.putFile(file);
 
         /******************************
          * Next update the database
@@ -58,7 +53,7 @@ public class RealFirebase implements iFirebase {
         Location location = photo.getLocation();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(uploadFilename);
+        DatabaseReference imageRef = database.child("images").child(photo.getId());
         imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
         imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
@@ -68,9 +63,9 @@ public class RealFirebase implements iFirebase {
         imageRef.child(DejaPhoto.PHOTO_KEY_FROM_CAMERA).setValue(photo.isFromCamera());
     }
 
-    public void downloadDejaPhoto(final String filename, OnSuccessListener successListener, final OnFailureListener failureListener) {
+    public void downloadDejaPhoto(final String id, OnSuccessListener successListener, final OnFailureListener failureListener) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(filename);
+        DatabaseReference imageRef = database.child("images").child(id);
         imageRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -81,7 +76,7 @@ public class RealFirebase implements iFirebase {
                 }
 
                 Map<String, Object> imageData = (Map<String, Object>)value;
-                DejaPhoto photo = new DejaPhoto(imageData, filename);
+                DejaPhoto photo = new DejaPhoto(imageData, id);
 
                 File localDestination = photo.getFile();
                 //TODO: download

@@ -21,6 +21,7 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Represents a single photo added to the app by the user
@@ -41,9 +42,14 @@ public class DejaPhoto {
     private static final String TAG = "DejaPhoto";
 
     /**
-     * A local File pointing into the app's custom album that uniquely identifies this photo
+     * A string uniquely identifying this photo
      */
-    private File localFile;
+    private String id;
+
+    /**
+     * The file extension
+     */
+    private String fileExtension;
 
     /**
      * true if this photo has been given karma, meaning it should appear more frequently
@@ -88,7 +94,8 @@ public class DejaPhoto {
     /**
      * Contructor from map objects from Firebase
      */
-    public DejaPhoto(Map<String, Object> map, String filename) {
+    public DejaPhoto(Map<String, Object> map, String id) {
+        this.id = id;
         this.hasKarma = false;
         this.wasReleased = false;
         this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
@@ -105,21 +112,20 @@ public class DejaPhoto {
         this.pictureOrigin = (String)map.get(PHOTO_KEY_PICTURE_ORIGIN);
         this.isFromCamera = (Boolean)map.get(PHOTO_KEY_FROM_CAMERA);
 
-        String myUsername = MainActivity.getCurrentUser();
+        /*String myUsername = MainActivity.getCurrentUser();
         boolean isFriend = ! myUsername.equalsIgnoreCase(pictureOrigin);
-        String targetAlbum = AlbumUtility.albumForParameters(isFriend, isFromCamera);
-        this.localFile = AlbumUtility.createNewPhotoFilename(targetAlbum, filename);
+        String targetAlbum = AlbumUtility.albumForParameters(isFriend, isFromCamera);*/
     }
 
     /**
      * Constructor to be used only with JUnit tests
-     * @param localFileString a unique string which will be converted to a URI
+     * @param id a unique string identifying this photo
      * @param hasKarma true if this photo has karma
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String userID, String localFileString, boolean hasKarma, boolean wasReleased, long time) {
-        this.localFile = new File(localFileString);
+    public DejaPhoto(String userID, String id, boolean hasKarma, boolean wasReleased, long time) {
+        this.id = id;
         this.pictureOrigin = userID;
         this.isFromCamera = false;
         this.hasKarma = hasKarma;
@@ -130,15 +136,15 @@ public class DejaPhoto {
 
     /**
      * Constructor to be used only with JUnit tests
-     * @param localFileString a unique string which will be converted to a File
+     * @param id a unique string identifying this photo
      * @param latitude the latitude where this photo was taken
      * @param longitude the latitude where this photo was taken
      * @param hasKarma true if this photo has karma
      * @param wasReleased true if this photo was released
      * @param time seconds since 1970 until the time the photo was taken
      */
-    public DejaPhoto(String userID, String localFileString, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
-        this.localFile = new File(localFileString);
+    public DejaPhoto(String userID, String id, double latitude, double longitude, boolean hasKarma, boolean wasReleased, long time) {
+        this.id = id;
         this.pictureOrigin = userID;
         this.isFromCamera = false;
         this.hasKarma = hasKarma;
@@ -151,53 +157,57 @@ public class DejaPhoto {
 
     /**
      * Preferred constructor
-     * @param localFile a File pointing into the app's custom album to a specific photo
+     * @param id a string uniquely identifying this photo
      *
      * @param contentResolver a ContentResolver that can be used to query
      */
-    public DejaPhoto(File localFile, Uri galleryUri, ContentResolver contentResolver) {
-        this.localFile = localFile;
+    public DejaPhoto(String userId, String id, Uri galleryUri, ContentResolver contentResolver) {
+        this.id = id;
+        this.pictureOrigin = userId;
         hasKarma = false;
         wasReleased = false;
 
         // Get all the info from the content resolver
 
-        String[] columns = {
+        final String[] columns = {
                 MediaStore.Images.Media.LATITUDE,
                 MediaStore.Images.Media.LONGITUDE,
                 MediaStore.Audio.Media.DATE_ADDED
         };
 
         Cursor cursor = contentResolver.query(galleryUri, columns, null, null, null);
-        cursor.moveToFirst();
 
-        // Now set the location
+        if (cursor != null) {
+            cursor.moveToFirst();
 
-        int latIndex = cursor.getColumnIndex(columns[0]);
-        String latitude = cursor.getString(latIndex);
+            // Now set the location
 
-        int lonIndex = cursor.getColumnIndex(columns[1]);
-        String longitude = cursor.getString(lonIndex);
+            int latIndex = cursor.getColumnIndex(columns[0]);
+            String latitude = cursor.getString(latIndex);
 
-        if (latitude != null && longitude != null) {
-            try {
-                location = new Location("");
-                location.setLatitude(Double.parseDouble(latitude));
-                location.setLongitude(Double.parseDouble(longitude));
-            } catch (NumberFormatException e) {
-                Log.w(TAG, "Encountered a photo with a lat/lon that don't parse as a double!", e);
+            int lonIndex = cursor.getColumnIndex(columns[1]);
+            String longitude = cursor.getString(lonIndex);
+
+            if (latitude != null && longitude != null) {
+                try {
+                    location = new Location("");
+                    location.setLatitude(Double.parseDouble(latitude));
+                    location.setLongitude(Double.parseDouble(longitude));
+                } catch (NumberFormatException e) {
+                    Log.w(TAG, "Encountered a photo with a lat/lon that don't parse as a double!", e);
+                    location = null;
+                }
+            } else {
                 location = null;
             }
-        } else {
-            location = null;
+
+            // And set the time
+
+            int dateIndex = cursor.getColumnIndex(columns[2]);
+            time = cursor.getLong(dateIndex);
+
+            cursor.close();
         }
-
-        // And set the time
-
-        int dateIndex = cursor.getColumnIndex(columns[2]);
-        time = cursor.getLong(dateIndex);
-
-        cursor.close();
     }
 
     /**
@@ -206,13 +216,30 @@ public class DejaPhoto {
      * @return true if both have equivalent URI
      */
     public boolean equals(DejaPhoto other) {
-        return other != null && localFile != null && other.localFile != null && localFile.equals(other.localFile);
+        return other != null && id != null && other.id != null && id.equals(other.id);
     }
 
     // Getters are setters
 
+    static public File fileForParameters(String id, String fileExtension, boolean isFromCamera, boolean isFromFriend) {
+        String targetAlbum = AlbumUtility.albumForParameters(isFromFriend, isFromCamera);
+        return fileForParameters(id, fileExtension, targetAlbum);
+    }
+
+    static public File fileForParameters(String id, String fileExtension, String targetAlbum) {
+        File destFolder = new File(AlbumUtility.albumParentFolder(), targetAlbum);
+        return new File(destFolder, id + fileExtension);
+    }
+
+    static public String generateNewId() {
+        return UUID.randomUUID().toString();
+    }
+
     public File getFile() {
-        return localFile;
+        String myUsername = MainActivity.getCurrentUser();
+        boolean isFromFriend = ! myUsername.equalsIgnoreCase(pictureOrigin);
+
+        return DejaPhoto.fileForParameters(id, getFileExtension(), isFromCamera, isFromFriend);
     }
 
     public boolean getKarma() {
@@ -414,5 +441,18 @@ public class DejaPhoto {
     public void setFromCamera(boolean fromCamera) {
         isFromCamera = fromCamera;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getFileExtension() {
+        if (fileExtension == null) {
+            return ".jpg";
+        }
+
+        return fileExtension;
+    }
+
 }
 

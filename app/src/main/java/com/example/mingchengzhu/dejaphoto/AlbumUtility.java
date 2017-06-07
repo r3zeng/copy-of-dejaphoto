@@ -110,8 +110,13 @@ public class AlbumUtility {
             return null;
         }
 
+        String id = DejaPhoto.generateNewId();
+
+        int extIndex = res.lastIndexOf('.');
+        String extension = (extIndex >= 0) ? res.substring(extIndex) : ".jpg";
+
         File sourceFile = new File(res);
-        File destFile = createNewPhotoFilename(targetAlbum, null);
+        File destFile = DejaPhoto.fileForParameters(id, extension, targetAlbum);
         if (!sourceFile.exists()) {
             return null;
         }
@@ -153,7 +158,8 @@ public class AlbumUtility {
                     }
                 });
 
-        return new DejaPhoto(destFile, photoUri, contentResolver);
+        String myUserId = MainActivity.getCurrentUser();
+        return new DejaPhoto(myUserId, id, photoUri, contentResolver);
     }
 
     @Nullable
@@ -177,16 +183,6 @@ public class AlbumUtility {
     }
 
     @Nullable
-    public static File createNewPhotoFilename(String targetAlbum, String filename) {
-        if (filename == null || filename.length() == 0) {
-            filename = java.util.UUID.randomUUID().toString() + ".jpg";
-        }
-
-        File destFolder = new File(albumParentFolder(), targetAlbum);
-        return new File(destFolder, filename);
-    }
-
-    @Nullable
     public static void releasePhoto(DejaPhoto photo)
     {
         if (photo.getFile().delete())
@@ -194,7 +190,4 @@ public class AlbumUtility {
             Log.e(TAG, "Failed to delete: " + photo.getFile().getPath());
         }
     }
-
-
-
 }
