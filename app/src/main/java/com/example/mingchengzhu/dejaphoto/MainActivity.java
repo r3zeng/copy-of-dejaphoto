@@ -9,9 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
@@ -26,13 +23,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
@@ -103,6 +98,9 @@ public class MainActivity extends AppCompatActivity
 
     PhotoManager photoManager;
     iFirebase server;
+
+    private ArrayList<String> friendList;
+    private ArrayList<Integer> MutalfriendIndex;
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
     public static String currentUserEmail;
@@ -317,9 +315,31 @@ public class MainActivity extends AppCompatActivity
         }else{
             currentUserEmail = "nullEmail@gmail.com";
         }
+        
+        loadFriendFromDataBase();
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference ref = database.getReference();
 
+        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                    if(dataSnapshot.getValue().toString().equals("true")){
+                        friendList.clear();
+                        MutalfriendIndex.clear();
+                        loadFriendFromDataBase();
+                        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").setValue("false");
+                    }
 
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -430,7 +450,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void add_friend(){
+public void add_friend(){
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
         ViewGroup container = (ViewGroup)  inflator2.inflate(R.layout.add_friend_menu, null);
 
@@ -442,6 +462,23 @@ public class MainActivity extends AppCompatActivity
         confirm.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.add_friend_edittext);
+                final String email = mEdit.getText().toString();
+                friendList.add(ModifyString(email));
+
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = database.getReference();
+
+                ref.child("Users").child(ModifyString(getCurrentUser())).child("size").setValue(friendList.size());
+                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
+                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("false");
+
+                checkIfFriend(ModifyString(email));
+
+
+
+
+
                 popup.dismiss();
             }
         });
@@ -453,6 +490,160 @@ public class MainActivity extends AppCompatActivity
                 popup.dismiss();
             }
         });
+    }
+
+    public void checkIfFriend(String email){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference();
+
+        final String email2 = email;
+
+        Query queryRef = myFirebaseRef.child("Users").child(email).child("size");
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.getValue() != null){
+
+                    int size = Integer.parseInt(snapshot.getValue().toString());
+                    checkIfFriend2(email2, size);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TAG1", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void checkIfFriend2(final String email, int size){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myFirebaseRef = database.getReference();
+
+        for(int i = 0; i < size; i++){
+            final int index = i;
+
+            Query queryRef = myFirebaseRef.child("Users").child(email).child(i + "");
+            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.getValue() != null){
+                        if(snapshot.getValue().toString().equals(ModifyString(getCurrentUser()))) {
+                            myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("true");
+                            myFirebaseRef.child("Users").child(email).child(index + ":friended you").setValue("true");
+                            myFirebaseRef.child("Users").child(email).child("Update").setValue("true");
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("TAG1", "Failed to read value.", error.toException());
+                }
+            });
+        }
+    }
+
+
+
+    public void loadFriendFromDataBase(){
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference();
+
+        Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child("size");
+
+
+
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.getValue() != null){
+                    int numfriends = Integer.parseInt(snapshot.getValue().toString());
+                    loadFriendFromDataBase2(numfriends);
+                }else{
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TAG1", "Failed to read value.", error.toException());
+            }
+        });
+
+
+    }
+
+    private void loadFriendFromDataBase2(int numfriends){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference();
+        for(int i = 0; i < numfriends; i++){
+            final int index = i;
+            Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + "");
+            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.getValue() != null){
+                        String value = snapshot.getValue().toString();
+                        friendList.add(value);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("TAG1", "Failed to read value.", error.toException());
+                }
+            });
+
+            Query queryRef2 = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + ":friended you");
+            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.getValue() != null){
+                        String value = snapshot.getValue().toString();
+                        if(value.equals("true")){
+                            MutalfriendIndex.add(index);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("TAG1", "Failed to read value.", error.toException());
+                }
+            });
+        }
+    }
+
+    public static String ModifyString(String email){
+        String newString = "";
+        for(int i = 0; i < email.length(); i++){
+            String character = email.substring(i, i+1);
+
+            if(character.equals("@")){
+                newString = newString + "_AT_";
+            }else if(character.equals(".")){
+                newString = newString + "_DOT_";
+            }else{
+                newString = newString + character;
+            }
+        }
+        return  newString.toLowerCase();
+    }
+
+    /* returns a list of mutual friends of the current user*/
+    public ArrayList<String> getAllMutalFriend(){
+        ArrayList<String> ret = new ArrayList<String>();
+        for(int i = 0; i < MutalfriendIndex.size(); i++){
+            ret.add(friendList.get(MutalfriendIndex.get(i)));
+        }
+        return  ret;
     }
 
     public void take_photo(){
@@ -875,18 +1066,20 @@ public class MainActivity extends AppCompatActivity
         setNoPhotosModeEnabled(false);
 
         ImageView background = (ImageView) findViewById(R.id.backgroundImage);
+        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
         background.setImageURI(Uri.fromFile(photo.getFile()));
         background.invalidate();
 
-        //here
-        TextView locationTextView = (TextView) findViewById(R.id.locationTextView);
+        // code for karma count
+        final TextView karmaTextView = (TextView) findViewById(R.id.karmaTextView);
+        server.displayKCount(photoManager.getCurrentPhoto().getId(), karmaTextView);
+        TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
+        karmaShape.setVisibility(View.VISIBLE);
+        //
 
         EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
-
         locationTextView.setText("");
-
         Location location = photo.getLocation();
-
         // for userDefinedLocation
         if(photo.userDefinedLocation){
             gotLocationText(photo, photo.getLocationName());
@@ -991,6 +1184,14 @@ public class MainActivity extends AppCompatActivity
         gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
-
+    // onClick method for the karma shape
+    public void updateKarmaC(View view){
+        long count = photoManager.getCurrentPhoto().getKarmaCount();
+        // increment the kcount
+        count++;
+        photoManager.getCurrentPhoto().increKarmaCount();
+        server.setKCount(photoManager.getCurrentPhoto().getId(), count);
+    }
+    //
 
 }

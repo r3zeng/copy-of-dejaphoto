@@ -1,5 +1,7 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.widget.TextView;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -11,6 +13,11 @@ public interface iFirebase {
 
     void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener);
 
-    void downloadDejaPhoto(final String filename, OnSuccessListener successListener, OnFailureListener failureListener);
+    void downloadDejaPhoto(final String id, OnSuccessListener successListener, OnFailureListener failureListener);
 
+    // for karma count
+    void displayKCount(final String id, final TextView view);
+
+    void setKCount(final String id, final long count);
+    //
 }

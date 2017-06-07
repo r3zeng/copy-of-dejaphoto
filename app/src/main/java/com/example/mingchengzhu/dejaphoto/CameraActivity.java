@@ -48,8 +48,8 @@ public class CameraActivity extends Activity {
         String imageFileName = "JPEG_" + timeStamp + "_";
         mCurrentFileName = imageFileName;
        // File storageDir =  getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-      //  File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        File storageDir = new File(Environment.getExternalStorageDirectory(), "DCIM/DejaPhoto");
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        //File storageDir = new File(Environment.getExternalStorageDirectory(), "DCIM/DejaPhoto");
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
         // Save a file: path for use with ACTION_VIEW intents
