@@ -60,25 +60,11 @@
         android:visibility="invisible"/>
 
     <TextView
-        android:id="@+id/karmaTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="290dp"
-        android:textSize="25dp"
-        android:clickable="false"
-        android:shadowColor="#000000"
-        android:shadowRadius="20"
-        android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="parent" />
-
-    <TextView
         android:id="@+id/karmaShape"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="310dp"
         android:textSize="25dp"
         android:text="♥"
         android:shadowColor="#000000"
@@ -86,9 +72,24 @@
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="invisible"
-        app:layout_constraintLeft_toRightOf="@id/karmaTextView"
+        app:layout_constraintLeft_toRightOf="parent"
         android:clickable="true"
         android:onClick="updateKarmaC"/>
+
+    <TextView
+        android:id="@+id/karmaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="10dp"
+        android:textSize="25dp"
+        android:clickable="false"
+        android:shadowColor="#000000"
+        android:shadowRadius="20"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/karmaShape" />
+
 
     <Button
         android:id="@+id/locationButton"
