@@ -35,6 +35,7 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_TIME_TAKEN = "timeTaken";
     public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
     public static final String PHOTO_KEY_FROM_CAMERA = "isFromCamera";
+    public static final String PHOTO_KEY_FILE_EXT = "fileExtension";
 
     /**
      * Used for logging
@@ -96,6 +97,7 @@ public class DejaPhoto {
      */
     public DejaPhoto(Map<String, Object> map, String id) {
         this.id = id;
+        this.fileExtension = (String)map.get(PHOTO_KEY_FILE_EXT);
         this.hasKarma = false;
         this.wasReleased = false;
         this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
