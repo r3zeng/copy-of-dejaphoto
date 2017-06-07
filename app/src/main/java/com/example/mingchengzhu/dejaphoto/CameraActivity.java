@@ -48,11 +48,9 @@ public class CameraActivity extends Activity {
         String imageFileName = "JPEG_" + timeStamp + "_";
         mCurrentFileName = imageFileName;
        // File storageDir =  getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-      //  File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        File storageDir = new File(Environment.getExternalStorageDirectory(), "DCIM/DejaPhoto");
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        //File storageDir = new File(Environment.getExternalStorageDirectory(), "DCIM/DejaPhoto");
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
-        //TODO: Sterling: generate a new image ID and base the filename off that
 
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -100,8 +98,6 @@ public class CameraActivity extends Activity {
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
 
                 Log.i(TAG, "Uri is " + mCapturedImageURI);
-
-                //TODO: Sterling: add the photo to PhotoManager and trigger upload
 
             }
         }
