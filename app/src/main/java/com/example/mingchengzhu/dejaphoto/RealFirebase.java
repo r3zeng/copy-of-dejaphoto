@@ -67,14 +67,7 @@ public class RealFirebase implements iFirebase {
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         DatabaseReference imageRef = database.child("images").child(photo.getId());
-        imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
-        imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
-        imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
-        imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(photo.getLocationName());
-        imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(photo.getTime());
-        imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(photo.getPictureOrigin());
-        imageRef.child(DejaPhoto.PHOTO_KEY_FROM_CAMERA).setValue(photo.isFromCamera());
-        imageRef.child(DejaPhoto.PHOTO_KEY_FILE_EXT).setValue(photo.getFileExtension());
+        photo.writeToDBRef(imageRef);
     }
 
     public void downloadDejaPhoto(final String id, final OnSuccessListener successListener, final OnFailureListener failureListener) {

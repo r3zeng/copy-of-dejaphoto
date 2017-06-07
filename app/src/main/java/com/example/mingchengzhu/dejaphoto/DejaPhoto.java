@@ -19,6 +19,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
+
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
@@ -223,6 +225,17 @@ public class DejaPhoto {
      */
     public boolean equals(DejaPhoto other) {
         return other != null && id != null && other.id != null && id.equals(other.id);
+    }
+
+    public void writeToDBRef(DatabaseReference imageRef) {
+        imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
+        imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
+        imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
+        imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(getLocationName());
+        imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(getTime());
+        imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(getPictureOrigin());
+        imageRef.child(DejaPhoto.PHOTO_KEY_FROM_CAMERA).setValue(isFromCamera());
+        imageRef.child(DejaPhoto.PHOTO_KEY_FILE_EXT).setValue(getFileExtension());
     }
 
     // Getters are setters
