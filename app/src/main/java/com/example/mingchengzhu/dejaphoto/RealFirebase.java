@@ -128,7 +128,12 @@ public class RealFirebase implements iFirebase {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Long data = dataSnapshot.getValue(Long.class);
-                view.setText(data.toString());
+                if(data != null) {
+                    view.setText(data.toString());
+                }
+                else{
+                    view.setText("0");
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

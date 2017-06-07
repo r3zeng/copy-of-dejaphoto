@@ -64,6 +64,13 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
 
 /**
  * The primary activity for the app
@@ -1072,9 +1079,17 @@ public void add_friend(){
 
         // code for karma count
         final TextView karmaTextView = (TextView) findViewById(R.id.karmaTextView);
-        server.displayKCount(photoManager.getCurrentPhoto().getId(), karmaTextView);
+        final TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
         TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
-        karmaShape.setVisibility(View.VISIBLE);
+        if(photoManager.getCurrentPhoto().getKarma()){
+            karmaShape.setVisibility(View.VISIBLE);
+            karmaEmpty.setVisibility(View.INVISIBLE);
+        }
+        else{
+            karmaShape.setVisibility(View.INVISIBLE);
+            karmaEmpty.setVisibility(View.VISIBLE);
+        }
+        server.displayKCount(photoManager.getCurrentPhoto().getId(), karmaTextView);
         //
 
         EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
@@ -1187,6 +1202,11 @@ public void add_friend(){
     // onClick method for the karma shape
     public void updateKarmaC(View view){
         long count = photoManager.getCurrentPhoto().getKarmaCount();
+        photoManager.getCurrentPhoto().setKarma(true);
+        TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
+        TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
+        karmaShape.setVisibility(View.VISIBLE);
+        karmaEmpty.setVisibility(View.INVISIBLE);
         // increment the kcount
         count++;
         photoManager.getCurrentPhoto().increKarmaCount();
