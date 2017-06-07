@@ -27,17 +27,17 @@ public class AlbumUtility {
     /**
      * Album for photos copied from other albums
      */
-    public static final String ALBUM_COPIED = "DejaPhotoCopied";
+    public static final String ALBUM_COPIED = ".DejaPhotoCopied";
 
     /**
      * Album for photos taken in the app
      */
-    public static final String ALBUM_INAPP_CAMERA = "DejaPhoto";
+    public static final String ALBUM_INAPP_CAMERA = ".DejaPhoto";
 
     /**
      * Album for friend's photos downloaded by the app
      */
-    public static final String ALBUM_FRIENDS = "DejaPhotoFriends";
+    public static final String ALBUM_FRIENDS = ".DejaPhotoFriends";
 
     public static File albumParentFolder() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
@@ -73,6 +73,14 @@ public class AlbumUtility {
             if (!path.exists()) {
                 path.mkdirs();
             }
+            try{
+                File nomedia = new File(path, ".nomedia");
+                nomedia.createNewFile();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
 
         if (albumsExist()) {

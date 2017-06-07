@@ -44,7 +44,8 @@ public class RealFirebase implements iFirebase {
         if (extension == null || extension.length() == 0) {
             extension = ".jpg";
         }
-        Uri file = Uri.fromFile(photo.getFile());
+        //Uri file = Uri.fromFile(photo.getFile());
+        Uri file = Uri.fromFile(Scaling.scaling(photo, null));
         String uploadFilename = UUID.randomUUID().toString() + extension;
 
         StorageReference riversRef = storageRef.child("images").child(uploadFilename);
