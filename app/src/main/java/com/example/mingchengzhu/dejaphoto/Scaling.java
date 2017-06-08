@@ -23,7 +23,7 @@ import java.io.IOException;
 public class Scaling {
     private static String TAG = "Scaling";
 
-    public static File scaling(DejaPhoto photo, final String locationText) {
+    public static File scaling(DejaPhoto photo) {
         File photoFile = photo.getFile();
 
         Log.i(TAG, "attempting to scale an existing image photoFile");
@@ -43,23 +43,23 @@ public class Scaling {
         while (originalHeight/scaleFactor > maxHeight || originalWidth/scaleFactor > maxWidth){
             scaleFactor *= 2;
         }
+        if (originalHeight > maxHeight || originalWidth > maxWidth) {
+            Bitmap out = Bitmap.createScaledBitmap(bitmap, originalWidth / scaleFactor, originalHeight / scaleFactor, false);
 
-        Bitmap out = Bitmap.createScaledBitmap(bitmap, originalWidth/scaleFactor, originalHeight/scaleFactor, false);
+            File file = new File(dir, "resize.jpeg");
+            FileOutputStream fOut;
 
-
-        File file = new File(dir, "resize.jpeg");
-        FileOutputStream fOut;
-
-        try {
-            fOut = new FileOutputStream(file);
-            out.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-            bitmap.recycle();
-            out.recycle();
-        } catch (Exception e) {
+            try {
+                fOut = new FileOutputStream(file);
+                out.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                fOut.flush();
+                fOut.close();
+                bitmap.recycle();
+                out.recycle();
+            } catch (Exception e) {
+            }
+            return file;
         }
-        return file;
-
+        return photoFile;
     }
 }

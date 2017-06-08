@@ -42,7 +42,8 @@ public class RealFirebase implements iFirebase {
         StorageReference storageRef = storage.getReference();
 
         //From Firebase Example
-        Uri file = Uri.fromFile(photo.getFile());
+      //  Uri file = Uri.fromFile(photo.getFile());
+        Uri file = Uri.fromFile(Scaling.scaling(photo));
         String uploadFilename = photo.getId() + photo.getFileExtension();
 
         StorageReference filenameRef = storageRef.child("images").child(uploadFilename);
