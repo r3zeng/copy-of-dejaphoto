@@ -315,8 +315,8 @@ public class MainActivity extends AppCompatActivity
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
         
-        private ArrayList<String> friendList;
-        private ArrayList<Integer> MutalfriendIndex;
+        friendList = new Arraylist<String>();
+        MutalfriendIndex = new ArrayList<Integer>();
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
