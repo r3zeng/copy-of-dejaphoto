@@ -22,6 +22,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -187,6 +188,11 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        ImageView backgroundImage2 = (ImageView)findViewById(R.id.backgroundImage);
+        Drawable resImg = this.getResources().getDrawable(R.drawable.default_background);
+        // set to default background every time a new user is logged in
+        backgroundImage2.setImageDrawable(resImg);
+
         //Intent intent = new Intent(this, LoginActivity.class);
         //startActivity(intent);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -209,6 +215,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         photoManager = new PhotoManager(this);
+        photoManager.refresh();
+
         server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -331,7 +339,7 @@ public class MainActivity extends AppCompatActivity
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference();
 
-        ref.child("Users").child(server.getUserID()).child("Update").addValueEventListener(new ValueEventListener() {
+        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
@@ -339,7 +347,7 @@ public class MainActivity extends AppCompatActivity
                         friendList.clear();
                         MutalfriendIndex.clear();
                         loadFriendFromDataBase();
-                        ref.child("Users").child(server.getUserID()).child("Update").setValue("false");
+                        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").setValue("false");
                     }
 
                 }
@@ -474,18 +482,20 @@ public void add_friend(){
             public void onClick(View view){
                 EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.add_friend_edittext);
                 final String email = mEdit.getText().toString();
-                final String userID = RealFirebase.emailToFirebaseUserID(email);
-
-                friendList.add(userID);
+                friendList.add(ModifyString(email));
 
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                 DatabaseReference ref = database.getReference();
 
-                ref.child("Users").child(server.getUserID()).child("size").setValue(friendList.size());
-                ref.child("Users").child(server.getUserID()).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
-                ref.child("Users").child(server.getUserID()).child(friendList.size() - 1 + ":friended you").setValue("false");
+                ref.child("Users").child(ModifyString(getCurrentUser())).child("size").setValue(friendList.size());
+                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
+                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("false");
 
-                checkIfFriend(userID);
+                checkIfFriend(ModifyString(email));
+
+
+
+
 
                 popup.dismiss();
             }
@@ -537,8 +547,8 @@ public void add_friend(){
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.getValue() != null){
-                        if(snapshot.getValue().toString().equals(server.getUserID())) {
-                            myFirebaseRef.child("Users").child(server.getUserID()).child(friendList.size() - 1 + ":friended you").setValue("true");
+                        if(snapshot.getValue().toString().equals(ModifyString(getCurrentUser()))) {
+                            myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("true");
                             myFirebaseRef.child("Users").child(email).child(index + ":friended you").setValue("true");
                             myFirebaseRef.child("Users").child(email).child("Update").setValue("true");
                         }
@@ -561,7 +571,7 @@ public void add_friend(){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myFirebaseRef = database.getReference();
 
-        Query queryRef = myFirebaseRef.child("Users").child(server.getUserID()).child("size");
+        Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child("size");
 
 
 
@@ -591,7 +601,7 @@ public void add_friend(){
         DatabaseReference myFirebaseRef = database.getReference();
         for(int i = 0; i < numfriends; i++){
             final int index = i;
-            Query queryRef = myFirebaseRef.child("Users").child(server.getUserID()).child(i + "");
+            Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + "");
             queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -608,7 +618,7 @@ public void add_friend(){
                 }
             });
 
-            Query queryRef2 = myFirebaseRef.child("Users").child(server.getUserID()).child(i + ":friended you");
+            Query queryRef2 = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + ":friended you");
             queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -627,6 +637,22 @@ public void add_friend(){
                 }
             });
         }
+    }
+
+    public static String ModifyString(String email){
+        String newString = "";
+        for(int i = 0; i < email.length(); i++){
+            String character = email.substring(i, i+1);
+
+            if(character.equals("@")){
+                newString = newString + "_AT_";
+            }else if(character.equals(".")){
+                newString = newString + "_DOT_";
+            }else{
+                newString = newString + character;
+            }
+        }
+        return  newString.toLowerCase();
     }
 
     /* returns a list of mutual friends of the current user*/

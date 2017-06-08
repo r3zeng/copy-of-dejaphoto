@@ -30,6 +30,12 @@ public class PhotoManager {
         this.client = client;
     }
 
+    public void refresh() {
+        currentPhoto = null;
+        backHistory = new PreviousImage();
+        allPhotos = new DejaPhoto[]{};
+    }
+
     public static DejaPhoto[] getAllPhotos() {
         return allPhotos;
     }
