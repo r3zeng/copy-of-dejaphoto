@@ -77,6 +77,23 @@
         android:onClick="updateKarmaC"/>
 
     <TextView
+        android:id="@+id/karmaEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12.5dp"
+        android:layout_marginLeft="310dp"
+        android:textSize="29dp"
+        android:text="♡"
+        android:shadowColor="#000000"
+        android:shadowRadius="20"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toRightOf="parent"
+        android:clickable="true"
+        android:onClick="updateKarmaC"/>
+
+    <TextView
         android:id="@+id/karmaTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

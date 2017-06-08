@@ -2,6 +2,7 @@ package com.example.mingchengzhu.dejaphoto;
 
 import android.location.Location;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -11,9 +12,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import android.widget.TextView;
 
 import java.io.File;
 import java.util.Map;
@@ -27,7 +30,7 @@ public class RealFirebase implements iFirebase {
 
     private static final String TAG = "RealFirebase";
 
-    public void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener) {
+    public void uploadDejaPhoto(DejaPhoto photo, final OnSuccessListener successListener, final OnFailureListener failureListener) {
 
         /******************************
          * First upload the file
@@ -39,16 +42,21 @@ public class RealFirebase implements iFirebase {
         StorageReference storageRef = storage.getReference();
 
         //From Firebase Example
-        String filename = photo.getFile().getName();
-        String extension = filename.substring(filename.lastIndexOf('.') + 1);
-        if (extension == null || extension.length() == 0) {
-            extension = ".jpg";
-        }
         Uri file = Uri.fromFile(photo.getFile());
-        String uploadFilename = UUID.randomUUID().toString() + extension;
+        String uploadFilename = photo.getId() + photo.getFileExtension();
 
-        StorageReference riversRef = storageRef.child("images").child(uploadFilename);
-        UploadTask uploadTask = riversRef.putFile(file);
+        StorageReference filenameRef = storageRef.child("images").child(uploadFilename);
+        filenameRef.putFile(file).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                successListener.onSuccess(taskSnapshot);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                failureListener.onFailure(e);
+            }
+        });
 
         /******************************
          * Next update the database
@@ -58,19 +66,13 @@ public class RealFirebase implements iFirebase {
         Location location = photo.getLocation();
 
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(uploadFilename);
-        imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
-        imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
-        imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
-        imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(photo.getLocationName());
-        imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(photo.getTime());
-        imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(photo.getPictureOrigin());
-        imageRef.child(DejaPhoto.PHOTO_KEY_FROM_CAMERA).setValue(photo.isFromCamera());
+        DatabaseReference imageRef = database.child("images").child(photo.getId());
+        photo.writeToDBRef(imageRef);
     }
 
-    public void downloadDejaPhoto(final String filename, OnSuccessListener successListener, final OnFailureListener failureListener) {
+    public void downloadDejaPhoto(final String id, final OnSuccessListener successListener, final OnFailureListener failureListener) {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference imageRef = database.child("images").child(filename);
+        DatabaseReference imageRef = database.child("images").child(id);
         imageRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -81,10 +83,28 @@ public class RealFirebase implements iFirebase {
                 }
 
                 Map<String, Object> imageData = (Map<String, Object>)value;
-                DejaPhoto photo = new DejaPhoto(imageData, filename);
+                DejaPhoto photo = new DejaPhoto(imageData, id);
 
-                File localDestination = photo.getFile();
-                //TODO: download
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReference();
+
+                //From Firebase Example
+                String uploadFilename = id + photo.getFileExtension();
+
+                StorageReference filenameRef = storageRef.child("images").child(uploadFilename);
+                filenameRef.getFile(photo.getFile()).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        successListener.onSuccess(taskSnapshot);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        failureListener.onFailure(e);
+                    }
+                });
             }
 
             @Override
@@ -94,4 +114,39 @@ public class RealFirebase implements iFirebase {
             }
         });
     }
+
+    public RealFirebase() {
+    }
+
+    // added for karma count
+    public void displayKCount(final String id, final TextView view){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference imageRef = database.child("images").child(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Long data = dataSnapshot.getValue(Long.class);
+                if(data != null) {
+                    view.setText(data.toString());
+                }
+                else{
+                    view.setText("0");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void setKCount(final String id, final long count){
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference imageRef = database.child("images").child(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
+        myRef.setValue(count);
+    }
+    //
 }
