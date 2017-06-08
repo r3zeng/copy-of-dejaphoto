@@ -203,7 +203,7 @@ public class PhotoManager {
             return 1;
         } else {
             if (photo.getKarma()) {
-                return 4;
+                return 3 * photo.getKarmaCount();
             } else {
                 return 1;
             }

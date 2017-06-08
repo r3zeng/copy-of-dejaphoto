@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
@@ -29,6 +30,7 @@ import android.os.ResultReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -577,10 +579,20 @@ public void add_friend(){
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("TAG1", "Failed to read value.", error.toException());
+            public void onCancelled(DatabaseError databaseError) {
+
             }
+
+            //        @Override
+     //       public void onCancelled(DatabaseError databaseError) {
+
+//            }
+
+  //          @Override
+       //     public void onCancelled(DatabaseError error) {
+                // Failed to read value
+   //             Log.w("TAG1", "Failed to read value.", error.toException());
+  //          }
         });
 
 
@@ -877,10 +889,15 @@ public void add_friend(){
                     autoSwitch.refresh();
 
                     // Upload the photo
+                    AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+                    myAlert.setMessage("Uploading photos to database... Please wait.");
+                    AlertDialog dialog = myAlert.create();
+                    dialog.show();
                     server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
                         @Override
                         public void onSuccess(Object o) {
                             Log.i(TAG, "Image uploaded successfully!");
+
                         }
                     }, new OnFailureListener() {
                         @Override
@@ -888,6 +905,7 @@ public void add_friend(){
                             //TODO:
                         }
                     });
+                    dialog.dismiss();
                 }
                 break;
             }
@@ -1154,6 +1172,11 @@ public void add_friend(){
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
+        AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+        myAlert.setMessage("You have lost connection to our services... Please wait while you are reconnected.");
+        AlertDialog dialog = myAlert.create();
+        dialog.show();
+
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
 
