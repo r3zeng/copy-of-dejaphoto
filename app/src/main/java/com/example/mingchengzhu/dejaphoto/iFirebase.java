@@ -11,6 +11,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public interface iFirebase {
 
+    String getUserID();
+
     void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener);
 
     void downloadDejaPhoto(final String id, OnSuccessListener successListener, OnFailureListener failureListener);

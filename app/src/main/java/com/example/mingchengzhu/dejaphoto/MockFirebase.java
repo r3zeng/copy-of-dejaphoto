@@ -11,6 +11,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MockFirebase implements iFirebase {
 
+    public String getUserID() {
+        return "user";
+    }
+
     public void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener) {
     }
 
