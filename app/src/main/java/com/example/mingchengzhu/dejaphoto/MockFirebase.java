@@ -5,7 +5,6 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import java.util.ArrayList;
 /**
  * Created by sterling on 6/2/17.
  */
@@ -23,31 +22,6 @@ public class MockFirebase implements iFirebase {
     }
 
     public void downloadAllFriendsPhotos(){}
-
-    @Override
-    public void loadFriendsFromDataBase() {
-
-    }
-
-    @Override
-    public void CheckIfFriend(String DataBaseID) {
-
-    }
-
-    @Override
-    public void StartUserUpdateListener() {
-
-    }
-
-    @Override
-    public void addFriend(String Email) {
-
-    }
-
-    @Override
-    public ArrayList<String> getAllMutalFriend() {
-        return null;
-    }
 
     // for karma count
     public void displayKCount(final String id, final TextView view){
