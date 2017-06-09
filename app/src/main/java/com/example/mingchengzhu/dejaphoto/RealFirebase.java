@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -51,6 +52,8 @@ public class RealFirebase implements iFirebase {
     //same as user friends on server but stored locally for faster access
     private ArrayList<String> friendList;
     private ArrayList<Integer> MutalfriendIndex;
+
+    private HashMap<String, Boolean> sharingOption;
 
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -407,6 +410,7 @@ public class RealFirebase implements iFirebase {
         friendList.add(emailToFirebaseUserID(Email));
 
         //add to server
+      //  reference.child("Users").child(userID).child("sharing").setValue(true);
         reference.child("Users").child(userID).child("size").setValue(friendList.size());
         reference.child("Users").child(userID).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
         reference.child("Users").child(userID).child(friendList.size() - 1 + ":friended you").setValue("false");
@@ -480,6 +484,14 @@ public class RealFirebase implements iFirebase {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+    }
+
+    public void checkIfSharingIsTurnedOff(){
+        reference.child("Users").child(userID).child("sharing").setValue(true);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference("images");
+
+        Query queryRef = myFirebaseRef.orderByChild("pictureOrigin").equalTo("");
     }
     //
 }
