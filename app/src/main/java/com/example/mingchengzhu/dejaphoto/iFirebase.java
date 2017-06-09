@@ -5,6 +5,8 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
+
 /**
  * Created by sterling on 6/1/17.
  */
