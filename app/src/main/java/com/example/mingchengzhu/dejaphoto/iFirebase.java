@@ -16,10 +16,19 @@ public interface iFirebase {
     void uploadDejaPhoto(DejaPhoto photo, OnSuccessListener successListener, OnFailureListener failureListener);
 
     void downloadDejaPhoto(final String id, OnSuccessListener successListener, OnFailureListener failureListener);
+    
+    void loadFriendsFromDataBase();
+
+    void CheckIfFriend(String DataBaseID);
+
+    void StartUserUpdateListener();
+
+    void addFriend(String Email);
+
+    ArrayList<String> getAllMutalFriend();
 
     // for karma count
     void displayKCount(final String id, final TextView view);
 
     void setKCount(final String id, final long count);
-    //
 }
