@@ -13,6 +13,7 @@ public class DownloadedImage {
     public int karmaCount;
     public float latitude;
     public float longitude;
+    public boolean hasCoords;
     public String pictureOrigin;
     public long timeTaken;
     public String locationName;
@@ -21,7 +22,11 @@ public class DownloadedImage {
     DownloadedImage(){}
 
     public DejaPhoto createDejaPhoto(){
-        return new DejaPhoto(id, fileExtension, isFromCamera, karmaCount, latitude, longitude, pictureOrigin, timeTaken, locationName);
+        if (hasCoords) {
+            return new DejaPhoto(id, fileExtension, isFromCamera, karmaCount, (Double)(double)latitude, (Double)(double)longitude, pictureOrigin, timeTaken, locationName);
+        } else {
+            return new DejaPhoto(id, fileExtension, isFromCamera, karmaCount, null, null, pictureOrigin, timeTaken, locationName);
+        }
     }
 
     void setId(String id){
