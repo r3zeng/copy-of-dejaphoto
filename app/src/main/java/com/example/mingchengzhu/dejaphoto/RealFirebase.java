@@ -8,10 +8,14 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -24,10 +28,13 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * Created by andymeza on 6/1/17.
@@ -38,6 +45,8 @@ public class RealFirebase implements iFirebase {
     private static final String TAG = "RealFirebase";
 
     private String userID = null;
+
+    private PhotoManager photoManager;
 
     public static String emailToFirebaseUserID(String email) {
         return email
@@ -51,8 +60,24 @@ public class RealFirebase implements iFirebase {
                 .toLowerCase();
     }
 
+    public static String firebaseUserIDToEmail(String userID) {
+        return userID
+                .replace("_dot_", ".")
+                .replace("_dollar_","$")
+                .replace("_lsb_","[")
+                .replace("_rsb_","]")
+                .replace("_hash_","#")
+                .replace("_slash_","/")
+                .replace("_at_","@")
+                .toLowerCase();
+    }
+
     public String getUserID() {
         return userID;
+    }
+
+    public void setPhotoManager(PhotoManager photoManager){
+        this.photoManager = photoManager;
     }
 
     public DatabaseReference createDbRefForImageId(String imageID) {
@@ -108,39 +133,105 @@ public class RealFirebase implements iFirebase {
     }
 
     public void downloadDejaPhoto(final String id, final OnSuccessListener successListener, final OnFailureListener failureListener) {
-        DatabaseReference imageRef = createDbRefForImageId(id);
-        imageRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.i(TAG, "begin downloading a photo");
+
+            DatabaseReference imageRef = createDbRefForImageId(id);
+            imageRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                 /*
                 Object value = dataSnapshot.getValue(false);
+
                 if (value.getClass() != Map.class) {
                     Log.e(TAG, "Firebase query resulted in data in unexpected format - aborting");
                     return;
                 }
 
                 Map<String, Object> imageData = (Map<String, Object>)value;
-                DejaPhoto photo = new DejaPhoto(imageData, id);
+                */
+                    DownloadedImage imageData = dataSnapshot.getValue(DownloadedImage.class);
+                    imageData.setId(id);
+                    final DejaPhoto photo = imageData.createDejaPhoto();
+                    //final DejaPhoto photo = new DejaPhoto(imageData, id);
 
-                StorageReference filenameRef = createStorageRefForImage(photo);
-                filenameRef.getFile(photo.getFile()).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                        successListener.onSuccess(taskSnapshot);
+                    StorageReference filenameRef = createStorageRefForImage(photo);
+                    filenameRef.getFile(photo.getFile()).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            successListener.onSuccess(taskSnapshot);
+                            photoManager.addPhoto(photo);
+                           // photoManager.setCurrentPhoto(photo);
+                            Log.i(TAG, "photo should be set to wallpaper now");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            failureListener.onFailure(e);
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    //TODO: pass a better exception
+                    failureListener.onFailure(new Exception());
+                }
+            });
+
+
+    }
+
+    public void downloadAllFriendsPhotos(){
+        ArrayList<String> friendList = MainActivity.getAllMutalFriend();
+        if (friendList.size() == 0) {
+            Log.i(TAG, "the user does not have any friend");
+            return;
+        }
+
+        for (int i = 0; i < friendList.size(); i++){
+            String friend = friendList.get(i);
+            downloadImageOfaFriend(friend);
+        }
+    }
+
+    public void downloadImageOfaFriend(String friend){
+        Log.i(TAG, friend + "'s photo should be downloaded");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference("images");
+        Log.i(TAG, "frind is " + friend);
+        Query queryRef = myFirebaseRef.orderByChild("pictureOrigin").equalTo(firebaseUserIDToEmail(friend));
+        Log.i(TAG, "friend email is " + firebaseUserIDToEmail(friend));
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot == null || snapshot.getValue() == null)
+                    Log.i(TAG, "No record found");
+                else {
+                    for (DataSnapshot childSnapshot: snapshot.getChildren()) {
+                        String key = childSnapshot.getKey();
+                        Log.i(TAG, "key is" + key);
+                        downloadDejaPhoto(key, new OnSuccessListener() {
+                            @Override
+                            public void onSuccess(Object o) {
+
+                            }
+                        }, new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+
+                            }
+                        });
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        failureListener.onFailure(e);
-                    }
-                });
+                }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //TODO: pass a better exception
-                failureListener.onFailure(new Exception());
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+
     }
 
     public RealFirebase(String userID) {

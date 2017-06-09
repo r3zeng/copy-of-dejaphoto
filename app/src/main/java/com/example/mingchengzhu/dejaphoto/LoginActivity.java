@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
 
         // for debugging
-        Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
 
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
@@ -101,6 +101,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent menuIntent = new Intent(this, MainActivity.class);
             menuIntent.putExtra("email", personEmail);
             startActivity(menuIntent);
+            Toast.makeText(this, personEmail, Toast.LENGTH_LONG).show();
 
         } else {
             // Signed out, show unauthenticated UI.

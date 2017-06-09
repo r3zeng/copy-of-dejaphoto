@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity
     PhotoManager photoManager;
     iFirebase server;
 
-    private ArrayList<String> friendList;
-    private ArrayList<Integer> MutalfriendIndex;
+    private static ArrayList<String> friendList;
+    private static ArrayList<Integer> MutalfriendIndex;
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
     public static String currentUserEmail;
@@ -220,6 +220,7 @@ public class MainActivity extends AppCompatActivity
         photoManager.refresh();
 
         server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
+        ((RealFirebase)server).setPhotoManager(photoManager);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -311,8 +312,6 @@ public class MainActivity extends AppCompatActivity
         // refresh time = 1 second, location update for every 500 meters
         locationManager.requestLocationUpdates(locationProvider, 1000, 500, locationListener);
 
-
-
         /* The following code is used to implement auto-switch */
         autoSwitch = new AutoSwitch(this, photoManager, autoSwitchHandler, refreshInterval);
 
@@ -335,8 +334,10 @@ public class MainActivity extends AppCompatActivity
         }else{
             currentUserEmail = "nullEmail@gmail.com";
         }
-        
+
+        Log.i(TAG, "Start loading friends from database");
         loadFriendFromDataBase();
+        Log.i(TAG, "friend should have been loaded from database");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference ref = database.getReference();
@@ -360,6 +361,10 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+        Log.i(TAG, "Begin downloading");
+        server.downloadAllFriendsPhotos();
+        Log.i(TAG, "Friends' photos should have been downloaded");
     }
 
     @Override
@@ -620,6 +625,7 @@ public void add_friend(){
                     if (snapshot != null && snapshot.getValue() != null){
                         String value = snapshot.getValue().toString();
                         friendList.add(value);
+                        Log.i(TAG, "the size of mutual friend is" + friendList.size());
                     }
                 }
 
@@ -631,13 +637,15 @@ public void add_friend(){
             });
 
             Query queryRef2 = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + ":friended you");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            queryRef2.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     if (snapshot != null && snapshot.getValue() != null){
                         String value = snapshot.getValue().toString();
                         if(value.equals("true")){
                             MutalfriendIndex.add(index);
+                            ((RealFirebase)server).downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
+                            Log.i(TAG, "the size of mutual friend index is" + MutalfriendIndex.size());
                         }
                     }
                 }
@@ -648,6 +656,8 @@ public void add_friend(){
                     Log.w("TAG1", "Failed to read value.", error.toException());
                 }
             });
+
+
         }
     }
 
@@ -668,11 +678,14 @@ public void add_friend(){
     }
 
     /* returns a list of mutual friends of the current user*/
-    public ArrayList<String> getAllMutalFriend(){
+    public static ArrayList<String> getAllMutalFriend(){
         ArrayList<String> ret = new ArrayList<String>();
         for(int i = 0; i < MutalfriendIndex.size(); i++){
             ret.add(friendList.get(MutalfriendIndex.get(i)));
         }
+        Log.i(TAG, "mutualindex's size is" + MutalfriendIndex.size());
+        Log.i(TAG, "frindList's size is" + friendList.size());
+        Log.i(TAG, "ret's size is" + ret.size());
         return  ret;
     }
 

@@ -21,6 +21,8 @@ public class MockFirebase implements iFirebase {
     public void downloadDejaPhoto(final String id, OnSuccessListener successListener, final OnFailureListener failureListener) {
     }
 
+    public void downloadAllFriendsPhotos(){}
+
     // for karma count
     public void displayKCount(final String id, final TextView view){
     }

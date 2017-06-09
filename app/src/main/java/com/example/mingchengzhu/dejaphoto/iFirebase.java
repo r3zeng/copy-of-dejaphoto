@@ -17,6 +17,8 @@ public interface iFirebase {
 
     void downloadDejaPhoto(final String id, OnSuccessListener successListener, OnFailureListener failureListener);
 
+    void downloadAllFriendsPhotos();
+
     // for karma count
     void displayKCount(final String id, final TextView view);
 

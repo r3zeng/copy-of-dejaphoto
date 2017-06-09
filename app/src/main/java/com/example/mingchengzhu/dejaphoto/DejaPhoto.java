@@ -97,6 +97,30 @@ public class DejaPhoto {
     // karma count field
     private int karmaCount;
 
+    public DejaPhoto(String id, String fileExtension, boolean isFromCamera, int karmaCount, float givenLatitude,
+            float givenLongitude, String pictureOrigin, long timeTaken, String locationName){
+        this.id = id;
+        this.fileExtension = fileExtension;
+        this.hasKarma = false;
+        this.wasReleased = false;
+        this.time = timeTaken;
+        this.karmaCount = karmaCount;
+
+        Number latitude = (Number)givenLatitude;
+        Number longitude = (Number)givenLongitude;
+        if (latitude != null && longitude != null) {
+            this.location = new Location("");
+            this.location.setLatitude(latitude.doubleValue());
+            this.location.setLongitude(longitude.doubleValue());
+        }
+
+        this.locationName = locationName;
+        this.pictureOrigin = pictureOrigin;
+        this.isFromCamera = isFromCamera;
+
+    }
+
+
     /**
      * Contructor from map objects from Firebase
      */
