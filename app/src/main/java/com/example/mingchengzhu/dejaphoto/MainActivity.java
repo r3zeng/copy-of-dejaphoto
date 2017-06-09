@@ -1113,16 +1113,18 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
 
     // onClick method for the karma shape
     public void updateKarmaC(View view){
-        long count = photoManager.getCurrentPhoto().getKarmaCount();
-        photoManager.getCurrentPhoto().setKarma(true);
-        TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
-        TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
-        karmaShape.setVisibility(View.VISIBLE);
-        karmaEmpty.setVisibility(View.INVISIBLE);
-        // increment the kcount
-        count++;
-        photoManager.getCurrentPhoto().increKarmaCount();
-        server.setKCount(photoManager.getCurrentPhoto().getId(), count);
+        if(!(photoManager.getCurrentPhoto().getKarma())) {
+            long count = photoManager.getCurrentPhoto().getKarmaCount();
+            photoManager.getCurrentPhoto().setKarma(true);
+            TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
+            TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
+            karmaShape.setVisibility(View.VISIBLE);
+            karmaEmpty.setVisibility(View.INVISIBLE);
+            // increment the kcount
+            count++;
+            photoManager.getCurrentPhoto().increKarmaCount();
+            server.setKCount(photoManager.getCurrentPhoto().getId(), count);
+        }
     }
     //
 
