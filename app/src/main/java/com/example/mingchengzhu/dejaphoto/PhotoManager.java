@@ -24,6 +24,7 @@ public class PhotoManager {
     private boolean matchKarma = true;
     private boolean showMine = true;
     private boolean showFriends = true;
+    private boolean share = true;
     private PreviousImage backHistory = new PreviousImage();
 
     public PhotoManager(PhotoManagerClient client) {
@@ -407,5 +408,8 @@ public class PhotoManager {
     public PreviousImage getBackHistory() {
         return backHistory;
     }
+
+    public boolean getShare(){return share;}
+    public void setShare(boolean share){this.share = share;}
 }
 

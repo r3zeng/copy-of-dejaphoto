@@ -450,11 +450,36 @@ public class RealFirebase implements iFirebase {
     }
 
 
-
     public void setKCount(final String id, final long count){
         DatabaseReference imageRef = createDbRefForImageId(id);
         DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
         myRef.setValue(count);
+    }
+
+    public void removeAllPhotosOfUser(String user){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference("images");
+
+        Query queryRef = myFirebaseRef.orderByChild("pictureOrigin").equalTo(firebaseUserIDToEmail(user));
+        Log.i(TAG, "friend email is " + firebaseUserIDToEmail(user));
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot == null || snapshot.getValue() == null)
+                    Log.i(TAG, "No record found");
+                else {
+                    for (DataSnapshot childSnapshot: snapshot.getChildren()) {
+                        childSnapshot.getRef().setValue(null);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
     }
     //
 }
