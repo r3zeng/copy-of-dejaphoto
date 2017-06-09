@@ -657,7 +657,6 @@ public void add_friend(){
                     photoManager.setShowFriends(true);
                     Toast.makeText(MainActivity.this, "Show Friends Photos", Toast.LENGTH_SHORT).show();
                     myFriend_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-
                 }
             }
         });
