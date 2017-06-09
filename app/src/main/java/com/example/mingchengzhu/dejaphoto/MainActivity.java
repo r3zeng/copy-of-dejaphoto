@@ -336,11 +336,16 @@ public class MainActivity extends AppCompatActivity
         server.loadFriendsFromDataBase();
         //listens to change in user information and will update accordingly
         server.StartUserUpdateListener();
+        AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+        myAlert.setMessage("Downloading photos from database... Please wait.");
+        AlertDialog dialog = myAlert.create();
+        dialog.show();
 /*
         Log.i(TAG, "Begin downloading");
         server.downloadAllFriendsPhotos();
         Log.i(TAG, "Friends' photos should have been downloaded");
   */
+        dialog.dismiss();
         AlbumUtility.createAlbums();
     }
 
@@ -657,7 +662,7 @@ public void add_friend(){
             }
         });
 
-        final Button share_button = (Button) popup.getContentView().findViewById(R.id.share_photo_button);
+final Button share_button = (Button) popup.getContentView().findViewById(R.id.share_photo_button);
         if(photoManager.getShare()){
             share_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
         }else{
@@ -812,21 +817,24 @@ public void add_friend(){
                     // reset timer
                     autoSwitch.refresh();
 
+                    AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+                    myAlert.setMessage("Uploading photos to database... Please wait.");
+                    AlertDialog dialog = myAlert.create();
+                    dialog.show();
                     // Upload the photo
-                    if (photoManager.getShare()) {
-                        server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
-                            @Override
-                            public void onSuccess(Object o) {
-                                Log.i(TAG, "Image uploaded successfully!");
-                            }
-                        }, new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                //TODO:
-                            }
-                        });
-                    }
-                }
+                    if (photoManager.getShare()){
+                    server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
+                        @Override
+                        public void onSuccess(Object o) {
+                            Log.i(TAG, "Image uploaded successfully!");
+                        }
+                    }, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            //TODO:
+                        }
+                    });
+                }}
                 break;
 
             }
