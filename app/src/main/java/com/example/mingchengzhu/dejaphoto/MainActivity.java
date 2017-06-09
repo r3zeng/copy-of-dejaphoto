@@ -5,16 +5,11 @@
 
 package com.example.mingchengzhu.dejaphoto;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,39 +18,37 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Bundle;
-import android.os.ResultReceiver;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.widget.TextView;
-
-import android.content.res.Resources;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Button;
-import android.view.ViewGroup;
-import android.view.LayoutInflater;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -66,12 +59,11 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -108,8 +100,7 @@ public class MainActivity extends AppCompatActivity
     PhotoManager photoManager;
     iFirebase server;
 
-    private ArrayList<String> friendList;
-    private ArrayList<Integer> MutalfriendIndex;
+    private final String defualt_User_Name = "user 1";
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
     public static String currentUserEmail;
@@ -316,42 +307,20 @@ public class MainActivity extends AppCompatActivity
         photoManager.setCurrentPhoto(photoManager.getNextRandomImage());
         // if currentPhoto is null, it will display a message telling the user there are no photos
         setBackgroundImage(photoManager.getCurrentPhoto());
-        
-        friendList = new ArrayList<String>();
-        MutalfriendIndex = new ArrayList<Integer>();
+
 
         // Get the email from the current google account
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             currentUserEmail = extras.getString("email");
         }else{
-            currentUserEmail = "nullEmail@gmail.com";
+            currentUserEmail = defualt_User_Name;;
         }
-        
-        loadFriendFromDataBase();
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference();
-
-        ref.child("Users").child(server.getUserID()).child("Update").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
-                    if(dataSnapshot.getValue().toString().equals("true")){
-                        friendList.clear();
-                        MutalfriendIndex.clear();
-                        loadFriendFromDataBase();
-                        ref.child("Users").child(server.getUserID()).child("Update").setValue("false");
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        //loads user information from database
+        server.loadFriendsFromDataBase();
+        //listens to change in user information and will update accordingly
+        server.StartUserUpdateListener();
     }
 
     @Override
@@ -476,19 +445,8 @@ public void add_friend(){
             public void onClick(View view){
                 EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.add_friend_edittext);
                 final String email = mEdit.getText().toString();
-                final String userID = RealFirebase.emailToFirebaseUserID(email);
 
-                friendList.add(userID);
-
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference ref = database.getReference();
-
-                ref.child("Users").child(server.getUserID()).child("size").setValue(friendList.size());
-                ref.child("Users").child(server.getUserID()).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
-                ref.child("Users").child(server.getUserID()).child(friendList.size() - 1 + ":friended you").setValue("false");
-
-                checkIfFriend(userID);
-
+                server.addFriend(email);
                 popup.dismiss();
             }
         });
@@ -502,153 +460,14 @@ public void add_friend(){
         });
     }
 
-    public void checkIfFriend(String email){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-
-        final String email2 = email;
-
-        Query queryRef = myFirebaseRef.child("Users").child(email).child("size");
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.getValue() != null){
-
-                    int size = Integer.parseInt(snapshot.getValue().toString());
-                    checkIfFriend2(email2, size);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("TAG1", "Failed to read value.", error.toException());
-            }
-        });
-    }
-
-    private void checkIfFriend2(final String email, int size){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myFirebaseRef = database.getReference();
-
-        for(int i = 0; i < size; i++){
-            final int index = i;
-
-            Query queryRef = myFirebaseRef.child("Users").child(email).child(i + "");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        if(snapshot.getValue().toString().equals(server.getUserID())) {
-                            myFirebaseRef.child("Users").child(server.getUserID()).child(friendList.size() - 1 + ":friended you").setValue("true");
-                            myFirebaseRef.child("Users").child(email).child(index + ":friended you").setValue("true");
-                            myFirebaseRef.child("Users").child(email).child("Update").setValue("true");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-        }
-    }
-
-
-
-    public void loadFriendFromDataBase(){
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-
-        Query queryRef = myFirebaseRef.child("Users").child(server.getUserID()).child("size");
-
-
-
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.getValue() != null){
-                    int numfriends = Integer.parseInt(snapshot.getValue().toString());
-                    loadFriendFromDataBase2(numfriends);
-                }else{
-                    return;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-            //        @Override
-     //       public void onCancelled(DatabaseError databaseError) {
-
-//            }
-
-  //          @Override
-       //     public void onCancelled(DatabaseError error) {
-                // Failed to read value
-   //             Log.w("TAG1", "Failed to read value.", error.toException());
-  //          }
-        });
-
-
-    }
-
-    private void loadFriendFromDataBase2(int numfriends){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-        for(int i = 0; i < numfriends; i++){
-            final int index = i;
-            Query queryRef = myFirebaseRef.child("Users").child(server.getUserID()).child(i + "");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        String value = snapshot.getValue().toString();
-                        friendList.add(value);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-
-            Query queryRef2 = myFirebaseRef.child("Users").child(server.getUserID()).child(i + ":friended you");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        String value = snapshot.getValue().toString();
-                        if(value.equals("true")){
-                            MutalfriendIndex.add(index);
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-        }
-    }
-
     /* returns a list of mutual friends of the current user*/
-    public ArrayList<String> getAllMutalFriend(){
-        ArrayList<String> ret = new ArrayList<String>();
-        for(int i = 0; i < MutalfriendIndex.size(); i++){
-            ret.add(friendList.get(MutalfriendIndex.get(i)));
+    public void DisplayAllMutualFriend(){
+        ArrayList<String> MF = server.getAllMutalFriend();
+        for(int i = 0; i < MF.size(); i++){
+            Toast.makeText(MainActivity.this, MF.get(i), Toast.LENGTH_SHORT).show();
         }
-        return  ret;
     }
+
 
     public void take_photo(){
         Intent intent = new Intent(MainActivity.this, CameraActivity.class);
