@@ -3,6 +3,7 @@ package com.example.mingchengzhu.dejaphoto;
 import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -16,6 +17,12 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.File;
@@ -71,7 +78,9 @@ public class RealFirebase implements iFirebase {
          * First upload the file
          ******************************/
 
+
         //From Firebase Example
+
         Uri file = Uri.fromFile(Scaling.scaling(photo));
 
         StorageReference filenameRef = createStorageRefForImage(photo);
