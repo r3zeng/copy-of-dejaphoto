@@ -23,7 +23,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -109,8 +108,7 @@ public class MainActivity extends AppCompatActivity
     PhotoManager photoManager;
     iFirebase server;
 
-    private static ArrayList<String> friendList;
-    private static ArrayList<Integer> MutalfriendIndex;
+    private final String default_User_Name = "user 1";
 
     //Currently Signed-Users ID/email (request this using MainActivity.getCurrentUser() )
     public static String currentUserEmail;
@@ -312,6 +310,8 @@ public class MainActivity extends AppCompatActivity
         // refresh time = 1 second, location update for every 500 meters
         locationManager.requestLocationUpdates(locationProvider, 1000, 500, locationListener);
 
+
+
         /* The following code is used to implement auto-switch */
         autoSwitch = new AutoSwitch(this, photoManager, autoSwitchHandler, refreshInterval);
 
@@ -332,39 +332,15 @@ public class MainActivity extends AppCompatActivity
         if(extras != null) {
             currentUserEmail = extras.getString("email");
         }else{
-            currentUserEmail = "nullEmail@gmail.com";
+            currentUserEmail = default_User_Name;
         }
 
-        Log.i(TAG, "Start loading friends from database");
-        loadFriendFromDataBase();
-        Log.i(TAG, "friend should have been loaded from database");
+        server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference ref = database.getReference();
-
-        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot != null && dataSnapshot.getValue() != null) {
-                    if(dataSnapshot.getValue().toString().equals("true")){
-                        friendList.clear();
-                        MutalfriendIndex.clear();
-                        loadFriendFromDataBase();
-                        ref.child("Users").child(ModifyString(getCurrentUser())).child("Update").setValue("false");
-                    }
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        Log.i(TAG, "Begin downloading");
-        server.downloadAllFriendsPhotos();
-        Log.i(TAG, "Friends' photos should have been downloaded");
+        //loads user information from database
+        server.loadFriendsFromDataBase();
+        //listens to change in user information and will update accordingly
+        server.StartUserUpdateListener();
     }
 
     @Override
@@ -489,21 +465,8 @@ public void add_friend(){
             public void onClick(View view){
                 EditText mEdit = (EditText) popup.getContentView().findViewById(R.id.add_friend_edittext);
                 final String email = mEdit.getText().toString();
-                friendList.add(ModifyString(email));
 
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference ref = database.getReference();
-
-                ref.child("Users").child(ModifyString(getCurrentUser())).child("size").setValue(friendList.size());
-                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
-                ref.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("false");
-
-                checkIfFriend(ModifyString(email));
-
-
-
-
-
+                server.addFriend(email);
                 popup.dismiss();
             }
         });
@@ -517,177 +480,14 @@ public void add_friend(){
         });
     }
 
-    public void checkIfFriend(String email){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-
-        final String email2 = email;
-
-        Query queryRef = myFirebaseRef.child("Users").child(email).child("size");
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.getValue() != null){
-
-                    int size = Integer.parseInt(snapshot.getValue().toString());
-                    checkIfFriend2(email2, size);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("TAG1", "Failed to read value.", error.toException());
-            }
-        });
-    }
-
-    private void checkIfFriend2(final String email, int size){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myFirebaseRef = database.getReference();
-
-        for(int i = 0; i < size; i++){
-            final int index = i;
-
-            Query queryRef = myFirebaseRef.child("Users").child(email).child(i + "");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        if(snapshot.getValue().toString().equals(ModifyString(getCurrentUser()))) {
-                            myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(friendList.size() - 1 + ":friended you").setValue("true");
-                            myFirebaseRef.child("Users").child(email).child(index + ":friended you").setValue("true");
-                            myFirebaseRef.child("Users").child(email).child("Update").setValue("true");
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-        }
-    }
-
-
-
-    public void loadFriendFromDataBase(){
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-
-        Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child("size");
-
-
-
-        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot != null && snapshot.getValue() != null){
-                    int numfriends = Integer.parseInt(snapshot.getValue().toString());
-                    loadFriendFromDataBase2(numfriends);
-                }else{
-                    return;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-            //        @Override
-     //       public void onCancelled(DatabaseError databaseError) {
-
-//            }
-
-  //          @Override
-       //     public void onCancelled(DatabaseError error) {
-                // Failed to read value
-   //             Log.w("TAG1", "Failed to read value.", error.toException());
-  //          }
-        });
-
-
-    }
-
-    private void loadFriendFromDataBase2(int numfriends){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference();
-        for(int i = 0; i < numfriends; i++){
-            final int index = i;
-            Query queryRef = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + "");
-            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        String value = snapshot.getValue().toString();
-                        friendList.add(value);
-                        Log.i(TAG, "the size of mutual friend is" + friendList.size());
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-
-            Query queryRef2 = myFirebaseRef.child("Users").child(ModifyString(getCurrentUser())).child(i + ":friended you");
-            queryRef2.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot != null && snapshot.getValue() != null){
-                        String value = snapshot.getValue().toString();
-                        if(value.equals("true")){
-                            MutalfriendIndex.add(index);
-                            ((RealFirebase)server).downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
-                            Log.i(TAG, "the size of mutual friend index is" + MutalfriendIndex.size());
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("TAG1", "Failed to read value.", error.toException());
-                }
-            });
-
-
-        }
-    }
-
-    public static String ModifyString(String email){
-        String newString = "";
-        for(int i = 0; i < email.length(); i++){
-            String character = email.substring(i, i+1);
-
-            if(character.equals("@")){
-                newString = newString + "_AT_";
-            }else if(character.equals(".")){
-                newString = newString + "_DOT_";
-            }else{
-                newString = newString + character;
-            }
-        }
-        return  newString.toLowerCase();
-    }
-
     /* returns a list of mutual friends of the current user*/
-    public static ArrayList<String> getAllMutalFriend(){
-        ArrayList<String> ret = new ArrayList<String>();
-        for(int i = 0; i < MutalfriendIndex.size(); i++){
-            ret.add(friendList.get(MutalfriendIndex.get(i)));
+    public void DisplayAllMutualFriend(){
+        ArrayList<String> MF = server.getAllMutalFriend();
+        for(int i = 0; i < MF.size(); i++){
+            Toast.makeText(MainActivity.this, MF.get(i), Toast.LENGTH_SHORT).show();
         }
-        Log.i(TAG, "mutualindex's size is" + MutalfriendIndex.size());
-        Log.i(TAG, "frindList's size is" + friendList.size());
-        Log.i(TAG, "ret's size is" + ret.size());
-        return  ret;
     }
+
 
     public void take_photo(){
         Intent intent = new Intent(MainActivity.this, CameraActivity.class);
