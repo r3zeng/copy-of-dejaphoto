@@ -48,6 +48,13 @@ public class RealFirebase implements iFirebase {
 
     private PhotoManager photoManager;
 
+    //same as user friends on server but stored locally for faster access
+    private ArrayList<String> friendList;
+    private ArrayList<Integer> MutalfriendIndex;
+
+    FirebaseDatabase database;
+    DatabaseReference reference;
+
     public static String emailToFirebaseUserID(String email) {
         return email
                 .replace(".", "_dot_")
@@ -182,7 +189,7 @@ public class RealFirebase implements iFirebase {
     }
 
     public void downloadAllFriendsPhotos(){
-        ArrayList<String> friendList = MainActivity.getAllMutalFriend();
+        ArrayList<String> friendList = getAllMutalFriend();
         if (friendList.size() == 0) {
             Log.i(TAG, "the user does not have any friend");
             return;
@@ -236,7 +243,188 @@ public class RealFirebase implements iFirebase {
 
     public RealFirebase(String userID) {
         this.userID = userID;
+
+        friendList = new ArrayList<String>();
+        MutalfriendIndex = new ArrayList<Integer>();
+
+        database = FirebaseDatabase.getInstance();
+        reference = database.getReference();
     }
+
+    @Override
+    public void loadFriendsFromDataBase() {
+        Query queryRef = reference.child("Users").child(userID).child("size");
+
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.getValue() != null){
+                    int numfriends = Integer.parseInt(snapshot.getValue().toString());
+                    loadFriendsFromDataBaseHelper(numfriends);
+                }else{
+                    return;
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TAG1", "Failed to read value.", error.toException());
+            }
+       });
+    }
+
+    private void loadFriendsFromDataBaseHelper(int numfriends) {
+        for (int i = 0; i < numfriends; i++) {
+            final int index = i;
+
+            //load all friends
+            Query queryRef = reference.child("Users").child(userID).child(i + "");
+            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+               @Override
+               public void onDataChange(DataSnapshot snapshot) {
+                   if (snapshot != null && snapshot.getValue() != null) {
+
+                       String value = snapshot.getValue().toString();
+                        friendList.add(value);
+                   }
+               }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("TAG1", "Failed to read value.", error.toException());
+                }
+            });
+
+            //identify mutual friends based on database info
+            Query queryRef2 = reference.child("Users").child(userID).child(i + ":friended you");
+            queryRef2.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.getValue() != null) {
+                        String value = snapshot.getValue().toString();
+                        if (value.equals("true")) {
+                            MutalfriendIndex.add(index);
+                            downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("TAG1", "Failed to read value.", error.toException());
+                }
+            });
+        }
+    }
+
+    @Override
+    public void CheckIfFriend(String DataBaseID) {
+        final String ID = DataBaseID;
+
+        Query queryRef = reference.child("Users").child(DataBaseID).child("size");
+        queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot != null && snapshot.getValue() != null){
+                    int size = Integer.parseInt(snapshot.getValue().toString());
+                    checkIfFriendHelper(ID, size);
+                }
+            }
+            @Override
+           public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("TAG1", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+    private void checkIfFriendHelper(final String ID, int size){
+        for(int i = 0; i < size; i++){
+            final int index = i;
+
+            Query queryRef = reference.child("Users").child(ID).child(i + "");
+            queryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                 public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot != null && snapshot.getValue() != null){
+                        if(snapshot.getValue().toString().equals(userID)) {
+                            MutalfriendIndex.add(friendList.size() - 1);
+                            reference.child("Users").child(userID).child(friendList.size() - 1 + ":friended you").setValue("true");
+                            reference.child("Users").child(ID).child(index + ":friended you").setValue("true");
+                            reference.child("Users").child(ID).child("Update").setValue("true");
+                        }
+                    }
+                }
+                 @Override
+                 public void onCancelled(DatabaseError error) {
+                     // Failed to read value
+                     Log.w("TAG1", "Failed to read value.", error.toException());
+                 }
+            });
+        }
+    }
+
+     @Override
+     public void StartUserUpdateListener() {
+         reference.child("Users").child(userID).child("Update").addValueEventListener(new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot dataSnapshot) {
+                 if(dataSnapshot != null && dataSnapshot.getValue() != null) {
+                     if(dataSnapshot.getValue().toString().equals("true")){
+                         friendList.clear();
+                         MutalfriendIndex.clear();
+                         loadFriendsFromDataBase();
+                         reference.child("Users").child(userID).child("Update").setValue("false");
+                     }
+
+                 }
+             }
+
+             @Override
+             public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+     }
+
+    @Override
+    public void addFriend(String Email) {
+        //cant add yourself as friend
+        if(emailToFirebaseUserID(Email).equals(userID)){
+            return;
+        }
+        //prevents repeats
+        for (int i = 0; i < friendList.size(); i++){
+            if(friendList.get(i).equals(emailToFirebaseUserID(Email))){
+                return;
+            }
+        }
+
+        //store locally
+        friendList.add(emailToFirebaseUserID(Email));
+
+        //add to server
+        reference.child("Users").child(userID).child("size").setValue(friendList.size());
+        reference.child("Users").child(userID).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
+        reference.child("Users").child(userID).child(friendList.size() - 1 + ":friended you").setValue("false");
+
+        //checks if added friend has already added you and updates database if so
+        CheckIfFriend(emailToFirebaseUserID(Email));
+
+    }
+
+    @Override
+    public ArrayList<String> getAllMutalFriend() {
+        ArrayList<String> ret = new ArrayList<String>();
+        for(int i = 0; i < MutalfriendIndex.size(); i++){
+            ret.add(friendList.get(MutalfriendIndex.get(i)));
+        }
+        return  ret;
+    }
+
 
     // added for karma count
     public void displayKCount(final String id, final TextView view){
@@ -260,6 +448,8 @@ public class RealFirebase implements iFirebase {
             }
         });
     }
+
+
 
     public void setKCount(final String id, final long count){
         DatabaseReference imageRef = createDbRefForImageId(id);
