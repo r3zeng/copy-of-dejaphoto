@@ -43,7 +43,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginStart="16dp"
         android:clickable="true"
-        android:onClick="hideLocationName"/>
+        android:onClick="hideLocationName"
+        android:text="Please Worksdfsadf"/>
 
     <EditText
         android:id="@+id/locationEditText"
