@@ -472,6 +472,7 @@ public class DejaPhoto {
      * Cached name of the location
      */
     public String getLocationName() {
+
         return locationName;
     }
 
