@@ -1000,6 +1000,7 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         Location location = photo.getLocation();
         // for userDefinedLocation
         if(photo.userDefinedLocation){
+            if( photo.getLocationName().length()>0 && !photo.getLocationName().isEmpty())
             gotLocationText(photo, photo.getLocationName());
         }
 
