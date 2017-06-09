@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity
                 //here
                 if(photoManager.getCurrentPhoto().userDefinedLocation = false) {
                     String text = resultData.getString(Constants.RESULT_DATA_KEY);
+                    photoManager.getCurrentPhoto().setLocationName(text);
                     gotLocationText(photoManager.getCurrentPhoto(), text);
                     Log.i(TAG, "location reverse geocoding succeeds");
                 }
