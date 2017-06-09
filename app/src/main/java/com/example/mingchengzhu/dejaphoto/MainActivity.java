@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import android.app.WallpaperManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -336,16 +337,20 @@ public class MainActivity extends AppCompatActivity
         server.loadFriendsFromDataBase();
         //listens to change in user information and will update accordingly
         server.StartUserUpdateListener();
-        AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
-        myAlert.setMessage("Downloading photos from database... Please wait.");
-        AlertDialog dialog = myAlert.create();
-        dialog.show();
+        final AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
+        myAlert.setMessage("Downloading photos from database...");
+        myAlert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                dialog.cancel();
+            };
+        });
+        myAlert.show();
 /*
         Log.i(TAG, "Begin downloading");
         server.downloadAllFriendsPhotos();
         Log.i(TAG, "Friends' photos should have been downloaded");
   */
-        dialog.dismiss();
         AlbumUtility.createAlbums();
     }
 
@@ -775,17 +780,20 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
                     if (photoManager.getShare()) {
                         AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
                         myAlert.setMessage("Uploading photos to database... Please wait.");
-                        AlertDialog dialog = myAlert.create();
+                        myAlert.setCancelable(true);
+                        final AlertDialog dialog = myAlert.create();
                         dialog.show();
+
                         server.uploadDejaPhoto(photoManager.getCurrentPhoto(), new OnSuccessListener() {
                             @Override
                             public void onSuccess(Object o) {
                                 Log.i(TAG, "Image uploaded successfully!");
-
+                                dialog.dismiss();
                             }
                         }, new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
+                                dialog.dismiss();
                                 //TODO:
                             }
                         });
@@ -818,7 +826,7 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
 
                     AlertDialog.Builder myAlert = new AlertDialog.Builder(this);
                     myAlert.setMessage("Uploading photos to database... Please wait.");
-                    AlertDialog dialog = myAlert.create();
+                    final AlertDialog dialog = myAlert.create();
                     dialog.show();
                     // Upload the photo
                     if (photoManager.getShare()){
@@ -826,10 +834,12 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
                         @Override
                         public void onSuccess(Object o) {
                             Log.i(TAG, "Image uploaded successfully!");
+                            dialog.dismiss();
                         }
                     }, new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
+                            dialog.dismiss();
                             //TODO:
                         }
                     });
@@ -1066,8 +1076,9 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         myAlert.setMessage("You have lost connection to our services... Please wait while you are reconnected.");
         AlertDialog dialog = myAlert.create();
         dialog.show();
-
+        mGoogleApiClient.connect();
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
+
     }
 
     // location name edit mode
