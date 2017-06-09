@@ -202,7 +202,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         photoManager = new PhotoManager(this);
-        server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -316,6 +315,8 @@ public class MainActivity extends AppCompatActivity
         }else{
             currentUserEmail = defualt_User_Name;;
         }
+        
+        server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
 
         //loads user information from database
         server.loadFriendsFromDataBase();
