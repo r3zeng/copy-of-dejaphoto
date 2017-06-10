@@ -308,7 +308,7 @@ public class RealFirebase implements iFirebase {
                         String value = snapshot.getValue().toString();
                         if (value.equals("true")) {
                             MutalfriendIndex.add(index);
-                            downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
+                            downloadImageOfaFriend(friendList.get(index));
                         }
                     }
                 }
