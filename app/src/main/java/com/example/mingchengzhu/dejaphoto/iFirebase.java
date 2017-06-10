@@ -20,7 +20,7 @@ public interface iFirebase {
 
     void downloadDejaPhoto(final String id, OnSuccessListener successListener, OnFailureListener failureListener);
 
-    void downloadAllFriendsPhotos();
+    void downloadAllPhotos();
 
     void loadFriendsFromDataBase();
 
