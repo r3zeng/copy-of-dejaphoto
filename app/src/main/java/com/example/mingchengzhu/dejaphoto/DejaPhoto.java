@@ -93,14 +93,21 @@ public class DejaPhoto {
      */
     private String pictureOrigin;
 
-    // for indicating userdefined location
+    /**
+     * for indicating userdefined location
+     */
     boolean userDefinedLocation = false;
 
     private boolean isFromCamera;
 
-    // karma count field
+    /**
+     * karma count field
+     */
     private int karmaCount;
 
+    /**
+     * Constructor from local pictures
+     */
     public DejaPhoto(String id, String fileExtension, boolean isFromCamera, int karmaCount, Double latitude,
             Double longitude, String pictureOrigin, long timeTaken, String locationName){
         this.id = id;
@@ -270,18 +277,26 @@ public class DejaPhoto {
         imageRef.child(DejaPhoto.PHOTO_KEY_FILE_EXT).setValue(getFileExtension());
     }
 
-    // Getters are setters
 
+    /**
+     * getter for targetAlbum
+     */
     static public File fileForParameters(String id, String fileExtension, boolean isFromCamera, boolean isFromFriend) {
         String targetAlbum = AlbumUtility.albumForParameters(isFromFriend, isFromCamera);
         return fileForParameters(id, fileExtension, targetAlbum);
     }
 
+    /**
+     * getter for destFolder
+     */
     static public File fileForParameters(String id, String fileExtension, String targetAlbum) {
         File destFolder = new File(AlbumUtility.albumParentFolder(), targetAlbum);
         return new File(destFolder, id + fileExtension);
     }
 
+    /**
+     * generator of photo ids
+     */
     static public String generateNewId() {
         return UUID.randomUUID().toString();
     }

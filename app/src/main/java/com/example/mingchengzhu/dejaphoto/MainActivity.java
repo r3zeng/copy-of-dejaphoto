@@ -1012,7 +1012,6 @@ public void add_friend(){
         locationTextView.setText("");
         Location location = photo.getLocation();
         // for userDefinedLocation
-        server.getUserDefined(photoManager.getCurrentPhoto().getId());
         if(photoManager.getCurrentPhoto().userDefinedLocation){
             if( photo.getLocationName().length()>0 && !photo.getLocationName().isEmpty())
             gotLocationText(photo, photo.getLocationName());
