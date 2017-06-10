@@ -11,7 +11,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Random;
 
 import static android.content.ContentValues.TAG;
@@ -34,6 +36,11 @@ public class PhotoManager {
     private boolean showFriends = true;
     private boolean share = true;
     private PreviousImage backHistory = new PreviousImage();
+    private iFirebase server;
+
+    public void setServer(iFirebase server){
+        this.server = server;
+    }
 
     public PhotoManager(PhotoManagerClient client) {
         this.client = client;
@@ -73,6 +80,7 @@ public class PhotoManager {
      * should be called on right swipe and by the auto-switcher
      */
     public DejaPhoto getNextRandomImage() {
+
         Log.i(TAG, "The size is " + allPhotos.length);
         if (allPhotos == null || allPhotos.length == 0) {
             Log.e(TAG, "Error: getting next image from empty album");
@@ -333,11 +341,12 @@ public class PhotoManager {
 
 
     public void next() {
+
         Log.i(TAG, "the size in next is " + allPhotos.length);
         Log.i(TAG, "next called");
         if (allPhotos.length == 0)
             return;
-
+/*
         final DejaPhoto newPhoto = getNextRandomImage();
         final String origin = newPhoto.getPictureOrigin();
         Log.i(TAG, "the origin is " + origin);
@@ -355,12 +364,11 @@ public class PhotoManager {
                         return;
                     }
                     else {
-
                         int i, j;
                         for (i = j = 0; j < allPhotos.length; ++j)
                             if (!newPhoto.equals(allPhotos[j])) allPhotos[i++] = allPhotos[j];
                         allPhotos = Arrays.copyOf(allPhotos, i);
-                        
+
                         next();
                     }
                 }
@@ -379,11 +387,60 @@ public class PhotoManager {
             // failed to determine what photo is next, so abort
             return;
         }
+*/
+        removeUnsharedImage();
+
+        DejaPhoto newPhoto = getNextRandomImage();
+
 
         currentPhoto = newPhoto;
         backHistory.swipeRight(currentPhoto);
 
         client.currentPhotoChanged();
+    }
+
+    public void removeUnsharedImage(){
+        if (allPhotos.length == 0)
+            return;
+
+        final DejaPhoto newPhoto = getNextRandomImage();
+        final String origin = newPhoto.getPictureOrigin();
+        Log.i(TAG, "the origin is " + origin);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference();
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean option = dataSnapshot.child("Users").child(RealFirebase.emailToFirebaseUserID(origin)).child("sharing").getValue(Boolean.class);
+                Log.i(TAG, "sharing option is " + option);
+                if (!option) {
+
+                    if (allPhotos.length == 1){
+                        allPhotos = new DejaPhoto[]{};
+                        return ;
+                    }
+                    else {
+                        int i, j;
+                        for (i = j = 0; j < allPhotos.length; ++j)
+                            if (!newPhoto.equals(allPhotos[j])) allPhotos[i++] = allPhotos[j];
+                        allPhotos = Arrays.copyOf(allPhotos, i);
+
+                        removeUnsharedImage();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+            }
+        };
+        myFirebaseRef.addListenerForSingleValueEvent(postListener);
+                //addValueEventListener(postListener);
+
+
     }
 
     public void prev() {

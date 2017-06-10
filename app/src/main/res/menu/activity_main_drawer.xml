@@ -40,6 +40,17 @@
             />
 
     </group>
+
+    <group android:id="@+id/update_photo_group"
+        android:layout_gravity="center_horizontal"
+        android:checkableBehavior="single">
+
+        <item android:id="@+id/update_photo"
+            android:title="Update Photo"
+            />
+
+    </group>
+
     <group android:checkableBehavior="all">
 
         <item

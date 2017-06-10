@@ -123,7 +123,6 @@ public class RealFirebase implements iFirebase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 successListener.onSuccess(taskSnapshot);
-                reference.child("Users").child(userID).child("Update").setValue("true");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -255,6 +254,9 @@ public class RealFirebase implements iFirebase {
         reference = database.getReference();
     }
 
+
+
+
     @Override
     public void loadFriendsFromDataBase() {
         Query queryRef = reference.child("Users").child(userID).child("size");
@@ -310,8 +312,8 @@ public class RealFirebase implements iFirebase {
                         String value = snapshot.getValue().toString();
                         if (value.equals("true")) {
                             MutalfriendIndex.add(index);
-                            downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
-                           // downloadImageOfaFriend(friendList.get(index));
+                            //downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
+                            downloadImageOfaFriend(friendList.get(index));
                         }
                     }
                 }
@@ -376,26 +378,7 @@ public class RealFirebase implements iFirebase {
      @Override
      public void StartUserUpdateListener() {
          reference.child("Users").child(userID).child("sharing").setValue(true);
-         reference.child("Users").orderByChild("Update").addValueEventListener(new ValueEventListener() {
-             @Override
-             public void onDataChange(DataSnapshot dataSnapshot) {
-                 for (DataSnapshot child: dataSnapshot.getChildren())
-                 if(child != null && child.getValue() != null) {
-                     if(child.getValue().toString().equals("true")){
-                         friendList.clear();
-                         MutalfriendIndex.clear();
-                         loadFriendsFromDataBase();
-                         reference.child("Users").child(child.getKey()).child("Update").setValue("false");
-                     }
 
-                 }
-             }
-
-             @Override
-             public void onCancelled(DatabaseError databaseError) {
-             }
-         });
-         /*
          reference.child("Users").child(userID).child("Update").addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(DataSnapshot dataSnapshot) {
@@ -414,7 +397,7 @@ public class RealFirebase implements iFirebase {
              public void onCancelled(DatabaseError databaseError) {
             }
         });
-        */
+
 
      }
 

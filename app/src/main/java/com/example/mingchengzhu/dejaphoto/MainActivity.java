@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity
 
         server = new RealFirebase(RealFirebase.emailToFirebaseUserID(currentUserEmail));
         ((RealFirebase)server).setPhotoManager(photoManager);
+        photoManager.setServer(server);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -460,8 +461,15 @@ public class MainActivity extends AppCompatActivity
         } else if(id == R.id.take_photo){
             take_photo();
         }
+        else if (id == R.id.update_photo){
+            update_photo();
+        }
         return true;
     }
+
+public void update_photo(){
+    server.downloadAllFriendsPhotos();
+}
 
 public void add_friend(){
         LayoutInflater inflator2 = (LayoutInflater) getApplication().getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -667,7 +675,7 @@ public void add_friend(){
             }
         });
 
-final Button share_button = (Button) popup.getContentView().findViewById(R.id.share_photo_button);
+        final Button share_button = (Button) popup.getContentView().findViewById(R.id.share_photo_button);
         if(photoManager.getShare()){
             share_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
         }else{
