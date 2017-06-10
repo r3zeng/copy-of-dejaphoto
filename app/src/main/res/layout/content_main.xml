@@ -73,9 +73,7 @@
         android:textColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="invisible"
-        app:layout_constraintLeft_toRightOf="parent"
-        android:clickable="true"
-        android:onClick="updateKarmaC"/>
+        app:layout_constraintLeft_toRightOf="parent" />
 
     <TextView
         android:id="@+id/karmaEmpty"

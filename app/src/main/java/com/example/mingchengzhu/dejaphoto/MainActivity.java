@@ -171,14 +171,17 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 //here
-                if(photoManager.getCurrentPhoto().userDefinedLocation = false) {
+                if(photoManager.getCurrentPhoto().userDefinedLocation == false) {
                     String text = resultData.getString(Constants.RESULT_DATA_KEY);
                     photoManager.getCurrentPhoto().setLocationName(text);
+                    server.setLName(photoManager.getCurrentPhoto().getId(), text);
                     gotLocationText(photoManager.getCurrentPhoto(), text);
                     Log.i(TAG, "location reverse geocoding succeeds");
                 }
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
+                server.setLName(photoManager.getCurrentPhoto().getId(), "La La Land");
+                gotLocationText(photoManager.getCurrentPhoto(), "La La Land");
             }
         }
     }
@@ -1002,8 +1005,7 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         // for userDefinedLocation
         if(photo.userDefinedLocation){
             if( photo.getLocationName().length()>0 && !photo.getLocationName().isEmpty())
-            //gotLocationText(photo, photo.getLocationName());
-                gotLocationText(photo, "La La Land");
+            gotLocationText(photo, photo.getLocationName());
         }
 
         else if (location != null) {
@@ -1016,6 +1018,7 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
             intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
             startService(intent);
         } else {
+            server.setLName(photoManager.getCurrentPhoto().getId(), "La La Land");
             gotLocationText(photo, "La La Land");
         }
 
@@ -1037,6 +1040,8 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         locationTextView.setText(locationText);
 
         setWallpaper(photo, locationText);
+
+        server.displayLName(photoManager.getCurrentPhoto().getId(), locationTextView, locationEditText);
     }
 
     public void currentPhotoChanged() {
@@ -1108,23 +1113,23 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
 
         locationTextView.setText(newLocationName);
         photoManager.getCurrentPhoto().setLocationName(newLocationName);
+        server.setLName(photoManager.getCurrentPhoto().getId(), newLocationName);
         gotLocationText(photoManager.getCurrentPhoto(), newLocationName);
     }
 
     // onClick method for the karma shape
     public void updateKarmaC(View view){
-        if(!(photoManager.getCurrentPhoto().getKarma())) {
-            long count = photoManager.getCurrentPhoto().getKarmaCount();
-            photoManager.getCurrentPhoto().setKarma(true);
-            TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
-            TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
-            karmaShape.setVisibility(View.VISIBLE);
-            karmaEmpty.setVisibility(View.INVISIBLE);
-            // increment the kcount
-            count++;
-            photoManager.getCurrentPhoto().increKarmaCount();
-            server.setKCount(photoManager.getCurrentPhoto().getId(), count);
-        }
+        final TextView karmaTextView = (TextView) findViewById(R.id.karmaTextView);
+        long count = Long.valueOf(karmaTextView.getText().toString());
+        photoManager.getCurrentPhoto().setKarma(true);
+        TextView karmaShape = (TextView) findViewById(R.id.karmaShape);
+        TextView karmaEmpty = (TextView) findViewById(R.id.karmaEmpty);
+        karmaShape.setVisibility(View.VISIBLE);
+        karmaEmpty.setVisibility(View.INVISIBLE);
+        // increment the kcount
+        count++;
+        photoManager.getCurrentPhoto().increKarmaCount();
+        server.setKCount(photoManager.getCurrentPhoto().getId(), count);
     }
     //
 

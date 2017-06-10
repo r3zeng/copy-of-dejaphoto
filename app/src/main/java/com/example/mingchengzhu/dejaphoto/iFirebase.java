@@ -1,5 +1,6 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -34,6 +35,10 @@ public interface iFirebase {
     // for karma count
     void displayKCount(final String id, final TextView view);
 
+    void displayLName(final String id, final TextView view, final EditText editText);
+
     void setKCount(final String id, final long count);
+
+    void setLName(final String id, final String lname);
     //
 }

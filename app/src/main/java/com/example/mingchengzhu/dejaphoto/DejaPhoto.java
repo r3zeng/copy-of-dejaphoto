@@ -133,7 +133,7 @@ public class DejaPhoto {
         this.karmaCount = 0;
 
         Boolean hasCoords = ((Boolean)map.get(PHOTO_KEY_HASCOORDS));
-        if (hasCoords == null || hasCoords) {
+        if (hasCoords) {
             Number latitude = (Number) map.get(PHOTO_KEY_LATITUDE);
             Number longitude = (Number) map.get(PHOTO_KEY_LONGITUDE);
             if (latitude != null && longitude != null) {
