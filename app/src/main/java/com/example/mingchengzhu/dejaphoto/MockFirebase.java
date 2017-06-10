@@ -37,7 +37,7 @@ public class MockFirebase implements iFirebase {
     public void downloadDejaPhoto(final String id, OnSuccessListener successListener, final OnFailureListener failureListener) {
     }
 
-    public void downloadAllFriendsPhotos(){}
+    public void downloadAllPhotos(){}
 
     @Override
    public void loadFriendsFromDataBase() {}

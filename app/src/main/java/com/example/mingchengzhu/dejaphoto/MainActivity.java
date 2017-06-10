@@ -68,13 +68,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import java.util.ArrayList;
 
 /**
  * The primary activity for the app
@@ -353,7 +346,7 @@ public class MainActivity extends AppCompatActivity
         myAlert.show();
 /*
         Log.i(TAG, "Begin downloading");
-        server.downloadAllFriendsPhotos();
+        server.downloadAllPhotos();
         Log.i(TAG, "Friends' photos should have been downloaded");
   */
         AlbumUtility.createAlbums();
@@ -471,7 +464,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 public void update_photo(){
-    server.downloadAllFriendsPhotos();
+    server.downloadAllPhotos();
 }
 
 public void add_friend(){

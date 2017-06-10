@@ -2,16 +2,11 @@ package com.example.mingchengzhu.dejaphoto;
 
 import android.location.Location;
 import android.net.Uri;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,21 +18,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.Executor;
 
 /**
  * Created by andymeza on 6/1/17.
@@ -192,7 +176,7 @@ public class RealFirebase implements iFirebase {
 
     }
 
-    public void downloadAllFriendsPhotos(){
+    public void downloadAllPhotos(){
         ArrayList<String> friendList = getAllMutalFriend();
         if (friendList.size() == 0) {
             Log.i(TAG, "the user does not have any friend");
@@ -201,11 +185,13 @@ public class RealFirebase implements iFirebase {
 
         for (int i = 0; i < friendList.size(); i++){
             String friend = friendList.get(i);
-            downloadImageOfaFriend(friend);
+            downloadImagesForUser(friend);
         }
+
+        downloadImagesForUser(userID);
     }
 
-    public void downloadImageOfaFriend(String friend){
+    public void downloadImagesForUser(String friend){
         Log.i(TAG, friend + "'s photo should be downloaded");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myFirebaseRef = database.getReference("images");
@@ -313,8 +299,8 @@ public class RealFirebase implements iFirebase {
                         String value = snapshot.getValue().toString();
                         if (value.equals("true")) {
                             MutalfriendIndex.add(index);
-                            //downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
-                            downloadImageOfaFriend(friendList.get(index));
+                            //downloadImagesForUser(friendList.get(MutalfriendIndex.get(index)));
+                            downloadImagesForUser(friendList.get(index));
                         }
                     }
                 }
