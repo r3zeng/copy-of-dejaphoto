@@ -123,6 +123,7 @@ public class RealFirebase implements iFirebase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 successListener.onSuccess(taskSnapshot);
+                reference.child("Users").child(userID).child("Update").setValue("true");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
