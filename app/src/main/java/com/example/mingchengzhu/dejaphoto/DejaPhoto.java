@@ -19,6 +19,7 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.firebase.database.DatabaseReference;
 
 import java.io.File;
@@ -33,6 +34,7 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_KCOUNT = "karmaCount";
     public static final String PHOTO_KEY_LATITUDE = "latitude";
     public static final String PHOTO_KEY_LONGITUDE = "longitude";
+    public static final String PHOTO_KEY_HASCOORDS = "hasCoords";
     public static final String PHOTO_KEY_LNAME = "locationName";
     public static final String PHOTO_KEY_TIME_TAKEN = "timeTaken";
     public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
@@ -97,8 +99,8 @@ public class DejaPhoto {
     // karma count field
     private int karmaCount;
 
-    public DejaPhoto(String id, String fileExtension, boolean isFromCamera, int karmaCount, float givenLatitude,
-            float givenLongitude, String pictureOrigin, long timeTaken, String locationName){
+    public DejaPhoto(String id, String fileExtension, boolean isFromCamera, int karmaCount, Double latitude,
+            Double longitude, String pictureOrigin, long timeTaken, String locationName){
         this.id = id;
         this.fileExtension = fileExtension;
         this.hasKarma = false;
@@ -106,8 +108,6 @@ public class DejaPhoto {
         this.time = timeTaken;
         this.karmaCount = karmaCount;
 
-        Number latitude = (Number)givenLatitude;
-        Number longitude = (Number)givenLongitude;
         if (latitude != null && longitude != null) {
             this.location = new Location("");
             this.location.setLatitude(latitude.doubleValue());
@@ -132,12 +132,17 @@ public class DejaPhoto {
         this.time = ((Number)map.get(PHOTO_KEY_TIME_TAKEN)).longValue();
         this.karmaCount = 0;
 
-        Number latitude = (Number)map.get(PHOTO_KEY_LATITUDE);
-        Number longitude = (Number)map.get(PHOTO_KEY_LONGITUDE);
-        if (latitude != null && longitude != null) {
-            this.location = new Location("");
-            this.location.setLatitude(latitude.doubleValue());
-            this.location.setLongitude(longitude.doubleValue());
+        Boolean hasCoords = ((Boolean)map.get(PHOTO_KEY_HASCOORDS));
+        if (hasCoords == null || hasCoords) {
+            Number latitude = (Number) map.get(PHOTO_KEY_LATITUDE);
+            Number longitude = (Number) map.get(PHOTO_KEY_LONGITUDE);
+            if (latitude != null && longitude != null) {
+                this.location = new Location("");
+                this.location.setLatitude(latitude.doubleValue());
+                this.location.setLongitude(longitude.doubleValue());
+            }
+        } else {
+            this.location = null;
         }
 
         this.locationName = (String)map.get(PHOTO_KEY_LNAME);
@@ -255,6 +260,7 @@ public class DejaPhoto {
         imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
         imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
+        imageRef.child(DejaPhoto.PHOTO_KEY_HASCOORDS).setValue(location != null);
         imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(getLocationName());
         imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(getTime());
         imageRef.child(DejaPhoto.PHOTO_KEY_PICTURE_ORIGIN).setValue(getPictureOrigin());
