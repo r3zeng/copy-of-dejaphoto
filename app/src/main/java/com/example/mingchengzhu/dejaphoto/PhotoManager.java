@@ -5,9 +5,17 @@ import android.location.Location;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Arrays;
 import java.util.Random;
 
 import static android.content.ContentValues.TAG;
+
 
 /**
  * Created by mingchengzhu on 5/13/17.
@@ -65,7 +73,7 @@ public class PhotoManager {
      * should be called on right swipe and by the auto-switcher
      */
     public DejaPhoto getNextRandomImage() {
-
+        Log.i(TAG, "The size is " + allPhotos.length);
         if (allPhotos == null || allPhotos.length == 0) {
             Log.e(TAG, "Error: getting next image from empty album");
             return null;
@@ -75,6 +83,7 @@ public class PhotoManager {
         DejaPhoto selectedPhoto = null;
 
         for (DejaPhoto currentPhoto : allPhotos) {
+            Log.i(TAG, "currentPhoto is null?" + (currentPhoto == null));
             double photoWeight = getTotalPhotoWeight(currentPhoto);
             if (photoWeight > largestWeight) {
                 selectedPhoto = currentPhoto;
@@ -324,8 +333,47 @@ public class PhotoManager {
 
 
     public void next() {
+        Log.i(TAG, "the size in next is " + allPhotos.length);
         Log.i(TAG, "next called");
-        DejaPhoto newPhoto = getNextRandomImage();
+        if (allPhotos.length == 0)
+            return;
+
+        final DejaPhoto newPhoto = getNextRandomImage();
+        final String origin = newPhoto.getPictureOrigin();
+        Log.i(TAG, "the origin is " + origin);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myFirebaseRef = database.getReference();
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean option = dataSnapshot.child("Users").child(RealFirebase.emailToFirebaseUserID(origin)).child("sharing").getValue(Boolean.class);
+                Log.i(TAG, "sharing option is " + option);
+                if (!option) {
+                    if (allPhotos.length == 1){
+                        allPhotos = new DejaPhoto[]{};
+                        return;
+                    }
+                    else {
+
+                        int i, j;
+                        for (i = j = 0; j < allPhotos.length; ++j)
+                            if (!newPhoto.equals(allPhotos[j])) allPhotos[i++] = allPhotos[j];
+                        allPhotos = Arrays.copyOf(allPhotos, i);
+                        
+                        next();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+            }
+        };
+        myFirebaseRef.addValueEventListener(postListener);
+
+
         if (newPhoto == null) {
             Log.w(TAG, "getNextRandomImage() returned null");
             // failed to determine what photo is next, so abort

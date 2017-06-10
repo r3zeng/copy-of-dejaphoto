@@ -53,7 +53,6 @@ public class RealFirebase implements iFirebase {
     private ArrayList<String> friendList;
     private ArrayList<Integer> MutalfriendIndex;
 
-    private HashMap<String, Boolean> sharingOption;
 
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -373,6 +372,7 @@ public class RealFirebase implements iFirebase {
 
      @Override
      public void StartUserUpdateListener() {
+         reference.child("Users").child(userID).child("sharing").setValue(true);
          reference.child("Users").child(userID).child("Update").addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(DataSnapshot dataSnapshot) {
@@ -410,7 +410,6 @@ public class RealFirebase implements iFirebase {
         friendList.add(emailToFirebaseUserID(Email));
 
         //add to server
-      //  reference.child("Users").child(userID).child("sharing").setValue(true);
         reference.child("Users").child(userID).child("size").setValue(friendList.size());
         reference.child("Users").child(userID).child(friendList.size() - 1 + "").setValue(friendList.get(friendList.size() -1));
         reference.child("Users").child(userID).child(friendList.size() - 1 + ":friended you").setValue("false");
@@ -486,12 +485,14 @@ public class RealFirebase implements iFirebase {
         });
     }
 
-    public void checkIfSharingIsTurnedOff(){
-        reference.child("Users").child(userID).child("sharing").setValue(true);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myFirebaseRef = database.getReference("images");
-
-        Query queryRef = myFirebaseRef.orderByChild("pictureOrigin").equalTo("");
+    public void turnOffSharing(){
+        reference.child("Users").child(userID).child("sharing").setValue(false);
     }
-    //
+
+    public void turnOnSharing(){
+        reference.child("Users").child(userID).child("sharing").setValue(true);
+    }
+
+
+
 }
