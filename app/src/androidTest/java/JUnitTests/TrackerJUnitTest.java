@@ -27,16 +27,4 @@ public class TrackerJUnitTest {
         assertEquals(tracker.getLocation(), null);
     }
 
-    @Test
-    public void testGetAndUpdateTime() {
-        long time1 = tracker.getTime();
-        tracker.updateTime();
-        long time2 = tracker.getTime();
-        tracker.updateTime();
-        long time3 = tracker.getTime();
-
-        assertTrue(time1 > 0);
-        assertEquals(time1, time2);
-        assertEquals(time2, time3);
-    }
 }
