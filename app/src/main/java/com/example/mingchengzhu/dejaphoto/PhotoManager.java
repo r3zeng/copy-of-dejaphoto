@@ -25,7 +25,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PhotoManager {
-    PhotoManagerClient client;
+    public PhotoManagerClient client;
     private static DejaPhoto[] allPhotos = {};
     private DejaPhoto currentPhoto = null;
     private boolean matchTime = true;

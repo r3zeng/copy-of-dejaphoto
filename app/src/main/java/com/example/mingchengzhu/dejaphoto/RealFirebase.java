@@ -155,8 +155,12 @@ public class RealFirebase implements iFirebase {
                         public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                             successListener.onSuccess(taskSnapshot);
                             photoManager.addPhoto(photo);
+                            if (photoManager.getCurrentPhoto() == null) {
+                                photoManager.setCurrentPhoto(photo);
+                                photoManager.client.currentPhotoChanged();
+                            }
                            // photoManager.setCurrentPhoto(photo);
-                            Log.i(TAG, "photo should be set to wallpaper now");
+                            Log.i(TAG, "successfully downloaded a photo");
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -183,12 +187,12 @@ public class RealFirebase implements iFirebase {
             return;
         }
 
+        downloadImagesForUser(userID);
+
         for (int i = 0; i < friendList.size(); i++){
             String friend = friendList.get(i);
             downloadImagesForUser(friend);
         }
-
-        downloadImagesForUser(userID);
     }
 
     public void downloadImagesForUser(String friend){

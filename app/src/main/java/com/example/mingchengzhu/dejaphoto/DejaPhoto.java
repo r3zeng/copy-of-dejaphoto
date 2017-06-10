@@ -261,7 +261,7 @@ public class DejaPhoto {
     public void writeToDBRef(DatabaseReference imageRef) {
         imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT).setValue(0);
         imageRef.child(DejaPhoto.PHOTO_KEY_LATITUDE).setValue((location == null) ? null : location.getLatitude());
-        imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLatitude());
+        imageRef.child(DejaPhoto.PHOTO_KEY_LONGITUDE).setValue((location == null) ? null : location.getLongitude());
         imageRef.child(DejaPhoto.PHOTO_KEY_HASCOORDS).setValue(location != null);
         imageRef.child(DejaPhoto.PHOTO_KEY_LNAME).setValue(getLocationName());
         imageRef.child(DejaPhoto.PHOTO_KEY_TIME_TAKEN).setValue(getTime());
