@@ -40,5 +40,9 @@ public interface iFirebase {
     void setKCount(final String id, final long count);
 
     void setLName(final String id, final String lname);
+
+    public void setUserDefined(final String id, final boolean userDefined);
+
+    public void getUserDefined(final String id);
     //
 }

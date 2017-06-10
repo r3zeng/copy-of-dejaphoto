@@ -40,6 +40,8 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
     public static final String PHOTO_KEY_FROM_CAMERA = "isFromCamera";
     public static final String PHOTO_KEY_FILE_EXT = "fileExtension";
+    public static final String PHOTO_KEY_USERDEFINED = "userDefined";
+
 
     /**
      * Used for logging

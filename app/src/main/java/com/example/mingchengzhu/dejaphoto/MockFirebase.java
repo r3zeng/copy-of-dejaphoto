@@ -55,6 +55,11 @@ public class MockFirebase implements iFirebase {
 
     public void setLName(final String id, final String lname){
     }
+
+    public void getUserDefined(final String id){
+    }
+    public void setUserDefined(final String id, final boolean userDefined){
+    }
     //
 
 }

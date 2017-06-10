@@ -504,6 +504,8 @@ public class RealFirebase implements iFirebase {
     }
 
 
+
+
     public void setKCount(final String id, final long count){
         DatabaseReference imageRef = createDbRefForImageId(id);
         DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
@@ -515,6 +517,37 @@ public class RealFirebase implements iFirebase {
         DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_LNAME);
         myRef.setValue(lname);
     }
+
+    public void setUserDefined(final String id, final boolean userDefined){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_USERDEFINED);
+        myRef.setValue(userDefined);
+    }
+
+    public void getUserDefined(final String id){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_USERDEFINED);
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean data = dataSnapshot.getValue(Boolean.class);
+                if(data != null) {
+                    Constants.USERDEFINED = data;
+                }
+                else{
+                    Constants.USERDEFINED = false;
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
 
     public void removeAllPhotosOfUser(String user){
         FirebaseDatabase database = FirebaseDatabase.getInstance();

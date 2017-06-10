@@ -1004,7 +1004,8 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         locationTextView.setText("");
         Location location = photo.getLocation();
         // for userDefinedLocation
-        if(photo.userDefinedLocation){
+        server.getUserDefined(photoManager.getCurrentPhoto().getId());
+        if(Constants.USERDEFINED){
             if( photo.getLocationName().length()>0 && !photo.getLocationName().isEmpty())
             gotLocationText(photo, photo.getLocationName());
         }
@@ -1110,6 +1111,7 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
         locationTextView.setVisibility(View.VISIBLE);
 
         photoManager.getCurrentPhoto().userDefinedLocation = true;
+        server.setUserDefined(photoManager.getCurrentPhoto().getId(), true);
         String newLocationName = locationEditText.getText().toString();
 
         locationTextView.setText(newLocationName);
