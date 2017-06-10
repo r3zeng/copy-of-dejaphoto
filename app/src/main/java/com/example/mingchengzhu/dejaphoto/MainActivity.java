@@ -145,8 +145,12 @@ public class MainActivity extends AppCompatActivity
      * Used to receive address results from FetchAddressIntentService
      */
     private class AddressResultReceiver extends ResultReceiver {
-        AddressResultReceiver(Handler handler) {
+        private DejaPhoto photo;
+
+        AddressResultReceiver(DejaPhoto photo, Handler handler) {
             super(handler);
+
+            this.photo = photo;
         }
 
         @Override
@@ -164,17 +168,20 @@ public class MainActivity extends AppCompatActivity
 
             if (resultCode == Constants.FETCH_ADDRESS_SUCCESS) {
                 //here
-                if(photoManager.getCurrentPhoto().userDefinedLocation == false) {
+                if(photo.userDefinedLocation == false) {
                     String text = resultData.getString(Constants.RESULT_DATA_KEY);
-                    photoManager.getCurrentPhoto().setLocationName(text);
-                    server.setLName(photoManager.getCurrentPhoto().getId(), text);
-                    gotLocationText(photoManager.getCurrentPhoto(), text);
+                    photo.setLocationName(text);
+                    server.setLName(photo.getId(), text);
+
+                    if (photoManager.getCurrentPhoto() == photo) {
+                        gotLocationText(photo, text);
+                    }
                     Log.i(TAG, "location reverse geocoding succeeds");
                 }
             } else {
                 Log.e(TAG, "location reverse geocoding failed");
-                server.setLName(photoManager.getCurrentPhoto().getId(), "La La Land");
-                gotLocationText(photoManager.getCurrentPhoto(), "La La Land");
+                server.setLName(photo.getId(), "La La Land");
+                gotLocationText(photo, "La La Land");
             }
         }
     }
@@ -1012,9 +1019,7 @@ public void add_friend(){
         }
 
         else if (location != null) {
-            if (resultReceiver == null) {
-                resultReceiver = new AddressResultReceiver(new Handler());
-            }
+            resultReceiver = new AddressResultReceiver(photo, new Handler());
 
             Intent intent = new Intent(this, FetchAddressIntentService.class);
             intent.putExtra(Constants.RECEIVER, resultReceiver);
@@ -1044,7 +1049,7 @@ public void add_friend(){
 
         setWallpaper(photo, locationText);
 
-        server.displayLName(photoManager.getCurrentPhoto().getId(), locationTextView, locationEditText);
+        //server.displayLName(photoManager.getCurrentPhoto().getId(), locationTextView, locationEditText);
     }
 
     public void currentPhotoChanged() {
