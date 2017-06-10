@@ -38,4 +38,6 @@ public final class Constants {
      */
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
             ".LOCATION_DATA_EXTRA";
+
+    public static  boolean USERDEFINED;
 }

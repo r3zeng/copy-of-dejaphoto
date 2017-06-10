@@ -40,6 +40,8 @@ public class DejaPhoto {
     public static final String PHOTO_KEY_PICTURE_ORIGIN = "pictureOrigin";
     public static final String PHOTO_KEY_FROM_CAMERA = "isFromCamera";
     public static final String PHOTO_KEY_FILE_EXT = "fileExtension";
+    public static final String PHOTO_KEY_USERDEFINED = "userDefined";
+
 
     /**
      * Used for logging
@@ -133,7 +135,7 @@ public class DejaPhoto {
         this.karmaCount = 0;
 
         Boolean hasCoords = ((Boolean)map.get(PHOTO_KEY_HASCOORDS));
-        if (hasCoords == null || hasCoords) {
+        if (hasCoords) {
             Number latitude = (Number) map.get(PHOTO_KEY_LATITUDE);
             Number longitude = (Number) map.get(PHOTO_KEY_LONGITUDE);
             if (latitude != null && longitude != null) {

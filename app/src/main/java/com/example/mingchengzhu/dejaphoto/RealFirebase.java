@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
@@ -460,12 +461,76 @@ public class RealFirebase implements iFirebase {
         });
     }
 
+    // added for location name
+    public void displayLName(final String id, final TextView view, final EditText editText){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_LNAME);
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String data = dataSnapshot.getValue(String.class);
+                if(data != null) {
+                    view.setText(data.toString());
+                    editText.setText(data.toString());
+                }
+                else{
+                    view.setText("La La Land");
+                    editText.setText("La La Land");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
 
     public void setKCount(final String id, final long count){
         DatabaseReference imageRef = createDbRefForImageId(id);
         DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_KCOUNT);
         myRef.setValue(count);
     }
+
+    public void setLName(final String id, final String lname){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_LNAME);
+        myRef.setValue(lname);
+    }
+
+    public void setUserDefined(final String id, final boolean userDefined){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_USERDEFINED);
+        myRef.setValue(userDefined);
+    }
+
+    public void getUserDefined(final String id){
+        DatabaseReference imageRef = createDbRefForImageId(id);
+        DatabaseReference myRef = imageRef.child(DejaPhoto.PHOTO_KEY_USERDEFINED);
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Boolean data = dataSnapshot.getValue(Boolean.class);
+                if(data != null) {
+                    Constants.USERDEFINED = data;
+                }
+                else{
+                    Constants.USERDEFINED = false;
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
 
     public void removeAllPhotosOfUser(String user){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
