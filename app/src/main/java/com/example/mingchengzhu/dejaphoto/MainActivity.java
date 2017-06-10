@@ -1006,7 +1006,7 @@ public void add_friend(){
         Location location = photo.getLocation();
         // for userDefinedLocation
         server.getUserDefined(photoManager.getCurrentPhoto().getId());
-        if(Constants.USERDEFINED){
+        if(photoManager.getCurrentPhoto().userDefinedLocation){
             if( photo.getLocationName().length()>0 && !photo.getLocationName().isEmpty())
             gotLocationText(photo, photo.getLocationName());
         }
@@ -1112,7 +1112,6 @@ public void add_friend(){
         locationTextView.setVisibility(View.VISIBLE);
 
         photoManager.getCurrentPhoto().userDefinedLocation = true;
-        server.setUserDefined(photoManager.getCurrentPhoto().getId(), true);
         String newLocationName = locationEditText.getText().toString();
 
         locationTextView.setText(newLocationName);

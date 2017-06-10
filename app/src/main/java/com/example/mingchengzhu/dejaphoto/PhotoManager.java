@@ -394,6 +394,7 @@ public class PhotoManager {
 
 
         currentPhoto = newPhoto;
+        setCurrentPhoto(currentPhoto);
         backHistory.swipeRight(currentPhoto);
 
         client.currentPhotoChanged();
