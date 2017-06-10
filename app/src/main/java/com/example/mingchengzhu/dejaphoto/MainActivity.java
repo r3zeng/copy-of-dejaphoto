@@ -682,14 +682,15 @@ final Button share_button = (Button) popup.getContentView().findViewById(R.id.sh
             public void onClick(View view) {
                 if (photoManager.getShare()) {
                     photoManager.setShare(false);
+                    ((RealFirebase)server).turnOffSharing();
                     ((RealFirebase)server).removeAllPhotosOfUser(getCurrentUser());
                     Toast.makeText(MainActivity.this, "Turn off Sharing Photos", Toast.LENGTH_SHORT).show();
                     share_button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
                 }else{
                     photoManager.setShare(true);
+                    ((RealFirebase)server).turnOnSharing();
                     Toast.makeText(MainActivity.this, "Turn on Sharing Photos", Toast.LENGTH_SHORT).show();
                     share_button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-
                 }
             }
         });

@@ -2,6 +2,7 @@ package com.example.mingchengzhu.dejaphoto;
 
 import android.location.Location;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -52,6 +54,7 @@ public class RealFirebase implements iFirebase {
     //same as user friends on server but stored locally for faster access
     private ArrayList<String> friendList;
     private ArrayList<Integer> MutalfriendIndex;
+
 
     FirebaseDatabase database;
     DatabaseReference reference;
@@ -121,6 +124,7 @@ public class RealFirebase implements iFirebase {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 successListener.onSuccess(taskSnapshot);
+                reference.child("Users").child(userID).child("Update").setValue("true");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -308,6 +312,7 @@ public class RealFirebase implements iFirebase {
                         if (value.equals("true")) {
                             MutalfriendIndex.add(index);
                             downloadImageOfaFriend(friendList.get(MutalfriendIndex.get(index)));
+                           // downloadImageOfaFriend(friendList.get(index));
                         }
                     }
                 }
@@ -371,6 +376,27 @@ public class RealFirebase implements iFirebase {
 
      @Override
      public void StartUserUpdateListener() {
+         reference.child("Users").child(userID).child("sharing").setValue(true);
+         reference.child("Users").orderByChild("Update").addValueEventListener(new ValueEventListener() {
+             @Override
+             public void onDataChange(DataSnapshot dataSnapshot) {
+                 for (DataSnapshot child: dataSnapshot.getChildren())
+                 if(child != null && child.getValue() != null) {
+                     if(child.getValue().toString().equals("true")){
+                         friendList.clear();
+                         MutalfriendIndex.clear();
+                         loadFriendsFromDataBase();
+                         reference.child("Users").child(child.getKey()).child("Update").setValue("false");
+                     }
+
+                 }
+             }
+
+             @Override
+             public void onCancelled(DatabaseError databaseError) {
+             }
+         });
+         /*
          reference.child("Users").child(userID).child("Update").addValueEventListener(new ValueEventListener() {
              @Override
              public void onDataChange(DataSnapshot dataSnapshot) {
@@ -389,6 +415,8 @@ public class RealFirebase implements iFirebase {
              public void onCancelled(DatabaseError databaseError) {
             }
         });
+        */
+
      }
 
     @Override
@@ -513,5 +541,15 @@ public class RealFirebase implements iFirebase {
             }
         });
     }
-    //
+
+    public void turnOffSharing(){
+        reference.child("Users").child(userID).child("sharing").setValue(false);
+    }
+
+    public void turnOnSharing(){
+        reference.child("Users").child(userID).child("sharing").setValue(true);
+    }
+
+
+
 }
