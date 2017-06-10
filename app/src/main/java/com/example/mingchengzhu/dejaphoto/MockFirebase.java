@@ -1,5 +1,6 @@
 package com.example.mingchengzhu.dejaphoto;
 
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -15,8 +16,11 @@ import java.util.HashMap;
 
 public class MockFirebase implements iFirebase {
 
+    private final static String TAG = "MockFirebase";
+
+    private ArrayList<String> mutualFriends = new ArrayList<String>();
     private HashMap<String, DejaPhoto> data = new HashMap<>();
-    private String userID = null;
+    private String userID = "1234";
 
     public HashMap<String, DejaPhoto> getData(){
         return data;
@@ -35,25 +39,38 @@ public class MockFirebase implements iFirebase {
     }
 
     public void downloadDejaPhoto(final String id, OnSuccessListener successListener, final OnFailureListener failureListener) {
+        successListener.onSuccess(new Object());
     }
 
-    public void downloadAllPhotos(){}
+    public void downloadAllPhotos(){
+        Log.d(TAG, "mock downloadAllPhotos called");
+    }
 
     @Override
-   public void loadFriendsFromDataBase() {}
+   public void loadFriendsFromDataBase() {
+        Log.d(TAG, "mock loadFriendsFromDataBase called");
+    }
 
     @Override
-    public void CheckIfFriend(String DataBaseID) {}
+    public void CheckIfFriend(String DataBaseID) {
+        Log.d(TAG, "mock CheckIfFriend called");
+    }
 
     @Override
-    public void StartUserUpdateListener() {}
+    public void StartUserUpdateListener() {
+        Log.d(TAG, "mock StartUserUpdateListener called");
+    }
 
     @Override
-    public void addFriend(String Email) {}
+    public void addFriend(String Email) {
+        if (Email.substring(0, 1).equalsIgnoreCase("a")) {
+            mutualFriends.add(Email);
+        }
+    }
 
     @Override
     public ArrayList<String> getAllMutalFriend() {
-        return null;
+        return mutualFriends;
     }
 
     // for karma count
@@ -62,9 +79,12 @@ public class MockFirebase implements iFirebase {
     }
 
     public void displayLName(final String id, final TextView view, final EditText editText){
+        view.setText("Mock Location Name!");
+        editText.setText("Mock Location Name!");
     }
 
     public void setKCount(final String id, final long count){
+        Log.d(TAG, "mock setKCount called");
     }
 
     public void setLName(final String id, final String lname){
